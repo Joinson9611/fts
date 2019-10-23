@@ -15,6 +15,24 @@ export function isExternal(path) {
  * @returns {Boolean}
  */
 export function validUsername(str) {
-  const valid_map = ['admin', 'editor']
-  return valid_map.indexOf(str.trim()) >= 0
+  if (str.length < 3 || str.length > 32) {
+    return false
+  } else if (check_other_char(str)) {
+    return false
+  } else {
+    return true
+  }
 }
+
+// 验证用户名是否含有特殊字符
+
+export function check_other_char(str) {
+  const UserName = '^(?=[0-9a-zA-Z_]+$)'
+  const REG = new RegExp(UserName)
+  if (REG.test(str)) {
+    return false
+  } else {
+    return true
+  }
+}
+

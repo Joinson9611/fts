@@ -1,8 +1,11 @@
 <template>
   <section class="app-main">
-    <transition name="fade-transform" mode="out-in">
-      <router-view :key="key" />
-    </transition>
+    <el-scrollbar id="scroller-box" class="sidebar">
+      <transition name="fade-transform" mode="out-in">
+        <!-- <router-view :key="key" /> -->
+        <router-view />
+      </transition>
+    </el-scrollbar>
   </section>
 </template>
 
