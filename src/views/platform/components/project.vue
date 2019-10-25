@@ -27,8 +27,8 @@
           <div class="list-header">
             <span class="left">项目列表</span>
             <span class="right">
-              <div class="item"><el-button size="small" type="primary" plain @click="newProject">新建项目</el-button></div>
-              <div class="item"> <el-input placeholder="请输入项目名称" size="small" style="width:200px;padding: 0 20px 0 10px" /></div>
+              <div class="item"><el-button size="mini" type="primary" plain @click="newProject">新建项目</el-button></div>
+              <div class="item"> <el-input placeholder="请输入项目名称" size="mini" style="width:200px;padding: 0 20px 0 10px" /></div>
             </span>
           </div>
         </div>
@@ -69,14 +69,29 @@
           <el-table-column
             align="center"
             label="操作"
-            width="90"
+            width="250"
           >
-            <template>
+            <template class="tab-btn">
               <el-button
+                class="btn"
                 type="primary"
-                size="small"
+                size="mini"
               >
                 进入项目
+              </el-button>
+              <el-button
+                class="btn"
+                type="success"
+                size="mini"
+              >
+                编辑
+              </el-button>
+              <el-button
+                class="btn"
+                type="danger"
+                size="mini"
+              >
+                删除
               </el-button>
             </template>
           </el-table-column>
@@ -86,17 +101,19 @@
     <el-drawer
       ref="drawer"
       title="新建项目"
-      :before-close="handleDialogClose"
       :visible.sync="isProjectDialogVisible"
       direction="ltr"
       size="50%"
     >
       <div class="newProject">
-        <el-form :model="paramsAddProject">
-          <el-form-item label="项目名称:" class="dialog-form-item" prop="name">
-            <el-input v-model="paramsAddProject.name" type="text" style="width:100px" />
+        <el-form :model="paramsAddProject" :rules="addProjectRules">
+          <el-form-item label="项目名称：" class="dialog-form-item" prop="name">
+            <el-input v-model="paramsAddProject.name" class="dialog-form-item" type="text" />
           </el-form-item>
-          <el-form-item label="项目地址：" prop="address">
+          <el-form-item label="项目描述：" class="dialog-form-item" prop="label">
+            <el-input v-model="paramsAddProject.label" type="text" />
+          </el-form-item>
+          <el-form-item label="项目地址：" prop="address" class="place">
             <el-select v-model="paramsAddProject.province_id" placeholder="省" @change="provinceChange">
               <el-option v-for="item in provinceOptions" :key="item.province_id" :label="item.province_name" :value="item.province_id" />
             </el-select>
@@ -106,12 +123,12 @@
             <el-select v-model="paramsAddProject.district_id" placeholder="区" @change="districtChange">
               <el-option v-for="item in districtOptions" :key="item.district_id" :label="item.district_name" :value="item.district_id" />
             </el-select>
-            <el-input v-model="paramsAddProject.address" placeholder="详细地址" type="text" style="margin-top: 20px" />
           </el-form-item>
+          <amap @pos="getPos" />
         </el-form>
         <div class="dialog-footer">
           <el-button @click="isProjectDialogVisible = false">取 消</el-button>
-          <el-button type="primary" :loading="loading" @click="$refs.drawer.closeDrawer()">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
+          <el-button type="primary" :loading="loading" @click="closeAddProject">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
         </div>
       </div>
     </el-drawer>
@@ -121,15 +138,23 @@
 <script>
 import { FormatDateTime } from '@/utils/time.js'
 import { getProjectList, addProject } from '@/api/project'
+import amap from '@/components/amap'
 import { getProvinces, getCities, getDistricts } from '@/api/address'
 
 export default {
+  components: {
+    amap
+  },
   data() {
     return {
       provinceOptions: [],
       cityOptions: [],
       districtOptions: [],
-
+      // 立项表单规则
+      addProjectRules: {
+        name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
+        label: [{ required: true, message: '请输入项目描述', trigger: 'blur' }]
+      },
       loading: false,
       isProjectDialogVisible: false,
       isProjecteLoading: false,
@@ -158,6 +183,12 @@ export default {
     this.getProvinces()
   },
   methods: {
+    // 获取从amap得到的位置信息
+    getPos(pos) {
+      this.paramsAddProject.longitude = pos.slon
+      this.paramsAddProject.latitude = pos.slat
+      this.paramsAddProject.address = pos.sname
+    },
     getProvinces() {
       getProvinces().then(res => {
         this.provinceOptions = res.data
@@ -189,22 +220,35 @@ export default {
     },
     // 区级选项改变
     districtChange(did) {
-      console.log(2)
     },
     newProject() {
       this.isProjectDialogVisible = true
     },
-    // 关闭新建项目对话框触发
-    handleDialogClose() {
-      // this.$confirm('确定要新建项目嘛？')
-      //   .then(_ => {
-      //     this.loading = true
-      //     setTimeout(() => {
-      //       this.loading = false
-      //       done()
-      //     }, 2000)
-      //   })
-      //   .catch(_ => {})
+    closeAddProject() {
+      this.$confirm('确定要新建项目嘛？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(_ => {
+          const params = {
+            name: this.paramsAddProject.name,			// 项目名称
+            district_id: this.paramsAddProject.district_id,		// 省市区
+            address: this.paramsAddProject.address,		// 项目地址
+            longitude: this.paramsAddProject.longitude,		// 经度
+            latitude: this.paramsAddProject.latitude,	// 纬度
+            label: this.paramsAddProject.label		// 项目描述
+          }
+          this.loading = true
+          addProject(params).then(() => {
+            this.loading = false
+            this.getProjectList()
+          }).catch(err => {
+            console.error(err)
+            this.loading = false
+          })
+        })
+        .catch(_ => {})
     },
     getTime(timeStamp) {
       return FormatDateTime(timeStamp, 'yyyy-MM-dd')
@@ -255,7 +299,11 @@ export default {
       }
 
     }
-
+  }
+  .place {
+    /deep/.el-input__inner {
+      width: 130px;
+    }
   }
   /deep/.el-drawer__body{
     padding: 0 14px 14px 14px;

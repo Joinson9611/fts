@@ -15,6 +15,25 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+import AMapJS from 'amap-js'
+// 创建AMapJSAPI Loader
+var aMapJSAPILoader = new AMapJS.AMapJSAPILoader({
+  key: '21d2805b1b3b94b2c35975460006531f',
+  v: '1.4.12' // 版本号
+})
+
+// 创建AMapUI Loader
+var aMapUILoader = new AMapJS.AMapUILoader({
+  v: '1.0' // UI组件库版本号
+})
+
+aMapJSAPILoader.load().then(function(AMap) {
+  aMapUILoader.load().then(function(initAMapUI) {
+    var AMapUI = initAMapUI() // 这里调用initAMapUI初始化并返回AMapUI
+    // 其他逻辑
+  })
+})
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
