@@ -6,12 +6,20 @@ import md5 from '@/utils/md5'
 const state = {
   token: getToken(),
   name: '',
-  avatar: ''
+  avatar: '',
+  selected_project_id: undefined,
+  userId: undefined,
+  level: undefined,
+  project_name: '',
+  roles: []
 }
 
 const mutations = {
   SET_USER_ID: (state, userId) => {
     state.userId = userId
+  },
+  SET_SELECTED_PROJECT_ID: (state, project_id) => {
+    state.selected_project_id = project_id
   },
   SET_TOKEN: (state, token) => {
     state.token = token
@@ -24,6 +32,12 @@ const mutations = {
   },
   SET_LEVEL: (state, level) => {
     state.level = level
+  },
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
+  },
+  SET_SELECTED_PROJECT_NAME: (state, project_name) => {
+    state.project_name = project_name
   }
 }
 
@@ -53,15 +67,41 @@ const actions = {
         if (!data) {
           reject('验证失败，请重新登录')
         }
-
-        const { user_name, level } = data
+        const { nickname, level } = data
         commit('SET_LEVEL', level)
-        commit('SET_NAME', user_name)
-        // commit('SET_AVATAR', avatar)
+        commit('SET_NAME', nickname)
         resolve(data)
       }).catch(error => {
         reject(error)
       })
+    })
+  },
+  // 用于权限验证
+  getInfo2({ commit, state }) {
+    return new Promise((resolve, reject) => {
+      getInfo(state.token).then(response => {
+        const { data } = response
+        if (!data) {
+          reject('验证失败，请重新登录')
+        }
+        const { nickname, level, selected_project_id } = data
+        commit('SET_ROLES', [level])
+        commit('SET_SELECTED_PROJECT_ID', selected_project_id)
+        commit('SET_NAME', nickname)
+        resolve(data)
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+  // 存储选择的项目id
+  SelectProject({ commit }, info) {
+    return new Promise(resolve => {
+      commit('SET_SELECTED_PROJECT_ID', info.project_id)
+      commit('SET_SELECTED_PROJECT_NAME', info.name)
+      commit('SET_ROLES', [])
+      resolve()
     })
   },
 
@@ -71,6 +111,7 @@ const actions = {
       logout(state.token).then(() => {
         commit('SET_USER_ID', '')
         commit('SET_TOKEN', '')
+        commit('SET_ROLES', [])
         removeToken()
         resetRouter()
         resolve()
@@ -79,11 +120,11 @@ const actions = {
       })
     })
   },
-
   // remove token
-  resetToken({ commit }) {
+  resetToken({ commit, rootState }) {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
+      rootState.permission.addRouters = []
       removeToken()
       resolve()
     })

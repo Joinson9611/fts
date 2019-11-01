@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-form ref="addForm" v-model="addForm" :rules="addRules">
-      <el-form-item label="具体地址：" prop="sname">
+      <el-form-item label="具体地址：" prop="sname" label-width="110px">
         <el-input
           id="sname"
           v-model.trim="addForm.sname"
@@ -10,6 +10,7 @@
           placeholder="请输入项目具体地址"
           @input="placeAutoInput('sname')"
           @keyup.delete.native="deletePlace('sname')"
+          @clear="clearAddress"
         >
           <i
             slot="suffix"
@@ -21,7 +22,8 @@
           <div>
             <el-button type="text" size="mini" @click.stop="snameMapShow = false">收起地图<i class="el-icon-caret-top" /></el-button>
           </div>
-          <div id="sNameMap" class="map-self" /></div>
+          <div id="sNameMap" class="map-self" />
+        </div>
       </el-form-item>
     </el-form>
     <!--地址模糊搜索子组件-->
@@ -47,6 +49,32 @@ import placeSearch from './components/placeSearch'
 import AMapJS from "amap-js";
 
 export default {
+  props:{
+    city:{
+      type: Number
+    },
+    position: {
+      type: Object,
+    }
+  },
+  watch: {
+    position: {
+      handler(item) {
+        if (item) {
+          this.resultVisible = false
+          this.snameMapShow = true
+          if(item) {
+            this.pickAddress('sname',this.parseNumer(item.lng), this.parseNumer(item.lat) )
+            // this.$refs.addForm.validateField(this.inputId)
+          } else {
+            this.geocoder(item.name, 'sname')
+          }
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   components: {
     'place-search': placeSearch
   },
@@ -54,7 +82,7 @@ export default {
     const validatePlace = (rules, value, callback) => {
       if (rules.field === 'sname') {
         if (value === '') {
-          callback(new Error('请输入上车地点'))
+          callback(new Error('请输入地址'))
         } else {
           if (!this.addForm.slat || this.addForm.slat === 0) {
             callback(new Error('请搜索并选择有经纬度的地点'))
@@ -66,9 +94,9 @@ export default {
     }
     return {
       addForm: {
-        sname: '', // 上车地点
-        slat: 0, // 上车地点纬度
-        slon: 0 // 上车地点经度
+        sname: '', // 地点名称
+        slat: 0, // 纬度
+        slon: 0 // 经度
       },
       addRules: {
         sname: [{ required: true, validator: validatePlace, trigger: 'change' }]
@@ -80,12 +108,9 @@ export default {
       inputHeight: 0, // 搜索框高度
       offsetLeft: 0, // 搜索框的左偏移值
       offsetTop: 0, // 搜索框的上偏移值
-      snameMap: null, // 上车地点地图选址
-      snameMapShow: false // 上车地点地图选址显示
+      snameMap: null, // 地图选址
+      snameMapShow: false // 地图选址显示
     }
-  },
-  created() {
-
   },
   mounted() {
     // document添加onclick监听，点击时隐藏地址下拉浮窗
@@ -97,6 +122,12 @@ export default {
     document.removeEventListener('click', this.hidePlaces, false)
   },
   methods: {
+    parseNumer(num) {
+      return parseFloat(((num * 100000)/100000).toFixed(6))
+    },
+    clearAddress() {
+     this.snameMapShow = false
+    },
     placeAutoInput(inputId) {
       const currentDom = document.getElementById(inputId)// 获取input对象
       const keywords = currentDom.value
@@ -106,7 +137,8 @@ export default {
       AMap.plugin('AMap.Autocomplete', () => {
         // 实例化Autocomplete
         const autoOptions = {
-          city: '全国'
+          city: this.city ? this.city : '全国',
+          citylimit:true
         }
         const autoComplete = new AMap.Autocomplete(autoOptions) // 初始化autocomplete
         // 开始搜索
@@ -122,6 +154,8 @@ export default {
             this.result = result.tips
             this.inputId = inputId
             this.resultVisible = true
+            console.log(1);
+
           }
         })
       })
@@ -143,7 +177,7 @@ export default {
         // 元素相对于页面的绝对位置 = 元素相对于窗口的绝对位置
         const inputWidth = currentDom.clientWidth// input的宽度
         const inputHeight = currentDom.clientHeight + 2// input的高度，2是上下border的宽
-        const offsetTop = sizeObj.top + inputHeight // 距顶部
+        const offsetTop = sizeObj.top + inputHeight// 距顶部
         const offsetLeft = sizeObj.left // 距左侧
         this.$refs['placeSearch'].changePost(offsetLeft, offsetTop, inputWidth, inputHeight)
       }
@@ -168,7 +202,7 @@ export default {
         AMapUI.loadUI(['misc/PositionPicker'], (PositionPicker) => {
           this.snameMap = new AMap.Map('sNameMap', {
             zoom: 16,
-            scrollWheel: false,
+            scrollWheel: true,
             center: [lon, lat]
           })
           const positionPicker = new PositionPicker({

@@ -16,3 +16,28 @@ export function addProject(params) {
     data: qs.stringify(params)
   })
 }
+
+export function editProject(params) {
+  return request({
+    url: '/projects/update',
+    method: 'post',
+    data: qs.stringify(params)
+  })
+}
+
+export function deleteProject(params) {
+  return request({
+    url: '/projects/delete',
+    method: 'post',
+    data: qs.stringify(params)
+  })
+}
+
+export function selectProject(params) {
+  return request({
+    url: '/users/update',
+    method: 'post',
+    data: qs.stringify(params)
+  })
+}
+

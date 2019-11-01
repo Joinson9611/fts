@@ -37,9 +37,16 @@ export const constantRoutes = [
     component: test,
     hidden: true
   },
+
   {
-    path: '/platform',
+    path: '/404',
+    component: () => import('@/views/404'),
+    hidden: true
+  },
+  {
+    path: '/',
     component: PlatformLayout,
+    redirect: '/projects',
     name: 'Platform',
     hidden: true,
     children: [{
@@ -48,35 +55,111 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/404',
-    component: () => import('@/views/404'),
-    hidden: true
-  },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
-    }]
-  },
-  {
     path: '/test',
     component: () => import('@/components/amap'),
     hidden: true
-  },
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  }
 ]
 
 export const asyncRouterMap = [
-
+  {
+    path: '/project',
+    component: Layout,
+    children: [{
+      path: 'projectDetail',
+      name: 'home',
+      component: () => import('@/views/dashboard/index'),
+      meta: { title: '项目详情', icon: 'dashboard', roles: [2] }
+    }]
+  },
+  {
+    path: '/project',
+    component: Layout,
+    redirect: 'noredirect',
+    name: 'Location',
+    alwaysShow: true,
+    meta: { title: '建筑管理', icon: 'location', roles: [2] },
+    children: [
+      {
+        path: 'building',
+        name: 'Building',
+        component: () => import('@/views/location/building'),
+        meta: { title: '建筑物', icon: 'building', roles: [2] }
+      },
+      {
+        path: 'floor',
+        name: 'Floor',
+        meta: { title: '楼层', icon: 'floor', roles: [2] },
+        component: () => import('@/views/location/floor')
+      }
+    ]
+  },
+  // {
+  //   path: '/project',
+  //   component: Layout,
+  //   redirect: 'noredirect',
+  //   name: 'fireProject',
+  //   alwaysShow: true,
+  //   meta: { title: '建筑防火', icon: 'fireProject', roles: [2] },
+  //   children: [
+  //     {
+  //       path: 'device',
+  //       name: 'device',
+  //       component: () => import('@/views/location/building'),
+  //       meta: { title: '设备管理', icon: 'devices', roles: [2] }
+  //     },
+  //     {
+  //       path: 'record',
+  //       name: 'record',
+  //       meta: { title: '记录', icon: 'record', roles: [2] },
+  //       component: () => import('@/views/location/floor')
+  //     },
+  //     {
+  //       path: 'report',
+  //       name: 'report',
+  //       meta: { title: '报表', icon: 'report', roles: [2] },
+  //       component: () => import('@/views/location/floor')
+  //     }
+  //   ]
+  // },
+  {
+    path: '/project',
+    component: Layout,
+    redirect: 'noredirect',
+    name: 'fireFighting',
+    alwaysShow: true,
+    meta: { title: '消防设施', icon: 'fireFighting' },
+    children: [
+      {
+        path: 'task',
+        name: 'task',
+        component: () => import('@/views/detection/task'),
+        meta: { title: '检测任务', icon: 'tasks', roles: [2] }
+      },
+      {
+        path: 'device',
+        name: 'device',
+        component: () => import('@/views/detection/device'),
+        meta: { title: '设备管理', icon: 'devices', roles: [2] }
+      },
+      {
+        path: 'record',
+        name: 'record',
+        meta: { title: '检测记录', icon: 'record', roles: [2] },
+        component: () => import('@/views/detection/record')
+      },
+      {
+        path: 'report',
+        name: 'report',
+        meta: { title: '报表', icon: 'report', roles: [2] },
+        component: () => import('@/views/detection/report')
+      }
+    ]
+  },
+  { path: '*', redirect: '/404', hidden: true }
 ]
 
-const createRouter = () => new Router({
+export const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes

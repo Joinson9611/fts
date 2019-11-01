@@ -19,8 +19,8 @@
           <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
             <el-dropdown-item>Github</el-dropdown-item>
           </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
+          <a target="_blank" @click="$router.push({ path: '/projects' })">
+            <el-dropdown-item>管理平台</el-dropdown-item>
           </a>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">退出登录</span>
@@ -53,6 +53,7 @@ export default {
     },
     async logout() {
       await this.$store.dispatch('user/logout')
+      location.reload() // 为了重新实例化vue-router对象 避免bug
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }

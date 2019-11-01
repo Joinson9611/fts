@@ -2,9 +2,9 @@
   <div class="platform">
     <el-tabs type="border-card">
       <el-tab-pane label="项目管理"><project /></el-tab-pane>
-      <el-tab-pane label="公司管理"><company /></el-tab-pane>
-      <el-tab-pane label="部门管理"><department /></el-tab-pane>
-      <el-tab-pane label="人员管理"><staff /></el-tab-pane>
+      <el-tab-pane v-if="validatePer([0],Account_Type)" label="公司管理" lazy><company /></el-tab-pane>
+      <el-tab-pane v-if="validatePer([0,1],Account_Type)" label="部门管理" lazy><department /></el-tab-pane>
+      <el-tab-pane v-if="validatePer([0,1],Account_Type)" label="人员管理" lazy><staff /></el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -14,13 +14,26 @@ import project from './components/project'
 import department from './components/department'
 import company from './components/company'
 import staff from './components/staff'
+import { mapGetters } from 'vuex'
 
 export default {
+  name: 'Project',
   components: {
     project,
     department,
     company,
     staff
+  },
+  computed: {
+    ...mapGetters([
+      'Account_Type'
+    ])
+  },
+  methods: {
+    // 判断是否有权限
+    validatePer(arrPer, level) {
+      return arrPer.includes(level)
+    }
   }
 }
 </script>
