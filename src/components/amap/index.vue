@@ -219,9 +219,9 @@ export default {
             this.$message.error('地址选取失败')
           })
           positionPicker.start()
-          this.snameMap.addControl(new AMap.ToolBar({
-            liteStyle: true
-          }))
+          // this.snameMap.addControl(new AMap.ToolBar({
+          //   liteStyle: true
+          // }))
         })
       }
     },

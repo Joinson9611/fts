@@ -76,7 +76,7 @@
             v-if="validatePer([2],Account_Type)"
             align="center"
             label="操作"
-            width="250"
+            width="260"
           >
             <template slot-scope="scope" class="tab-btn">
               <el-button

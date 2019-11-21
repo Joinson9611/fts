@@ -37,6 +37,11 @@
           <span>{{ scope.row.label }}</span>
         </template>
       </el-table-column>
+      <el-table-column label="项目负责人" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.leader | leader }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="检测时段" align="center" width="310">
         <template slot-scope="scope">
           <span>{{ `${getTime(scope.row.testting_time)}~${ getTime(scope.row.testing_completion_time)}` }}</span>
@@ -45,6 +50,11 @@
       <el-table-column label="是否完成" align="center">
         <template slot-scope="scope">
           <span :style="{color:scope.row.is_finished? '#67C23A':'#F56C6C'}">{{ isFinished[scope.row.is_finished] }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="复查结果" align="center">
+        <template slot-scope="scope">
+          <span>{{ reviewMap[scope.row.is_review] }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -66,7 +76,7 @@
       </el-table-column>
     </el-table>
     <!--页码导航-->
-    <pagination v-show="total>0" :total="total" :page.sync="paramsGetTasks.page" :limit.sync="paramsGetTasks.limit" @pagination="getTaskFire" />
+    <pagination v-show="total>0" :total="total" :page.sync="paramsGetTasks.page" :limit.sync="paramsGetTasks.limit" @pagination="getTask" />
 
     <!-- 新建检测任务的窗口 -->
     <el-drawer
@@ -90,13 +100,20 @@
               <el-form-item label="委托单位：" class="dialog-form-item" prop="constructing_unit" :size="size">
                 <el-input v-model="paramsNewTasks.constructing_unit" class="dialog-form-item" type="text" />
               </el-form-item>
-              <el-form-item label="设计单位：" class="dialog-form-item" prop="designed_unit" :size="size">
-                <el-input v-model="paramsNewTasks.designed_unit" class="dialog-form-item" type="text" />
+              <el-form-item label="统一社会信用代码：" class="dialog-form-item" prop="constructing_unit_code" :size="size">
+                <el-input v-model="paramsNewTasks.constructing_unit_code" class="dialog-form-item" type="text" />
               </el-form-item>
-              <el-form-item label="施工单位：" class="dialog-form-item" prop="construction_unit" :size="size">
-                <el-input v-model="paramsNewTasks.construction_unit" class="dialog-form-item" type="text" />
+              <el-form-item label="检测时间：" class="dialog-form-item" prop="testting_time" :size="size">
+                <el-date-picker
+                  v-model="paramsNewTasks.testting_time"
+                  type="datetime"
+                  placeholder="请选择检测时间"
+                  style="width: 100%;"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                />
               </el-form-item>
-              <el-form-item label="检测方案：" class="dialog-form-item" :size="size">
+
+              <!-- <el-form-item label="检测方案：" class="dialog-form-item" :size="size">
                 <el-input class="dialog-form-item" disabled :placeholder="schemefileList.length===0?'请选择检测方案':schemefileList[0].name" type="text" style="width:200px" />
                 <el-button v-if="fileTestingScheme.isExport" size="mini" type="primary" @click="exportFile('testing_scheme')">导出文件</el-button>
                 <el-upload
@@ -110,11 +127,11 @@
                 >
                   <el-button slot="trigger" size="mini" type="primary">浏览...</el-button>
                 </el-upload>
-              </el-form-item>
-              <el-form-item label="检测面积(平方米)：" class="dialog-form-item" prop="testing_area" :size="size">
+              </el-form-item> -->
+              <!-- <el-form-item label="检测面积(平方米)：" class="dialog-form-item" prop="testing_area" :size="size">
                 <el-input v-model="paramsNewTasks.testing_area" oninput="value=value.replace(/[^\d.]/g,'')" class="dialog-form-item" type="text" />
-              </el-form-item>
-              <el-form-item label="竣工日期：" class="dialog-form-item" prop="asbuild_time" :size="size">
+              </el-form-item> -->
+              <!-- <el-form-item label="竣工日期：" class="dialog-form-item" prop="asbuild_time" :size="size">
                 <el-date-picker
                   v-model="paramsNewTasks.asbuild_time"
                   type="datetime"
@@ -122,41 +139,23 @@
                   style="width: 100%;"
                   value-format="yyyy-MM-dd HH:mm:ss"
                 />
-              </el-form-item>
-              <el-form-item label="竣工图纸提供情况：" class="dialog-form-item" prop="asbuild_drawings" :size="size">
+              </el-form-item> -->
+              <!-- <el-form-item label="竣工图纸提供情况：" class="dialog-form-item" prop="asbuild_drawings" :size="size">
                 <el-input v-model="paramsNewTasks.asbuild_drawings" show-word-limit maxlength="25" class="dialog-form-item" type="text" />
-              </el-form-item>
-              <el-form-item label="建筑总面积(平方米)：" class="dialog-form-item" prop="total_building_area" :size="size">
+              </el-form-item> -->
+              <!-- <el-form-item label="建筑总面积(平方米)：" class="dialog-form-item" prop="total_building_area" :size="size">
                 <el-input v-model="paramsNewTasks.total_building_area" oninput="value=value.replace(/[^\d.]/g,'')" class="dialog-form-item" type="text" />
-              </el-form-item>
-              <el-form-item label="建筑类型：" class="dialog-form-item" prop="building_type" :size="size">
+              </el-form-item> -->
+              <!-- <el-form-item label="建筑类型：" class="dialog-form-item" prop="building_type" :size="size">
                 <el-input v-model="paramsNewTasks.building_type" class="dialog-form-item" type="text" />
-              </el-form-item>
+              </el-form-item> -->
             </el-col>
-            <el-col :span="2" style="height:460px">
+            <el-col :span="2" style="height:200px">
               <div class="divider">
                 <el-divider direction="vertical" />
               </div>
             </el-col>
             <el-col :span="11">
-              <el-form-item label="统一社会信用代码：" class="dialog-form-item" prop="constructing_unit_code" :size="size">
-                <el-input v-model="paramsNewTasks.constructing_unit_code" class="dialog-form-item" type="text" />
-              </el-form-item>
-              <el-form-item label="建筑楼层：" class="dialog-form-item" prop="building_floors" :size="size">
-                <el-input v-model="paramsNewTasks.building_floors" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
-              </el-form-item>
-              <el-form-item label="建筑高度(米)：" class="dialog-form-item" prop="building_hight" :size="size">
-                <el-input v-model="paramsNewTasks.building_hight" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
-              </el-form-item>
-              <el-form-item label="检测时间：" class="dialog-form-item" prop="testting_time" :size="size">
-                <el-date-picker
-                  v-model="paramsNewTasks.testting_time"
-                  type="datetime"
-                  placeholder="请选择检测时间"
-                  style="width: 100%;"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                />
-              </el-form-item>
               <el-form-item label="检测完成日期：" class="dialog-form-item" prop="testing_completion_time" :size="size">
                 <el-date-picker
                   v-model="paramsNewTasks.testing_completion_time"
@@ -166,6 +165,12 @@
                   value-format="yyyy-MM-dd HH:mm:ss"
                 />
               </el-form-item>
+              <!-- <el-form-item label="建筑楼层：" class="dialog-form-item" prop="building_floors" :size="size">
+                <el-input v-model="paramsNewTasks.building_floors" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
+              </el-form-item> -->
+              <!-- <el-form-item label="建筑高度(米)：" class="dialog-form-item" prop="building_hight" :size="size">
+                <el-input v-model="paramsNewTasks.building_hight" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
+              </el-form-item> -->
               <el-form-item label="联系人：" class="dialog-form-item" prop="contacts" :size="size">
                 <el-input v-model="paramsNewTasks.contacts" class="dialog-form-item" type="text" />
               </el-form-item>
@@ -191,7 +196,7 @@
                   <el-button slot="trigger" size="mini" type="primary">浏览...</el-button>
                 </el-upload>
               </el-form-item>
-              <el-form-item label="检测类型：" class="dialog-form-item" prop="testing_type_id" :size="size">
+              <!-- <el-form-item label="检测类型：" class="dialog-form-item" prop="testing_type_id" :size="size">
                 <el-select v-model="paramsNewTasks.testing_type_id" filterable placeholder="请选择检测类型" style="width: 100%">
                   <el-option
                     v-for="item in testingTypeOptions"
@@ -200,8 +205,8 @@
                     :value="item.type_id"
                   />
                 </el-select>
-              </el-form-item>
-              <el-form-item label="检测范围：" class="dialog-form-item" prop="testing_scope" :size="size">
+              </el-form-item> -->
+              <!-- <el-form-item label="检测范围：" class="dialog-form-item" prop="testing_scope" :size="size">
                 <el-select v-model="paramsNewTasks.testing_scope" filterable placeholder="请选择检测范围" style="width: 100%">
                   <el-option
                     v-for="item in testingScopeOptions"
@@ -210,16 +215,16 @@
                     :value="item.type_id"
                   />
                 </el-select>
-              </el-form-item>
+              </el-form-item> -->
             </el-col>
           </el-row>
-          <el-row>
+          <!-- <el-row>
             <el-col :span="24">
               <el-form-item label="检测部位：" class="dialog-form-item" prop="testing_part" :size="size">
                 <el-input v-model="paramsNewTasks.testing_part" class="dialog-form-item" type="text" show-word-limit maxlength="45" />
               </el-form-item>
             </el-col>
-          </el-row>
+          </el-row> -->
           <el-row>
             <el-col :span="24">
               <el-form-item label="检测批文：" class="dialog-form-item" prop="testing_appvoval" :size="size">
@@ -227,13 +232,13 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row>
+          <!-- <el-row>
             <el-col :span="24">
               <el-form-item label="检测部位使用功能：" class="dialog-form-item" prop="testing_part_functiong" :size="size">
                 <el-input v-model="paramsNewTasks.testing_part_functiong" show-word-limit maxlength="45" class="dialog-form-item" type="text" />
               </el-form-item>
             </el-col>
-          </el-row>
+          </el-row> -->
           <el-row>
             <el-col :span="24">
               <el-form-item label="检测依据：" class="dialog-form-item" prop="testing_basis" :size="size">
@@ -243,7 +248,7 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item label="检测内容(系统)：" class="dialog-form-item" prop="system_id_list" :size="size">
+              <el-form-item label="检测内容(场所)：" class="dialog-form-item" prop="system_id_list" :size="size">
                 <el-select v-model="paramsNewTasks.system_id_list" filterable multiple placeholder="请选择需检测的系统" style="width: 100%">
                   <el-option
                     v-for="item in systemTypeOptions"
@@ -297,6 +302,16 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="复查结果：" class="dialog-form-item" prop="is_review" :size="size">
+                <el-radio-group v-model="paramsNewTasks.is_review" size="small">
+                  <el-radio :label="0">初查</el-radio>
+                  <el-radio :label="1">复查</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
       </div>
       <div class="dialog-footer">
@@ -305,39 +320,72 @@
       </div>
     </el-drawer>
     <!--弹出查看报告窗口-->
-    <el-dialog :visible.sync="dialogVisible" :append-to-body="true" :close-on-click-modal="false" :title="'任务名称-'+reportFile.name">
+    <el-drawer
+      title="报告详情"
+      :visible.sync="dialogVisible"
+      direction="btt"
+      size="50%"
+    >
       <el-table
-        :data="reportFile.list"
+        v-loading="isReportLoading"
+        :data="reportFile"
         element-loading-text="Loading"
         style="width: 100%;"
         border
+        max-height="260"
         fit
       >
+        <el-table-column label="场所" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.system_type }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="报告日期" align="center">
           <template slot-scope="scope">
-            <i class="el-icon-time" />
-            <span>{{ scope.row.time }}</span>
+            <i v-show="scope.row.is_report" class="el-icon-time" />
+            <span>{{ scope.row.report_time }}</span>
           </template>
         </el-table-column>
         <el-table-column label="报告文件名称" align="center">
           <template slot-scope="scope">
-            <a style="color: #409EFF" @click="downloadReport">{{ scope.row.filename }}</a>
+            <a style="color: #409EFF" @click="downloadReport(scope.row.report_path,scope.row.is_report)">{{ scope.row.fileName }}</a>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" width="200">
+          <template slot-scope="scope">
+            <el-button
+              class="btn"
+              type="primary"
+              size="mini"
+              plain
+              @click="generateReport(scope.row.history_id)"
+            >
+              生成报告
+            </el-button>
+            <el-button
+              class="btn"
+              type="success"
+              size="mini"
+              plain
+              :disabled="!scope.row.is_report"
+              @click="downloadReport(scope.row.report_path,scope.row.is_report)"
+            >
+              下载报告
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
-      <div slot="footer" class="dialog-footer" style="margin-right: 20px;margin-top: 0;">
-        <el-button v-waves :loading="isGenerateReportLoading" type="primary" plain @click="generateReport">生成报告</el-button>
-        <el-button v-waves :disabled="reportFile.list.length===0 || isGenerateReportLoading" plain type="success" @click="downloadReport">下载报告</el-button>
-      </div>
-    </el-dialog>
+    </el-drawer>
+
   </div>
 </template>
 
 <script>
-import { deleteTaskFire, updateTaskFire, detailTaskFire, addTaskFire, getTaskFire, generateReport } from '@/api/task1'
+import { getTask, newTask, detailTask, updateTask, deleteTask, generateReport } from '@/api/task5'
 import { getUsersByCompany } from '@/api/user'
 import { getSystemTypes } from '@/api/system'
 import { Formattimestamp } from '@/utils/time'
+import { getHistoryReport } from '@/api/history5'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -346,8 +394,14 @@ export default {
   name: 'Detectiontasks',
   components: { Pagination },
   directives: { waves },
+  filters: {
+    leader(user) {
+      if (user !== '') return JSON.parse(user).user_name
+    }
+  },
   data() {
     return {
+      reviewMap: ['初查', '复查'],
       isFinished: ['否', '是'],
       testingTypeOptions: [
         { type_id: 0, type_name: '竣工检测' },
@@ -358,10 +412,7 @@ export default {
         { type_id: 1, type_name: '局部检测' }
       ],
       // 报告文件
-      reportFile: {
-        list: [],
-        url: ''
-      },
+      reportFile: [],
 
       // 检测方案文件列表
       schemefileList: [],
@@ -372,6 +423,8 @@ export default {
       isButtonDownLoading: false,
       // 新建任务加载显示
       isNewLoading: false,
+
+      // 当前的任务ID
       task_id: undefined,
       // 保留检测方案文件信息
       fileTestingScheme: {
@@ -389,6 +442,8 @@ export default {
       userOptions: [],
       systemTypeOptions: [],
       size: 'mini',
+      // 报告加载显示
+      isReportLoading: false,
       isNewDialogShow: false,
       isTasksDeleteShow: false,
       multipleSelection: [],
@@ -429,9 +484,9 @@ export default {
         system_id_list: [{ required: true, message: '请选择检测内容(需检测的系统)', trigger: 'blur' }],
         leader: [{ required: true, message: '请选择项目负责人', trigger: 'blur' }],
         auditor: [{ required: true, message: '请选择审核人', trigger: 'blur' }],
-        testing_users: [{ required: true, message: '请选择检测人员', trigger: 'blur' }]
+        testing_users: [{ required: true, message: '请选择检测人员', trigger: 'blur' }],
+        is_review: [{ required: true, message: '请选择复查结果', trigger: 'blur' }]
       },
-
       paramsGetTasks: {
         project_id: undefined,
         page: 1,
@@ -442,34 +497,23 @@ export default {
       taskFormData: new FormData(),
 
       paramsNewTasks: {
-        project_id: undefined,
-        label: undefined,
-        constructing_unit: undefined, // 委托单位(建设单位)
-        constructing_unit_code: undefined,
-        designed_unit: undefined,	// 设计单位
-        construction_unit: undefined,	// 施工单位(维保单位)
-        testing_area: undefined,		// 检测面积(平方米)
-        asbuild_time: undefined,	// 竣工日期
-        asbuild_drawings: undefined,	// 竣工图纸提供情况
-        total_building_area: undefined,	// 建筑总面积(平方米)
-        building_type: undefined,	// 建筑类型
-        building_floors: undefined,	// 建筑楼层
-        building_hight: undefined,		// 建筑高度(米)
-        testting_time: undefined, // 检测日期
-        testing_completion_time: undefined, // 检测完成日期
-        contacts: undefined,	// 联系人
-        contact_number: undefined,	// 联系电话
+        project_id: undefined,		// 项目名称
+        name: undefined,				// 任务名称
+        label: undefined,			// 任务描述
+        constructing_unit: undefined,		// 委托单位(建设单位)
+        constructing_unit_code: undefined,		// 统一信用代码(建设单位)
+        testting_time: undefined,		// 检测日期
+        testing_completion_time: undefined,		// 检测完成日期
+        contacts: undefined,		// 联系人
+        contact_number: undefined,		// 联系电话
         contract_amount: undefined,		// 合同金额(元)
-        testing_type_id: undefined,	// 检测类型0=竣工检测、1=年度检测
-        testing_scope: undefined,	// 检测范围0=整体检测、1=局部检测
-        testing_part: undefined, // 检测部位
-        testing_appvoval: undefined,	// 检测批文
-        testing_part_functiong: undefined, // 检测部位使用功能
-        testing_basis: undefined,	// 检测依据
-        system_id_list: undefined,	// 检测内容(需检测的系统)
-        leader: undefined,		// 项目负责人
-        auditor: undefined,	// 审核人
-        testing_users: undefined	// 检测人员(多个)
+        testing_appvoval: undefined,		// 检测批文
+        testing_basis: undefined,		// 检测依据
+        system_id_list: undefined,			// 检测内容(需检测的系统)
+        leader: undefined,			// 项目负责人		//json字符串：{"user_id":6,"user_name":"mwuyeuser1-"}
+        auditor: undefined,			// 审核人			//json字符串：{"user_id":6,"user_name":"mwuyeuser1-"}
+        testing_users: undefined,		// 检测人员   		//json字符串：[{"user_id":6,"user_name":"mwuyeuser1-"}]
+        is_review: undefined		// 0=初次检查、1=复查
       }
     }
   },
@@ -480,36 +524,44 @@ export default {
     ])
   },
   created() {
-    this.getTaskFire()
+    this.getTask()
     this.getSystemTypes()
     this.getUserList()
   },
   methods: {
-
     // 生成报告
-    generateReport() {
+    generateReport(history_id) {
       this.$confirm('是否生成新的报告?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.isGenerateReportLoading = true
-        generateReport({ task_id: this.reportFile.task_id }).then((res) => {
-          const filename = res.data.report_path.split('/').pop()
-          this.reportFile.list = [{
-            time: Formattimestamp(res.data.report_time),
-            filename
-          }]
-          this.reportFile.url = process.env.VUE_APP_FILE_API + res.data.report_path
-          this.isGenerateReportLoading = false
+        generateReport({ history_id }).then(res => {
           this.$message({
             type: 'success',
             message: '新报告生成，需要查看请下载该报告'
           })
+          this.getHistoryReport(this.task_id)
         }).catch(err => {
-          this.isGenerateReportLoading = false
           console.error(err)
         })
+        // generateReport({ task_id: this.reportFile.task_id }).then((res) => {
+        //   const filename = res.data.report_path.split('/').pop()
+        //   this.reportFile.list = [{
+        //     time: Formattimestamp(res.data.report_time),
+        //     filename
+        //   }]
+        //   this.reportFile.url = process.env.VUE_APP_FILE_API + res.data.report_path
+        //   this.isGenerateReportLoading = false
+        //   this.$message({
+        //     type: 'success',
+        //     message: '新报告生成，需要查看请下载该报告'
+        //   })
+        // }).catch(err => {
+        //   this.isGenerateReportLoading = false
+        //   console.error(err)
+        // })
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -518,33 +570,73 @@ export default {
       })
     },
     // 下载报告
-    downloadReport() {
-      if (this.reportFile.url !== '') window.open(this.reportFile.url)
+    downloadReport(url, isReport) {
+      if (isReport) window.open(url)
       return
+    },
+    getHistoryReport(tid) {
+      this.isReportLoading = true
+      getHistoryReport({ task_id: tid }).then(res => {
+        const fileInfo = res.data.items
+        fileInfo.forEach((item) => {
+          if (item.is_report) {
+            const fileName = item.report_path.split('/').pop()
+            item.fileName = fileName
+            item.report_path = process.env.VUE_APP_FILE_API + item.report_path
+            item.report_time = Formattimestamp(item.report_time)
+          } else {
+            item.report_time = '/'
+            item.fileName = '暂无报告'
+          }
+        })
+        this.isReportLoading = false
+        this.reportFile = fileInfo
+      }).catch(err => {
+        this.isReportLoading = false
+        console.error(err)
+      })
     },
     // 查看报告
     checkReport(info) {
       this.dialogVisible = true
-      let fileInfo
-      if (info.report_path === '') {
-        fileInfo = {
-          list: [],
-          task_id: info.task_id,
-          name: info.name
-        }
-      } else {
-        const filename = info.report_path.split('/').pop()
-        fileInfo = {
-          list: [{
-            time: Formattimestamp(info.report_time),
-            filename
-          }],
-          task_id: info.task_id,
-          name: info.name
-        }
-        fileInfo.url = process.env.VUE_APP_FILE_API + info.report_path
-      }
-      this.reportFile = fileInfo
+      this.getHistoryReport(info.task_id)
+      this.task_id = info.task_id
+      // getHistoryReport({ task_id: info.task_id }).then(res => {
+      //   const fileInfo = res.data.items
+      //   fileInfo.forEach((item) => {
+      //     if (item.is_report) {
+      //       const fileName = item.report_path.split('/').pop()
+      //       item.fileName = fileName
+      //       item.report_time = Formattimestamp(item.report_time)
+      //     } else {
+      //       item.report_time = '/'
+      //       item.system_type = '/'
+      //       item.fileName = '暂无报告'
+      //     }
+      //   })
+      //   this.reportFile = fileInfo
+      // }).catch(err => {
+      //   console.error(err)
+      // })
+
+      // if (info.report_path === '') {
+      //   fileInfo = {
+      //     list: [],
+      //     task_id: info.task_id,
+      //     name: info.name
+      //   }
+      // } else {
+      //   const filename = info.report_path.split('/').pop()
+      //   fileInfo = {
+      //     list: [{
+      //       time: Formattimestamp(info.report_time),
+      //       filename
+      //     }],
+      //     task_id: info.task_id,
+      //     name: info.name
+      //   }
+      //   fileInfo.url = process.env.VUE_APP_FILE_API + info.report_path
+      // }
     },
     // 导出文件
     exportFile(name) {
@@ -589,23 +681,23 @@ export default {
       return true
     },
     // 处理检测方案文件改变的函数
-    handleFileChange(file, fileList) {
-      if (this.fileCheck(file)) {
-        if (fileList.length === 1) {
-          this.schemefileList = fileList
-        } else {
-          this.schemefileList = [fileList[1]]
-        }
-        this.fileTestingScheme.isExport = false
-        this.taskFormData.set('testing_scheme', this.schemefileList[0].raw, this.schemefileList[0].name)
-      } else {
-        if (this.fileTestingScheme.isExport) {
-          this.schemefileList = [{ name: this.fileTestingScheme.name }]
-        } else {
-          this.schemefileList = []
-        }
-      }
-    },
+    // handleFileChange(file, fileList) {
+    //   if (this.fileCheck(file)) {
+    //     if (fileList.length === 1) {
+    //       this.schemefileList = fileList
+    //     } else {
+    //       this.schemefileList = [fileList[1]]
+    //     }
+    //     this.fileTestingScheme.isExport = false
+    //     this.taskFormData.set('testing_scheme', this.schemefileList[0].raw, this.schemefileList[0].name)
+    //   } else {
+    //     if (this.fileTestingScheme.isExport) {
+    //       this.schemefileList = [{ name: this.fileTestingScheme.name }]
+    //     } else {
+    //       this.schemefileList = []
+    //     }
+    //   }
+    // },
     // 处理合同扫描件改变的函数
     handleFileContractChange(file, fileList) {
       if (this.fileCheck(file)) {
@@ -634,7 +726,7 @@ export default {
     },
     // 获取系统列表
     getSystemTypes() {
-      getSystemTypes({ task_type_id: 1 }).then(res => {
+      getSystemTypes({ task_type_id: 5 }).then(res => {
         this.systemTypeOptions = res.data.items
       }).catch(err => {
         console.error(err)
@@ -648,7 +740,7 @@ export default {
     onNewSubmit() {
       this.$refs.newTaskRuleForm.validate(valid => {
         if (valid) {
-          if (this.schemefileList.length === 0 || this.contractfileList.length === 0) {
+          if (this.contractfileList.length === 0) {
             this.$message({
               type: 'warning',
               message: '请添加检测方案文件或合同扫描件！'
@@ -665,13 +757,13 @@ export default {
             // 是否是编辑
             if (this.isEdit) {
               this.taskFormData.set('task_id', this.task_id)
-              updateTaskFire(this.taskFormData).then(() => {
+              updateTask(this.taskFormData).then(() => {
                 this.isNewLoading = false
                 this.$message({
                   type: 'success',
                   message: '编辑检测任务成功！'
                 })
-                this.getTaskFire()
+                this.getTask()
                 this.isNewLoading = false
                 this.isNewDialogShow = false
               }).catch(() => {
@@ -679,13 +771,13 @@ export default {
               })
             } else {
               this.taskFormData.set('project_id', this.project_id)
-              addTaskFire(this.taskFormData).then(() => {
+              newTask(this.taskFormData).then(() => {
                 this.isNewLoading = false
                 this.$message({
                   type: 'success',
                   message: '新建检测任务成功！'
                 })
-                this.getTaskFire()
+                this.getTask()
                 this.isNewLoading = false
                 this.isNewDialogShow = false
               }).catch(() => {
@@ -699,7 +791,7 @@ export default {
     // 初始化表单
     init() {
       if (this.$refs.newTaskRuleForm !== undefined) this.$refs.newTaskRuleForm.resetFields()
-      this.schemefileList = []
+      // this.schemefileList = []
       this.contractfileList = []
       this.taskFormData = new FormData()
       for (const key in this.paramsNewTasks) {
@@ -713,17 +805,17 @@ export default {
     openEditTask(task_id) {
       this.task_id = task_id
       this.isEdit = true
-      this.fileTestingScheme.isExport = true
+      // this.fileTestingScheme.isExport = true
       this.fileContractCopy.isExport = true
       this.isNewDialogShow = true
-      detailTaskFire({ task_id }).then(res => {
+      detailTask({ task_id }).then(res => {
         const obj = {}
         const data = res.data
         for (const key in data) {
           if (!['project_id', 'id', 'testing_scheme', 'contract_copy', 'is_finished', 'extension', 'status'].includes(key)) {
             obj[key] = data[key]
           }
-          if (['asbuild_time', 'testting_time', 'testing_completion_time'].includes(key)) {
+          if (['testting_time', 'testing_completion_time'].includes(key)) {
             obj[key] = Formattimestamp(data[key])
           }
           if (['leader', 'auditor', 'testing_users'].includes(key)) {
@@ -733,12 +825,12 @@ export default {
             // 将字符串转化为数组并将将数组项映射成number类型
             obj[key] = data[key].split(',').map(item => item * 1)
           }
-          if (key === 'testing_scheme') {
-            const fileName = data[key].split('/').pop()
-            this.fileTestingScheme.name = fileName
-            this.fileTestingScheme.url = process.env.VUE_APP_FILE_API + data[key]
-            this.schemefileList = [{ name: fileName }]
-          }
+          // if (key === 'testing_scheme') {
+          //   const fileName = data[key].split('/').pop()
+          //   this.fileTestingScheme.name = fileName
+          //   this.fileTestingScheme.url = process.env.VUE_APP_FILE_API + data[key]
+          //   this.schemefileList = [{ name: fileName }]
+          // }
           if (key === 'contract_copy') {
             const fileName = data[key].split('/').pop()
             this.fileContractCopy.name = fileName
@@ -753,10 +845,10 @@ export default {
      * @Description: 获取任务列表
      * @Date: 2019/5/7
      **/
-    getTaskFire() {
+    getTask() {
       this.isTaskListLoadingShow = true
       this.paramsGetTasks.project_id = this.project_id
-      getTaskFire(this.paramsGetTasks).then(response => {
+      getTask(this.paramsGetTasks).then(response => {
         this.TaskList = response.data.items
         this.total = response.data.total
         this.isTaskListLoadingShow = false
@@ -771,7 +863,7 @@ export default {
      **/
     onSearch() {
       this.paramsGetTasks.page = 1
-      this.getTaskFire()
+      this.getTask()
     },
     /**
      * @Description: 列表勾选回调
@@ -793,9 +885,9 @@ export default {
           task_id_list: this.multipleSelection.map(item => item.task_id).toString(),
           project_id: this.selected_project_id
         }
-        deleteTaskFire(deleteParam).then(() => {
+        deleteTask(deleteParam).then(() => {
           this.isTaskListLoadingShow = false
-          this.getTaskFire()
+          this.getTask()
         }).catch(err => {
           console.log(err)
           this.isTaskListLoadingShow = false
@@ -832,7 +924,7 @@ export default {
     height: 0
   }
   .task {
-    padding: 0 20px;
+    padding: 20px 20px;
     overflow: auto;
     flex: 1;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);

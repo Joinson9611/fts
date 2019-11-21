@@ -19,6 +19,7 @@
   display: none;
 }
 
+
 // to fixed https://github.com/ElemeFE/element/issues/2461
 .el-dialog {
   transform: none;
@@ -43,5 +44,29 @@
 .el-dropdown-menu {
   a {
     display: block
+  }
+}
+
+.el-drawer__body{
+  padding: 0 14px 14px 14px;
+}
+
+.el-drawer__container{
+  overflow: hidden;
+}
+
+.el-drawer-common{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  form{
+    flex: 1;
+  }
+  button {
+    flex: 0 0 100px;
+  }
+  .dialog-footer{
+    display: flex;
+    justify-content: flex-end;
   }
 }

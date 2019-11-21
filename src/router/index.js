@@ -56,7 +56,7 @@ export const constantRoutes = [
   },
   {
     path: '/test',
-    component: () => import('@/components/amap'),
+    component: () => import('@/views/test'),
     hidden: true
   }
 ]
@@ -68,12 +68,12 @@ export const asyncRouterMap = [
     children: [{
       path: 'projectDetail',
       name: 'home',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: '项目详情', icon: 'dashboard', roles: [2] }
+      component: () => import('@/views/home'),
+      meta: { title: '项目详情', icon: 'home', roles: [2] }
     }]
   },
   {
-    path: '/project',
+    path: '/location',
     component: Layout,
     redirect: 'noredirect',
     name: 'Location',
@@ -94,41 +94,13 @@ export const asyncRouterMap = [
       }
     ]
   },
-  // {
-  //   path: '/project',
-  //   component: Layout,
-  //   redirect: 'noredirect',
-  //   name: 'fireProject',
-  //   alwaysShow: true,
-  //   meta: { title: '建筑防火', icon: 'fireProject', roles: [2] },
-  //   children: [
-  //     {
-  //       path: 'device',
-  //       name: 'device',
-  //       component: () => import('@/views/location/building'),
-  //       meta: { title: '设备管理', icon: 'devices', roles: [2] }
-  //     },
-  //     {
-  //       path: 'record',
-  //       name: 'record',
-  //       meta: { title: '记录', icon: 'record', roles: [2] },
-  //       component: () => import('@/views/location/floor')
-  //     },
-  //     {
-  //       path: 'report',
-  //       name: 'report',
-  //       meta: { title: '报表', icon: 'report', roles: [2] },
-  //       component: () => import('@/views/location/floor')
-  //     }
-  //   ]
-  // },
   {
-    path: '/project',
+    path: '/fireFighting',
     component: Layout,
     redirect: 'noredirect',
     name: 'fireFighting',
     alwaysShow: true,
-    meta: { title: '消防设施', icon: 'fireFighting' },
+    meta: { title: '消防设施', icon: 'fireFighting', roles: [2] },
     children: [
       {
         path: 'task',
@@ -147,12 +119,28 @@ export const asyncRouterMap = [
         name: 'record',
         meta: { title: '检测记录', icon: 'record', roles: [2] },
         component: () => import('@/views/detection/record')
+      }
+    ]
+  },
+  {
+    path: '/establishments',
+    component: Layout,
+    redirect: 'noredirect',
+    name: 'establishments',
+    alwaysShow: true,
+    meta: { title: '三小场所', icon: 'establishments', roles: [2] },
+    children: [
+      {
+        path: 'task',
+        name: 'task',
+        component: () => import('@/views/establishments/task'),
+        meta: { title: '检测任务', icon: 'tasks', roles: [2] }
       },
       {
-        path: 'report',
-        name: 'report',
-        meta: { title: '报表', icon: 'report', roles: [2] },
-        component: () => import('@/views/detection/report')
+        path: 'record',
+        name: 'record',
+        meta: { title: '检测记录', icon: 'record', roles: [2] },
+        component: () => import('@/views/establishments/record')
       }
     ]
   },

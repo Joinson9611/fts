@@ -38,6 +38,9 @@ const mutations = {
   },
   SET_SELECTED_PROJECT_NAME: (state, project_name) => {
     state.project_name = project_name
+  },
+  SET_COMPANY_ID: (state, cid) => {
+    state.company_id = cid
   }
 }
 
@@ -84,7 +87,8 @@ const actions = {
         if (!data) {
           reject('验证失败，请重新登录')
         }
-        const { nickname, level, selected_project_id } = data
+        const { nickname, level, selected_project_id, company_id } = data
+        commit('SET_COMPANY_ID', company_id)
         commit('SET_ROLES', [level])
         commit('SET_SELECTED_PROJECT_ID', selected_project_id)
         commit('SET_NAME', nickname)

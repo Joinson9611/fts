@@ -11,10 +11,23 @@ import App from './App'
 import store from './store'
 import router from './router'
 
+// 图片预览插件
+import Viewer from 'v-viewer'
+// 下次记住要引入样式
+import 'viewerjs/dist/viewer.css'
 import '@/icons' // icon
 import '@/permission' // permission control
 
 import AMapJS from 'amap-js'
+
+Vue.use(Viewer, {
+  defaultOptions: {
+    zIndex: 9999
+  }
+})
+Viewer.setDefaults({
+  Options: { 'inline': true, 'button': true, 'navbar': true, 'title': false, 'toolbar': true, 'tooltip': true, 'movable': false, 'zoomable': true, 'rotatable': true, 'scalable': true, 'transition': true, 'fullscreen': false, 'keyboard': true, 'url': 'data-source' }
+})
 // 创建AMapJSAPI Loader
 var aMapJSAPILoader = new AMapJS.AMapJSAPILoader({
   key: '21d2805b1b3b94b2c35975460006531f',
@@ -41,10 +54,6 @@ aMapJSAPILoader.load().then(function(AMap) {
  * Currently MockJs will be used in the production environment,
  * please remove it before going online! ! !
  */
-import { mockXHR } from '../mock'
-if (process.env.NODE_ENV === 'production') {
-  mockXHR()
-}
 
 // set ElementUI lang to EN
 Vue.use(ElementUI)

@@ -1,5 +1,5 @@
 <template>
-  <div>项目首页</div>
+  <div class="project">项目首页(待写中...)</div>
 </template>
 
 <script>

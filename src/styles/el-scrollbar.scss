@@ -1,0 +1,20 @@
+.sidebar {
+  border-right: 1px solid rgba(0,0,0,.07);
+  overflow-y: auto;
+  transition: transform .25s ease-out;
+  width: 100%;
+  z-index: 998;
+}
+.sidebar::-webkit-scrollbar {
+  width: 4px
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px
+}
+.sidebar:hover::-webkit-scrollbar-thumb {
+  background: hsla(0,0%,53%,.4)
+}
+.sidebar:hover::-webkit-scrollbar-track {
+  background: hsla(0,0%,53%,.1)
+}
