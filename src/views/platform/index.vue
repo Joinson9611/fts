@@ -1,6 +1,6 @@
 <template>
   <div class="platform">
-    <el-tabs type="border-card">
+    <el-tabs type="card">
       <el-tab-pane label="项目管理"><project /></el-tab-pane>
       <el-tab-pane v-if="validatePer([0],Account_Type)" label="公司管理" lazy><company /></el-tab-pane>
       <el-tab-pane v-if="validatePer([0,1],Account_Type)" label="部门管理" lazy><department /></el-tab-pane>

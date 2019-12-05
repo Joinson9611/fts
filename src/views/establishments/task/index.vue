@@ -24,7 +24,7 @@
         align="center"
         width="50"
       />
-      <el-table-column label="序号" align="center" width="70">
+      <el-table-column label="序号" align="center" width="60">
         <template slot-scope="scope"><span>{{ scope.$index+(paramsGetTasks.page - 1) * paramsGetTasks.limit + 1 }} </span></template>
       </el-table-column>
       <el-table-column label="任务名称" align="center">
@@ -37,22 +37,27 @@
           <span>{{ scope.row.label }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="项目负责人" align="center">
+      <el-table-column label="负责人" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.leader | leader }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="检测时段" align="center" width="310">
+      <el-table-column label="检测时段" align="center" width="210">
         <template slot-scope="scope">
           <span>{{ `${getTime(scope.row.testting_time)}~${ getTime(scope.row.testing_completion_time)}` }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="是否完成" align="center">
+      <el-table-column label="完成时间" align="center" width="120">
+        <template slot-scope="scope">
+          <span>{{ scope.row.finished_time ? getTime(scope.row.finished_time) : '/' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="是否完成" align="center" width="80">
         <template slot-scope="scope">
           <span :style="{color:scope.row.is_finished? '#67C23A':'#F56C6C'}">{{ isFinished[scope.row.is_finished] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="复查结果" align="center">
+      <el-table-column label="检测类型" align="center" width="80">
         <template slot-scope="scope">
           <span>{{ reviewMap[scope.row.is_review] }}</span>
         </template>
@@ -60,7 +65,8 @@
       <el-table-column
         align="center"
         label="操作"
-        width="120"
+        width="102"
+        fixed="right"
       >
         <template slot-scope="scope" class="tab-btn">
           <el-button
@@ -100,55 +106,22 @@
               <el-form-item label="委托单位：" class="dialog-form-item" prop="constructing_unit" :size="size">
                 <el-input v-model="paramsNewTasks.constructing_unit" class="dialog-form-item" type="text" />
               </el-form-item>
-              <el-form-item label="统一社会信用代码：" class="dialog-form-item" prop="constructing_unit_code" :size="size">
-                <el-input v-model="paramsNewTasks.constructing_unit_code" class="dialog-form-item" type="text" />
-              </el-form-item>
-              <el-form-item label="检测时间：" class="dialog-form-item" prop="testting_time" :size="size">
+              <el-form-item label="任务开始时间：" class="dialog-form-item" prop="testting_time" :size="size">
                 <el-date-picker
                   v-model="paramsNewTasks.testting_time"
-                  type="datetime"
-                  placeholder="请选择检测时间"
+                  placeholder="请选择任务开始时间"
                   style="width: 100%;"
-                  value-format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
-
-              <!-- <el-form-item label="检测方案：" class="dialog-form-item" :size="size">
-                <el-input class="dialog-form-item" disabled :placeholder="schemefileList.length===0?'请选择检测方案':schemefileList[0].name" type="text" style="width:200px" />
-                <el-button v-if="fileTestingScheme.isExport" size="mini" type="primary" @click="exportFile('testing_scheme')">导出文件</el-button>
-                <el-upload
-                  ref="sUpload"
-                  :show-file-list="false"
-                  style="display:inline-block"
-                  action="customize"
-                  :on-change="handleFileChange"
-                  :file-list="schemefileList"
-                  :auto-upload="false"
-                >
-                  <el-button slot="trigger" size="mini" type="primary">浏览...</el-button>
-                </el-upload>
-              </el-form-item> -->
-              <!-- <el-form-item label="检测面积(平方米)：" class="dialog-form-item" prop="testing_area" :size="size">
-                <el-input v-model="paramsNewTasks.testing_area" oninput="value=value.replace(/[^\d.]/g,'')" class="dialog-form-item" type="text" />
-              </el-form-item> -->
-              <!-- <el-form-item label="竣工日期：" class="dialog-form-item" prop="asbuild_time" :size="size">
+              <el-form-item label="任务结束时间：" class="dialog-form-item" prop="testing_completion_time" :size="size">
                 <el-date-picker
-                  v-model="paramsNewTasks.asbuild_time"
-                  type="datetime"
-                  placeholder="请选择竣工日期"
+                  v-model="paramsNewTasks.testing_completion_time"
+                  placeholder="请选择任务结束时间"
                   style="width: 100%;"
-                  value-format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-dd"
                 />
-              </el-form-item> -->
-              <!-- <el-form-item label="竣工图纸提供情况：" class="dialog-form-item" prop="asbuild_drawings" :size="size">
-                <el-input v-model="paramsNewTasks.asbuild_drawings" show-word-limit maxlength="25" class="dialog-form-item" type="text" />
-              </el-form-item> -->
-              <!-- <el-form-item label="建筑总面积(平方米)：" class="dialog-form-item" prop="total_building_area" :size="size">
-                <el-input v-model="paramsNewTasks.total_building_area" oninput="value=value.replace(/[^\d.]/g,'')" class="dialog-form-item" type="text" />
-              </el-form-item> -->
-              <!-- <el-form-item label="建筑类型：" class="dialog-form-item" prop="building_type" :size="size">
-                <el-input v-model="paramsNewTasks.building_type" class="dialog-form-item" type="text" />
-              </el-form-item> -->
+              </el-form-item>
             </el-col>
             <el-col :span="2" style="height:200px">
               <div class="divider">
@@ -156,21 +129,9 @@
               </div>
             </el-col>
             <el-col :span="11">
-              <el-form-item label="检测完成日期：" class="dialog-form-item" prop="testing_completion_time" :size="size">
-                <el-date-picker
-                  v-model="paramsNewTasks.testing_completion_time"
-                  type="datetime"
-                  placeholder="请选择检测完成时间"
-                  style="width: 100%;"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                />
+              <el-form-item label="统一社会信用代码：" class="dialog-form-item" prop="constructing_unit_code" :size="size">
+                <el-input v-model="paramsNewTasks.constructing_unit_code" class="dialog-form-item" type="text" />
               </el-form-item>
-              <!-- <el-form-item label="建筑楼层：" class="dialog-form-item" prop="building_floors" :size="size">
-                <el-input v-model="paramsNewTasks.building_floors" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
-              </el-form-item> -->
-              <!-- <el-form-item label="建筑高度(米)：" class="dialog-form-item" prop="building_hight" :size="size">
-                <el-input v-model="paramsNewTasks.building_hight" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
-              </el-form-item> -->
               <el-form-item label="联系人：" class="dialog-form-item" prop="contacts" :size="size">
                 <el-input v-model="paramsNewTasks.contacts" class="dialog-form-item" type="text" />
               </el-form-item>
@@ -196,35 +157,8 @@
                   <el-button slot="trigger" size="mini" type="primary">浏览...</el-button>
                 </el-upload>
               </el-form-item>
-              <!-- <el-form-item label="检测类型：" class="dialog-form-item" prop="testing_type_id" :size="size">
-                <el-select v-model="paramsNewTasks.testing_type_id" filterable placeholder="请选择检测类型" style="width: 100%">
-                  <el-option
-                    v-for="item in testingTypeOptions"
-                    :key="item.type_id"
-                    :label="item.type_name"
-                    :value="item.type_id"
-                  />
-                </el-select>
-              </el-form-item> -->
-              <!-- <el-form-item label="检测范围：" class="dialog-form-item" prop="testing_scope" :size="size">
-                <el-select v-model="paramsNewTasks.testing_scope" filterable placeholder="请选择检测范围" style="width: 100%">
-                  <el-option
-                    v-for="item in testingScopeOptions"
-                    :key="item.type_id"
-                    :label="item.type_name"
-                    :value="item.type_id"
-                  />
-                </el-select>
-              </el-form-item> -->
             </el-col>
           </el-row>
-          <!-- <el-row>
-            <el-col :span="24">
-              <el-form-item label="检测部位：" class="dialog-form-item" prop="testing_part" :size="size">
-                <el-input v-model="paramsNewTasks.testing_part" class="dialog-form-item" type="text" show-word-limit maxlength="45" />
-              </el-form-item>
-            </el-col>
-          </el-row> -->
           <el-row>
             <el-col :span="24">
               <el-form-item label="检测批文：" class="dialog-form-item" prop="testing_appvoval" :size="size">
@@ -232,13 +166,6 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <!-- <el-row>
-            <el-col :span="24">
-              <el-form-item label="检测部位使用功能：" class="dialog-form-item" prop="testing_part_functiong" :size="size">
-                <el-input v-model="paramsNewTasks.testing_part_functiong" show-word-limit maxlength="45" class="dialog-form-item" type="text" />
-              </el-form-item>
-            </el-col>
-          </el-row> -->
           <el-row>
             <el-col :span="24">
               <el-form-item label="检测依据：" class="dialog-form-item" prop="testing_basis" :size="size">
@@ -304,7 +231,7 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item label="复查结果：" class="dialog-form-item" prop="is_review" :size="size">
+              <el-form-item label="检测类型：" class="dialog-form-item" prop="is_review" :size="size">
                 <el-radio-group v-model="paramsNewTasks.is_review" size="small">
                   <el-radio :label="0">初查</el-radio>
                   <el-radio :label="1">复查</el-radio>
@@ -320,12 +247,10 @@
       </div>
     </el-drawer>
     <!--弹出查看报告窗口-->
-    <el-drawer
-      title="报告详情"
-      :visible.sync="dialogVisible"
-      direction="btt"
-      size="50%"
-    >
+    <el-dialog :visible.sync="dialogVisible" :append-to-body="true" :close-on-click-modal="true" title="报告详情">
+      <div class="reportTime">
+        <span>报告生成时间：</span><span class="time"><i v-show="report_time" class="el-icon-time" /> {{ report_time? getTime2(report_time) : '暂无报告' }}</span>
+      </div>
       <el-table
         v-loading="isReportLoading"
         :data="reportFile"
@@ -334,48 +259,37 @@
         border
         max-height="260"
         fit
+        @close="closeReport"
       >
-        <el-table-column label="场所" align="center">
+        <el-table-column label="场所" align="center" width="120x`">
           <template slot-scope="scope">
-            <span>{{ scope.row.system_type }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="报告日期" align="center">
-          <template slot-scope="scope">
-            <i v-show="scope.row.is_report" class="el-icon-time" />
-            <span>{{ scope.row.report_time }}</span>
+            <span>{{ scope.row.report_system }}</span>
           </template>
         </el-table-column>
         <el-table-column label="报告文件名称" align="center">
           <template slot-scope="scope">
-            <a style="color: #409EFF" @click="downloadReport(scope.row.report_path,scope.row.is_report)">{{ scope.row.fileName }}</a>
+            <a style="color: #409EFF" @click="downloadReport(scope.row.report_path)">{{ scope.row.report_file_name }}</a>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" width="200">
+        <el-table-column label="操作" align="center" width="120">
           <template slot-scope="scope">
-            <el-button
-              class="btn"
-              type="primary"
-              size="mini"
-              plain
-              @click="generateReport(scope.row.history_id)"
-            >
-              生成报告
-            </el-button>
             <el-button
               class="btn"
               type="success"
               size="mini"
               plain
-              :disabled="!scope.row.is_report"
-              @click="downloadReport(scope.row.report_path,scope.row.is_report)"
+              :disabled="!is_reported"
+              @click="downloadReport(scope.row.report_path)"
             >
               下载报告
             </el-button>
           </template>
         </el-table-column>
       </el-table>
-    </el-drawer>
+      <div slot="footer" class="dialog-footer" style="margin-right: 20px;margin-top: 0;">
+        <el-button v-waves type="primary" :loading="isGenerateReportLoading" plain @click="generateReport"> {{ isGenerateReportLoading? '生成中':'生成报告' }}</el-button>
+      </div>
+    </el-dialog>
 
   </div>
 </template>
@@ -384,8 +298,7 @@
 import { getTask, newTask, detailTask, updateTask, deleteTask, generateReport } from '@/api/task5'
 import { getUsersByCompany } from '@/api/user'
 import { getSystemTypes } from '@/api/system'
-import { Formattimestamp } from '@/utils/time'
-import { getHistoryReport } from '@/api/history5'
+import { Formattimestamp2, Formattimestamp } from '@/utils/time'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -492,10 +405,13 @@ export default {
         page: 1,
         limit: 20
       },
+      // 是否生成过报告
+      is_reported: 0,
+      // 报告生成时间
+      report_time: undefined,
       isEdit: false,
       // 检测任务的formdata对象
       taskFormData: new FormData(),
-
       paramsNewTasks: {
         project_id: undefined,		// 项目名称
         name: undefined,				// 任务名称
@@ -529,40 +445,44 @@ export default {
     this.getUserList()
   },
   methods: {
+    // 关闭查看报告对话框
+    closeReport() {
+      this.report_time = undefined
+      this.is_reported = 0
+    },
     // 生成报告
-    generateReport(history_id) {
+    generateReport() {
       this.$confirm('是否生成新的报告?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         this.isGenerateReportLoading = true
-        generateReport({ history_id }).then(res => {
+        generateReport({ task_id: this.task_id }).then(res => {
+          const report_time = res.data.report_time
+          this.report_time = res.data.report_time
           this.$message({
             type: 'success',
             message: '新报告生成，需要查看请下载该报告'
           })
-          this.getHistoryReport(this.task_id)
+          this.getTask()
+          this.is_reported = res.data.is_reported
+          const report_info = JSON.parse(res.data.report_info)
+          this.reportFile = report_info.map(item => {
+            return {
+              report_time: report_time,
+              report_system: item.report_system,
+              report_path: item.report_path ? process.env.VUE_APP_FILE_API + item.report_path : '/',
+              report_file_name: item.report_path ? item.report_path.split('/').pop() : '暂无报告'
+            }
+          })
+          this.isGenerateReportLoading = false
         }).catch(err => {
+          this.isGenerateReportLoading = false
           console.error(err)
         })
-        // generateReport({ task_id: this.reportFile.task_id }).then((res) => {
-        //   const filename = res.data.report_path.split('/').pop()
-        //   this.reportFile.list = [{
-        //     time: Formattimestamp(res.data.report_time),
-        //     filename
-        //   }]
-        //   this.reportFile.url = process.env.VUE_APP_FILE_API + res.data.report_path
-        //   this.isGenerateReportLoading = false
-        //   this.$message({
-        //     type: 'success',
-        //     message: '新报告生成，需要查看请下载该报告'
-        //   })
-        // }).catch(err => {
-        //   this.isGenerateReportLoading = false
-        //   console.error(err)
-        // })
-      }).catch(() => {
+      }).catch((err) => {
+        console.log(err)
         this.$message({
           type: 'info',
           message: '已取消'
@@ -570,73 +490,27 @@ export default {
       })
     },
     // 下载报告
-    downloadReport(url, isReport) {
-      if (isReport) window.open(url)
+    downloadReport(url) {
+      if (this.is_reported) window.open(url)
       return
     },
-    getHistoryReport(tid) {
-      this.isReportLoading = true
-      getHistoryReport({ task_id: tid }).then(res => {
-        const fileInfo = res.data.items
-        fileInfo.forEach((item) => {
-          if (item.is_report) {
-            const fileName = item.report_path.split('/').pop()
-            item.fileName = fileName
-            item.report_path = process.env.VUE_APP_FILE_API + item.report_path
-            item.report_time = Formattimestamp(item.report_time)
-          } else {
-            item.report_time = '/'
-            item.fileName = '暂无报告'
-          }
-        })
-        this.isReportLoading = false
-        this.reportFile = fileInfo
-      }).catch(err => {
-        this.isReportLoading = false
-        console.error(err)
-      })
-    },
+
     // 查看报告
     checkReport(info) {
       this.dialogVisible = true
-      this.getHistoryReport(info.task_id)
+      const report_info = JSON.parse(info.report_info)
+      const report_time = info.report_time
+      this.is_reported = info.is_reported
+      this.report_time = info.report_time
+      this.reportFile = report_info.map(item => {
+        return {
+          report_time: report_time,
+          report_system: item.report_system,
+          report_path: item.report_path ? process.env.VUE_APP_FILE_API + item.report_path : '/',
+          report_file_name: item.report_path ? item.report_path.split('/').pop() : '暂无报告'
+        }
+      })
       this.task_id = info.task_id
-      // getHistoryReport({ task_id: info.task_id }).then(res => {
-      //   const fileInfo = res.data.items
-      //   fileInfo.forEach((item) => {
-      //     if (item.is_report) {
-      //       const fileName = item.report_path.split('/').pop()
-      //       item.fileName = fileName
-      //       item.report_time = Formattimestamp(item.report_time)
-      //     } else {
-      //       item.report_time = '/'
-      //       item.system_type = '/'
-      //       item.fileName = '暂无报告'
-      //     }
-      //   })
-      //   this.reportFile = fileInfo
-      // }).catch(err => {
-      //   console.error(err)
-      // })
-
-      // if (info.report_path === '') {
-      //   fileInfo = {
-      //     list: [],
-      //     task_id: info.task_id,
-      //     name: info.name
-      //   }
-      // } else {
-      //   const filename = info.report_path.split('/').pop()
-      //   fileInfo = {
-      //     list: [{
-      //       time: Formattimestamp(info.report_time),
-      //       filename
-      //     }],
-      //     task_id: info.task_id,
-      //     name: info.name
-      //   }
-      //   fileInfo.url = process.env.VUE_APP_FILE_API + info.report_path
-      // }
     },
     // 导出文件
     exportFile(name) {
@@ -773,6 +647,7 @@ export default {
               this.taskFormData.set('project_id', this.project_id)
               newTask(this.taskFormData).then(() => {
                 this.isNewLoading = false
+                this.init()
                 this.$message({
                   type: 'success',
                   message: '新建检测任务成功！'
@@ -799,6 +674,9 @@ export default {
       }
     },
     getTime(time) {
+      return Formattimestamp2(time)
+    },
+    getTime2(time) {
       return Formattimestamp(time)
     },
     // 打开编辑窗口
@@ -816,7 +694,7 @@ export default {
             obj[key] = data[key]
           }
           if (['testting_time', 'testing_completion_time'].includes(key)) {
-            obj[key] = Formattimestamp(data[key])
+            obj[key] = Formattimestamp2(data[key])
           }
           if (['leader', 'auditor', 'testing_users'].includes(key)) {
             obj[key] = JSON.parse(data[key])
@@ -914,8 +792,8 @@ export default {
       height: 100%;
     }
   }
-  /deep/.el-drawer__body{
-    padding: 0;
+  /deep/.el-dialog__body{
+    padding-top: 0;
   }
   /deep/.el-drawer__body{
     display: flex;
@@ -932,15 +810,21 @@ export default {
     flex-direction: column;
     height: 100%;
     /deep/.el-form-item__label {
-      width: 148px;
+      width: 152px;
       text-align: right;
       padding: 0;
     }
     /deep/.el-form-item__content{
-      margin-left: 148px;
+      margin-left: 152px;
     }
     button {
       flex: 0 0 140px;
+    }
+  }
+  .reportTime {
+    margin: 20px 0;
+    .time {
+      color: #909399
     }
   }
   .dialog-footer{

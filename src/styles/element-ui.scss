@@ -19,7 +19,10 @@
   display: none;
 }
 
-
+.el-drawer__body{
+  // 解决flex布局在火狐浏览器overflow失效
+  min-height: 0;
+}
 // to fixed https://github.com/ElemeFE/element/issues/2461
 .el-dialog {
   transform: none;

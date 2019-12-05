@@ -22,20 +22,33 @@
       <el-table-column label="序号" align="center" width="70">
         <template slot-scope="scope"><span>{{ scope.$index + 1 }} </span></template>
       </el-table-column>
-      <el-table-column label="系统类型" align="center">
+      <el-table-column label="场所类型" align="center">
         <template slot-scope="scope">
-          <a style="color: #409EFF" @click="openRecordDetail(scope.row)">{{ scope.row.system_type }}</a>
+          <span>{{ scope.row.system_type }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="任务名称" align="center">
+      <el-table-column label="检测类型" align="center" width="80">
         <template slot-scope="scope">
-          <span>{{ scope.row.task_name }}</span>
+          <span>{{ reviewMap[scope.row.is_review] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间" align="center" width="210px">
+      <el-table-column label="检测时间" align="center" width="210px">
         <template slot-scope="scope">
-          <i class="el-icon-time" />
-          <span>{{ getTime(scope.row.update_time) }}</span>
+          <i v-show="scope.row.update_time" class="el-icon-time" />
+          <span>{{ scope.row.update_time?getTime(scope.row.update_time):'/' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="102">
+        <template slot-scope="scope">
+          <el-button
+            class="btn"
+            type="success"
+            size="mini"
+            plain
+            @click="openRecordDetail(scope.row)"
+          >
+            查看记录
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -52,18 +65,17 @@
               <el-form-item label="任务名称" class="dialog-form-item" prop="building">
                 <span>{{ historyInfo.task_name }}</span>
               </el-form-item>
-              <el-form-item label="系统类型" class="dialog-form-item">
+              <el-form-item label="场所类型" class="dialog-form-item">
                 <span>{{ historyInfo.system_type }}</span>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="更新时间" class="dialog-form-item">
-                <span><i class="el-icon-time" /> {{ getTime(historyInfo.update_time) }}</span>
+              <el-form-item label="检测时间" class="dialog-form-item">
+                <span><i v-show="historyInfo.update_time" class="el-icon-time" /> {{ historyInfo.update_time ? getTime(historyInfo.update_time) : '/' }}</span>
               </el-form-item>
               <el-form-item v-show="historyInfo.is_review === 1" label="是否合格" class="dialog-form-item">
                 <span :style="{color:historyInfo.is_pass? '#67C23A':'#F56C6C'}">{{ isPassMap[historyInfo.is_pass] }}</span>
               </el-form-item>
-
             </el-col>
           </el-row>
           <el-row>
@@ -89,14 +101,14 @@
               </el-col>
             </el-row>
             <el-col :span="24">
-              <el-form-item v-loading="isDeviceItemLoading" label="存在问题" class="dialog-form-item">
+              <el-form-item v-if="deviceitem.length !== 0" v-loading="isDeviceItemLoading" label="存在问题" class="dialog-form-item">
                 <div class="device-item">
                   <div v-for="(item,key) in deviceitem" :key="key" class="item">
                     <div class="list">
                       <span class="title">{{ item.device_type + '、' }}</span>
                       <span v-show="item.device_type_label !== ''">{{ item.device_type_label }}</span>
                       <span v-for="(deviceItem,index) in item.itemInfo" :key="index">
-                        <span v-show="deviceItem.is_other_problem">{{ deviceItem.other_problem }}</span>
+                        <!-- <span v-show="deviceItem.is_other_problem">{{ deviceItem.other_problem }}</span> -->
                         <span v-show="deviceItem.device_item !== ''"><el-checkbox :checked="deviceItem.value" style="display:inline-block" disabled /> {{ deviceItem.device_item }}</span>
                       </span>
                     </div>
@@ -107,9 +119,6 @@
             </el-col>
           </el-row>
         </el-form>
-      </div>
-      <div class="dialog-footer">
-        <el-button v-waves plain @click="dialogVisible = false">关闭</el-button>
       </div>
     </el-drawer>
     <!--历史记录详情-->
@@ -129,7 +138,7 @@ export default {
   },
   data() {
     return {
-      review: ['初查', '复查'],
+      reviewMap: ['初查', '复查'],
       historyInfo: {
         image: ''
       },
@@ -162,7 +171,7 @@ export default {
       this.historyInfo = Object.assign({}, info)
       const newInfo = Object.assign({}, info)
       // 保留其他问题
-      const other_problem = info.other_problem
+      const other_problem = info.other_problem || ''
       this.deviceitem = []
       this.isDeviceItemLoading = true
       getDeviceItems({ system_type_id: info.system_type_id, is_review: info.is_review }).then(res => {
@@ -174,47 +183,50 @@ export default {
             value: undefined
           }
           // this.deviceitem = res.data.items
-          item_list.forEach((item1, index, arr) => {
-            newInfo.device_item.forEach((item2) => {
-              if (item1.device_item_id === item2.item) {
-                itemInfo = {
-                  device_item: undefined,
-                  value: undefined,
-                  is_other_problem: false
+          if (newInfo.device_item.length === 0) {
+            this.deviceitem = []
+          } else {
+            item_list.forEach((item1, index, arr) => {
+              newInfo.device_item.forEach((item2) => {
+                if (item1.device_item_id === item2.item) {
+                  itemInfo = {
+                    device_item: undefined,
+                    value: undefined,
+                    is_other_problem: false
+                  }
+                  itemInfo.value = !!item2.value
+                  itemInfo.device_item = item1.device_item
+                  arr[index].itemInfo = itemInfo
                 }
-                itemInfo.value = !!item2.value
-                itemInfo.device_item = item1.device_item
-                arr[index].itemInfo = itemInfo
-              }
-              if (item1.device_item_id === -1) {
-                itemInfo = {
-                  device_item: '',
-                  other_problem,
-                  value: false,
-                  is_other_problem: true
+                if (item1.device_item_id === -1) {
+                  itemInfo = {
+                    device_item: '',
+                    other_problem,
+                    value: false,
+                    is_other_problem: true
+                  }
+                  arr[index].itemInfo = itemInfo
                 }
-                arr[index].itemInfo = itemInfo
+              })
+            })
+            const itemList = []
+            item_list.map(val => {
+              let flag = false // 标志两个数组有没相同项
+              itemList.map((item, itemIndex) => {
+                // 类型一样content数组push
+                if (val.device_type === item.device_type) {
+                  flag = true
+                  itemList[itemIndex].itemInfo.push(val.itemInfo)
+                }
+              })
+              // 没有相同项push
+              if (!flag) {
+                itemList.push({ device_type: val.device_type, itemInfo: [val.itemInfo], device_type_label: val.device_type_label })
               }
             })
-          })
-        }
-
-        const itemList = []
-        item_list.map(val => {
-          let flag = false // 标志两个数组有没相同项
-          itemList.map((item, itemIndex) => {
-            // 类型一样content数组push
-            if (val.device_type === item.device_type) {
-              flag = true
-              itemList[itemIndex].itemInfo.push(val.itemInfo)
-            }
-          })
-          // 没有相同项push
-          if (!flag) {
-            itemList.push({ device_type: val.device_type, itemInfo: [val.itemInfo], device_type_label: val.device_type_label })
+            this.deviceitem = itemList
           }
-        })
-        this.deviceitem = itemList
+        }
         this.isDeviceItemLoading = false
       }).catch(err => {
         this.isDeviceItemLoading = false
@@ -283,6 +295,7 @@ export default {
     }
   }
   /deep/.el-drawer__body{
+    display: -moz-flex;
     display: flex;
     flex-direction: column;
     padding: 0;
@@ -321,10 +334,5 @@ export default {
     /deep/.el-form-item {
       margin-bottom: 0;
     }
-  }
-  .dialog-footer {
-    flex:0 0 50px;
-    text-align: right;
-    padding:10px 20px 10px 10px;
   }
 </style>

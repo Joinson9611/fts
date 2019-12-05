@@ -2,14 +2,14 @@
   <div class="navbar">
     <div class="left-menu">
       <template>
-        <span class="left-menu-item hover-effect" @click="toProjects">欢迎来到消防检查系统</span>
+        <span class="left-menu-item ">利盾消防检查系统</span>
       </template>
     </div>
     <div class="right-menu">
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div>
           <div class="avatar-wrapper">
-            <!-- <img :src="user_image+'?imageView2/1/w/80/h/80'" class="user-avatar" onerror="this.src='https://www.smartfas.cn/fms/tp5/public/image/user_head/0.png?imageView2/1/w/80/h/80'"> -->
+            <img :src="user_image+'?imageView2/1/w/80/h/80'" class="user-avatar" onerror="this.src='http://192.168.3.101/fts/public/image/user_head/0.png?imageView2/1/w/80/h/80'">
           </div>
           <span class="username-item">{{ nick_name }}</span>
         </div>
@@ -36,7 +36,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      nick_name: 'name'
+      nick_name: 'name',
+      user_image: 'user_image'
     })
   },
   methods: {
@@ -98,11 +99,9 @@ export default {
       margin-right: 0px;
       height: 100%;
       line-height: 50px;
-
       &:focus {
         outline: none;
       }
-
       .right-menu-item {
         display: inline-block;
         padding: 0 8px 0 8px;

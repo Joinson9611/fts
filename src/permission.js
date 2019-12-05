@@ -8,7 +8,7 @@ import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login'] // no redirect whitelist
+const whiteList = ['/login', '/report/task'] // no redirect whitelist
 
 router.beforeEach((to, from, next) => {
   // start progress bar
@@ -53,10 +53,11 @@ router.beforeEach((to, from, next) => {
             next(`/login?redirect=${to.path}`)
             NProgress.done()
           })
-        }).catch(error => {
+        }).catch((error) => {
           // remove token and go to login page to re-login
           store.dispatch('user/resetToken')
-          Message.error(error || 'Has Error')
+          Message.error('验证失败，请重新登录。')
+          console.log(error)
           next(`/login?redirect=${to.path}`)
           NProgress.done()
         })

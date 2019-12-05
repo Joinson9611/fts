@@ -61,7 +61,7 @@ div:focus {
   }
 }
 
-// main-container global css
+// app-container global css
 .app-container {
   padding: 20px;
 }
@@ -155,4 +155,9 @@ table {
   &:hover{
     background-color: rgba(144,147,153,.5)
   }
+}
+//  修改elementUI表头样式
+.el-table th{
+  background-color: #eeeeee88;
+  font-weight: 700;
 }

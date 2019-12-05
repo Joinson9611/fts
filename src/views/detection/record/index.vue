@@ -42,11 +42,11 @@
       <el-table-column label="序号" align="center" width="70">
         <template slot-scope="scope"><span>{{ scope.$index+(paramsGetRecord.page - 1) * paramsGetRecord.limit + 1 }} </span></template>
       </el-table-column>
-      <el-table-column label="任务名称" align="center">
+      <!-- <el-table-column label="任务名称" align="center">
         <template slot-scope="scope">
           <a style="color: #409EFF" @click="openRecordDetail(scope.row)">{{ scope.row.task_name }}</a>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="系统类型" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.system_type }}</span>
@@ -57,7 +57,17 @@
           <span>{{ scope.row.device_type }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" align="center">
+            <el-table-column label="建筑" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.building_name }}</span>
+        </template>
+      </el-table-column>
+            <el-table-column label="楼层" width="80" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.floor_name  }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="具体位置" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.label }}</span>
         </template>
@@ -72,10 +82,23 @@
           <span :style="{color:scope.row.is_pass? '#67C23A':'#F56C6C'}">{{ isPassMap[scope.row.is_pass] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="检测时间" align="center" width="210px">
+      <el-table-column label="检测时间" align="center" width="120px">
         <template slot-scope="scope">
           <i class="el-icon-time" />
-          <span>{{ getTime(scope.row.create_time) }}</span>
+          <span>{{scope.row.create_time? getTime2(scope.row.create_time): '/' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="102">
+        <template slot-scope="scope">
+          <el-button
+            class="btn"
+            type="success"
+            size="mini"
+            plain
+            @click="openRecordDetail(scope.row)"
+          >
+            查看记录
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -87,6 +110,7 @@
       direction="ltr"
       size="51%"
     >
+
       <div class="history">
         <el-form label-width="100px">
           <el-row>
@@ -109,7 +133,7 @@
                 <span :style="{color:historyInfo.is_pass? '#67C23A':'#F56C6C'}">{{ isPassMap[historyInfo.is_pass] }}</span>
               </el-form-item>
               <el-form-item label="检测时间" class="dialog-form-item">
-                <span><i class="el-icon-time" /> {{ getTime(historyInfo.create_time) }}</span>
+                <span><i class="el-icon-time" v-show="historyInfo.create_time" /> {{ historyInfo.create_time? getTime2(historyInfo.create_time): '/' }}</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -127,7 +151,7 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item label="描述" class="dialog-form-item">
+              <el-form-item label="具体位置" class="dialog-form-item">
                 <span>{{ historyInfo.label }}</span>
               </el-form-item>
             </el-col>
@@ -145,7 +169,7 @@
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-form-item v-loading="isDeviceItemLoading" label="检测项" class="dialog-form-item">
+              <el-form-item v-loading="isDeviceItemLoading" label="单项评定结果" class="dialog-form-item">
                 <div class="device-item">
                   <div v-for="(item,key) in deviceitem" :key="key" class="item">
                     <div class="list">
@@ -165,9 +189,6 @@
           </el-row>
         </el-form>
       </div>
-      <div class="dialog-footer">
-        <el-button v-waves plain @click="dialogVisible = false">关闭</el-button>
-      </div>
     </el-drawer>
     <!--历史记录详情-->
 
@@ -184,7 +205,7 @@ import { getHistoryFireFac } from '@/api/history1'
 import { getTaskList } from '@/api/task1'
 import { getSystemTypes } from '@/api/system'
 import { getDeviceTypes } from '@/api/device'
-import { Formattimestamp } from '@/utils/time'
+import { Formattimestamp, Formattimestamp2 } from '@/utils/time'
 import { getDeviceItems } from '@/api/deviceitem'
 export default {
   components: {
@@ -300,6 +321,9 @@ export default {
     },
     getTime(timestamp) {
       return Formattimestamp(timestamp)
+    },
+    getTime2(timestamp) {
+      return Formattimestamp2(timestamp)
     },
     getTaskList() {
       getTaskList({ project_id: this.project_id }).then(res => {
@@ -461,9 +485,5 @@ export default {
       margin-bottom: 0;
     }
   }
-  .dialog-footer {
-    flex:0 0 50px;
-    text-align: right;
-    padding:10px 20px 10px 10px;
-  }
+
 </style>

@@ -7,6 +7,7 @@ Vue.use(Router)
 import Layout from '@/layout'
 import PlatformLayout from '@/views/platformlayout/PlatformLayout'
 import test from '@/views/login/index'
+import report from '@/views/report/task'
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -33,11 +34,15 @@ import test from '@/views/login/index'
  */
 export const constantRoutes = [
   {
+    path: '/report/task',
+    component: report,
+    hidden: true
+  },
+  {
     path: '/login',
     component: test,
     hidden: true
   },
-
   {
     path: '/404',
     component: () => import('@/views/404'),
@@ -119,6 +124,28 @@ export const asyncRouterMap = [
         name: 'record',
         meta: { title: '检测记录', icon: 'record', roles: [2] },
         component: () => import('@/views/detection/record')
+      }
+    ]
+  },
+  {
+    path: '/security',
+    component: Layout,
+    redirect: 'noredirect',
+    name: 'security',
+    alwaysShow: true,
+    meta: { title: '安全评估', icon: 'security', roles: [2] },
+    children: [
+      {
+        path: 'task',
+        name: 'task',
+        component: () => import('@/views/security/task'),
+        meta: { title: '评估任务', icon: 'tasks', roles: [2] }
+      },
+      {
+        path: 'record',
+        name: 'record',
+        meta: { title: '评估记录', icon: 'record', roles: [2] },
+        component: () => import('@/views/security/record')
       }
     ]
   },

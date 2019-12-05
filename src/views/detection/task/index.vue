@@ -7,7 +7,6 @@
       <!--删除按钮-->
       <el-button v-waves :disabled="multipleSelection.length===0" class="filter-item" type="danger" icon="el-icon-delete" @click="deleteTasks">删除任务</el-button>
     </div>
-
     <!--任务列表-->
     <el-table
       v-loading="isTaskListLoadingShow"
@@ -37,9 +36,20 @@
           <span>{{ scope.row.label }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="检测时段" align="center" width="310">
+      <el-table-column label="负责人" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.leader | leader }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="检测时段" align="center" width="210">
         <template slot-scope="scope">
           <span>{{ `${getTime(scope.row.testting_time)}~${ getTime(scope.row.testing_completion_time)}` }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="完成时间" align="center" width="120">
+        <template slot-scope="scope">
+          <i v-show="scope.row.finished_time" class="el-icon-time" />
+          <span>{{ scope.row.finished_time ? getTime(scope.row.finished_time) : '/' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="是否完成" align="center">
@@ -50,7 +60,8 @@
       <el-table-column
         align="center"
         label="操作"
-        width="120"
+        width="102"
+        fixed="right"
       >
         <template slot-scope="scope" class="tab-btn">
           <el-button
@@ -117,10 +128,9 @@
               <el-form-item label="竣工日期：" class="dialog-form-item" prop="asbuild_time" :size="size">
                 <el-date-picker
                   v-model="paramsNewTasks.asbuild_time"
-                  type="datetime"
                   placeholder="请选择竣工日期"
                   style="width: 100%;"
-                  value-format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
               <el-form-item label="竣工图纸提供情况：" class="dialog-form-item" prop="asbuild_drawings" :size="size">
@@ -151,19 +161,17 @@
               <el-form-item label="检测时间：" class="dialog-form-item" prop="testting_time" :size="size">
                 <el-date-picker
                   v-model="paramsNewTasks.testting_time"
-                  type="datetime"
                   placeholder="请选择检测时间"
                   style="width: 100%;"
-                  value-format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
               <el-form-item label="检测完成日期：" class="dialog-form-item" prop="testing_completion_time" :size="size">
                 <el-date-picker
                   v-model="paramsNewTasks.testing_completion_time"
-                  type="datetime"
                   placeholder="请选择检测完成时间"
                   style="width: 100%;"
-                  value-format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-dd"
                 />
               </el-form-item>
               <el-form-item label="联系人：" class="dialog-form-item" prop="contacts" :size="size">
@@ -305,7 +313,7 @@
       </div>
     </el-drawer>
     <!--弹出查看报告窗口-->
-    <el-dialog :visible.sync="dialogVisible" :append-to-body="true" :close-on-click-modal="false" :title="'任务名称-'+reportFile.name">
+    <el-dialog :visible.sync="dialogVisible" :append-to-body="true" :close-on-click-modal="true" :title="'任务名称-'+reportFile.name">
       <el-table
         :data="reportFile.list"
         element-loading-text="Loading"
@@ -337,7 +345,7 @@
 import { deleteTaskFire, updateTaskFire, detailTaskFire, addTaskFire, getTaskFire, generateReport } from '@/api/task1'
 import { getUsersByCompany } from '@/api/user'
 import { getSystemTypes } from '@/api/system'
-import { Formattimestamp } from '@/utils/time'
+import { Formattimestamp, Formattimestamp2 } from '@/utils/time'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -346,6 +354,11 @@ export default {
   name: 'Detectiontasks',
   components: { Pagination },
   directives: { waves },
+  filters: {
+    leader(leader) {
+      return JSON.parse(leader).user_name
+    }
+  },
   data() {
     return {
       isFinished: ['否', '是'],
@@ -681,6 +694,7 @@ export default {
               this.taskFormData.set('project_id', this.project_id)
               addTaskFire(this.taskFormData).then(() => {
                 this.isNewLoading = false
+                this.init()
                 this.$message({
                   type: 'success',
                   message: '新建检测任务成功！'
@@ -707,7 +721,7 @@ export default {
       }
     },
     getTime(time) {
-      return Formattimestamp(time)
+      return Formattimestamp2(time)
     },
     // 打开编辑窗口
     openEditTask(task_id) {
@@ -724,7 +738,7 @@ export default {
             obj[key] = data[key]
           }
           if (['asbuild_time', 'testting_time', 'testing_completion_time'].includes(key)) {
-            obj[key] = Formattimestamp(data[key])
+            obj[key] = Formattimestamp2(data[key])
           }
           if (['leader', 'auditor', 'testing_users'].includes(key)) {
             obj[key] = JSON.parse(data[key])
@@ -832,7 +846,7 @@ export default {
     height: 0
   }
   .task {
-    padding: 0 20px;
+    padding: 20px 20px;
     overflow: auto;
     flex: 1;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);

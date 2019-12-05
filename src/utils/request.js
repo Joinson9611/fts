@@ -1,7 +1,6 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import { getToken, getUserID } from '@/utils/auth'
 import { getNowFormatDate } from '@/utils/time'
 
 // create an axios instance
@@ -18,12 +17,11 @@ service.interceptors.request.use(
     // do something before request is sent
     config.headers['term_type'] = '0'
     config.headers['request_time'] = getNowFormatDate()
+    // 用户已经登录过的情况下
     if (store.getters.token) {
-      config.headers['token'] = getToken()
-      config.headers['user_id'] = getUserID()
-    } else {
-      config.headers['token'] = ''
-      config.headers['user_id'] = ''
+      config.headers['token'] = store.getters.token
+      config.headers['user_id'] = store.getters.user_id
+    // 如果vuex
     }
     return config
   },
@@ -64,7 +62,7 @@ service.interceptors.response.use(
             type: 'warning'
           }
         ).then(() => {
-          store.dispatch('logout').then(() => {
+          store.dispatch('user/FedLogOut').then(() => {
             location.reload() // 为了重新实例化vue-router对象 避免bug
           })
         })

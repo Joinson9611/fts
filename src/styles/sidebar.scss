@@ -7,6 +7,7 @@
     position: relative;
   }
 
+  // 侧边栏 Sidebar container
   .sidebar-container {
     transition: width 0.28s;
     width: $sideBarWidth !important;
@@ -26,16 +27,18 @@
     }
 
     .scrollbar-wrapper {
-      overflow-x: auto !important;
+      overflow-x: hidden !important;
       .el-scrollbar__view {
-        height: 200px;
+        height: 100%;
       }
     }
 
     .el-scrollbar__bar.is-vertical {
       right: 0px;
     }
-
+    .is-horizontal {
+      display: none;
+    }
     .el-scrollbar {
       height: 100%;
     }

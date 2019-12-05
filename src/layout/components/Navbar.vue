@@ -5,10 +5,12 @@
     <breadcrumb class="breadcrumb-container" />
 
     <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="click">
-        <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
+      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
+        <div>
+          <div class="avatar-wrapper">
+            <img :src="user_image+'?imageView2/1/w/80/h/80'" class="user-avatar" onerror="this.src='http://192.168.3.101/fts/public/image/user_head/0.png?imageView2/1/w/80/h/80'">
+          </div>
+          <span class="username-item">{{ name }}</span>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <a target="_blank" @click="$router.push({ path: '/projects' })">
@@ -19,6 +21,9 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
+      <template>
+        <Screenfull class="right-menu-item hover-effect" />
+      </template>
     </div>
   </div>
 </template>
@@ -27,16 +32,19 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import Screenfull from '@/components/Screenfull'
 
 export default {
   components: {
     Breadcrumb,
-    Hamburger
+    Hamburger,
+    Screenfull
   },
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'user_image',
+      'name'
     ])
   },
   methods: {
@@ -105,9 +113,18 @@ export default {
     }
 
     .avatar-container {
-      margin-right: 30px;
+      margin-right: 0;
+      .username-item {
+        display: inline-block;
+        margin-left: 8px;
+        height: 100%;
+        font-size: 16px;
+        color: #666666;
+        vertical-align: text-bottom;
+      }
 
       .avatar-wrapper {
+        display: inline-block;
         margin-top: 5px;
         position: relative;
 
@@ -115,7 +132,7 @@ export default {
           cursor: pointer;
           width: 40px;
           height: 40px;
-          border-radius: 10px;
+          border-radius: 999px;
         }
 
         .el-icon-caret-bottom {

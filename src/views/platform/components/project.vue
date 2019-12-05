@@ -1,28 +1,7 @@
 <template>
   <div class="project">
-    <el-row class="header">
-      <el-col :span="12">
-        <el-card class="item">
-          <div slot="header" class="clearfix">
-            <span>操作历史</span>
-          </div>
-          <!-- <ul class="history">
-            <li v-for="item in historyRecord">
-
-            </li>
-          </ul> -->
-        </el-card>
-      </el-col>
-      <el-col :span="12" style="margin-right:0">
-        <el-card class="item">
-          <div slot="header" class="clearfix">
-            <span>项目统计</span>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
     <div class="project-list">
-      <el-card>
+      <el-card style="margin-bottom: 20px">
         <div slot="header">
           <div class="list-header">
             <span class="left">项目列表</span>
@@ -96,92 +75,61 @@
               >
                 编辑
               </el-button>
-              <el-button
-                v-if="validatePer([2],Account_Type)"
-                class="btn"
-                type="danger"
-                size="mini"
-              >
-                删除
-              </el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-card>
-      <pagination v-show="total>0" :page-sizes="[3,6,9]" :auto-scroll="false" :total="total" :page.sync="paramsGetProjectList.page" :limit.sync="paramsGetProjectList.limit" @pagination="getProjectList" />
+      <pagination v-show="total>0" :page-sizes="[10,20,30]" :auto-scroll="false" :total="total" :page.sync="paramsGetProjectList.page" :limit.sync="paramsGetProjectList.limit" @pagination="getProjectList" />
     </div>
     <!-- 项目添加dialog -->
-    <el-drawer
-      ref="drawer"
-      title="新建项目"
+    <el-dialog
       :visible.sync="isProjectDialogVisible"
-      direction="ltr"
-      size="50%"
-      @close="closeAdd"
+      :append-to-body="true"
+      :close-on-click-modal="false"
+      title="新建项目"
+      @closed="closeAdd"
     >
       <div class="newProject">
-        <el-form :model="paramsAddProject" :rules="addProjectRules">
+        <el-form ref="addProject" :model="paramsAddProject" :rules="addProjectRules">
           <el-form-item label="项目名称：" class="dialog-form-item" prop="name" label-width="110px">
             <el-input v-model="paramsAddProject.name" class="dialog-form-item" type="text" />
           </el-form-item>
           <el-form-item label="项目描述：" class="dialog-form-item" prop="label" label-width="110px">
             <el-input v-model="paramsAddProject.label" type="text" />
           </el-form-item>
-          <el-form-item label="项目地址：" prop="address" class="place" label-width="110px">
-            <el-select v-model="paramsAddProject.province_id" placeholder="省" @change="provinceChange">
-              <el-option v-for="item in provinceOptions" :key="item.province_id" :label="item.province_name" :value="item.province_id" />
-            </el-select>
-            <el-select v-model="paramsAddProject.city_id" placeholder="市" @change="cityChange">
-              <el-option v-for="item in cityOptions" :key="item.city_id" :label="item.city_name" :value="item.city_id" />
-            </el-select>
-            <el-select v-model="paramsAddProject.district_id" placeholder="区" @change="districtChange">
-              <el-option v-for="item in districtOptions" :key="item.district_id" :label="item.district_name" :value="item.district_id" />
-            </el-select>
-          </el-form-item>
-          <amap v-if="isMapOpen" :city="paramsAddProject.city_id" @pos="getAddPos" />
+          <amap v-if="isMapOpen" style="margin-right:20px;" @pos="getAddPos" />
         </el-form>
-        <div class="dialog-footer">
+        <div slot="footer" class="dialog-footer" style="text-align:right;margin-right: 20px;margin-top: 0;">
           <el-button @click="isProjectDialogVisible = false">取 消</el-button>
           <el-button type="primary" :loading="loading" @click="closeAddProject">{{ loading ? '提交中 ...' : '确 定' }}</el-button>
         </div>
       </div>
-    </el-drawer>
+    </el-dialog>
     <!-- 项目编辑dialog -->
-    <el-drawer
-      ref="drawer"
-      title="编辑项目"
+    <el-dialog
       :visible.sync="isEditProjectDialog"
-      direction="ltr"
-      size="50%"
-      @close="closeEdit"
+      :append-to-body="true"
+      :close-on-click-modal="false"
+      title="编辑"
+      @closed="closeEdit"
     >
       <div class="newProject">
-        <el-form :model="paramsEditProject" :rules="addProjectRules">
+        <el-form ref="editProject" :model="paramsEditProject" :rules="addProjectRules">
           <el-form-item label="项目名称：" class="dialog-form-item" prop="name" label-width="110px">
             <el-input v-model="paramsEditProject.name" class="dialog-form-item" type="text" />
           </el-form-item>
           <el-form-item label="项目描述：" class="dialog-form-item" prop="label" label-width="110px">
             <el-input v-model="paramsEditProject.label" type="text" />
           </el-form-item>
-          <el-form-item label="项目地址：" prop="address" class="place" label-width="110px">
-            <el-select v-model="paramsEditProject.province_id" placeholder="省" @change="provinceChange">
-              <el-option v-for="item in provinceEditOptions" :key="item.province_id" :label="item.province_name" :value="item.province_id" />
-            </el-select>
-            <el-select v-model="paramsEditProject.city_id" placeholder="市" @change="cityChange">
-              <el-option v-for="item in cityEditOptions" :key="item.city_id" :label="item.city_name" :value="item.city_id" />
-            </el-select>
-            <el-select v-model="paramsEditProject.district_id" placeholder="区" @change="districtChange">
-              <el-option v-for="item in districtEditOptions" :key="item.district_id" :label="item.district_name" :value="item.district_id" />
-            </el-select>
-          </el-form-item>
-          <amap v-if="mapEditOpen" :position="pos" :city="paramsEditProject.city_id" @pos="getEditPos" />
+          <amap v-if="mapEditOpen" :position="pos" style="margin-right:20px;" @pos="getEditPos" />
         </el-form>
-        <div class="dialog-footer">
+        <div slot="footer" class="dialog-footer" style="margin-right: 20px;margin-top: 0; text-align:right">
           <el-button @click="isEditProjectDialog = false">取消</el-button>
           <el-button type="primary" :loading="isEditLoading" @click="closeEditProject">确定</el-button>
         </div>
       </div>
-    </el-drawer>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -190,7 +138,6 @@ import { Formattimestamp2 } from '@/utils/time.js'
 import { getProjectList, addProject, editProject, deleteProject, selectProject } from '@/api/project'
 import Pagination from '@/components/Pagination'
 import amap from '@/components/amap'
-import { getProvinces, getCities, getDistricts } from '@/api/address'
 import { mapGetters } from 'vuex'
 export default {
   name: 'Project',
@@ -200,6 +147,7 @@ export default {
   },
   data() {
     return {
+      visible: false,
       pos: {
         lng: undefined,
         lat: undefined,
@@ -241,15 +189,12 @@ export default {
       },
       paramsGetProjectList: {
         page: 1,
-        limit: 3,
+        limit: 10,
         name: undefined
       },
       paramsEditProject: {
         project_id: undefined,
         name: undefined,		// 项目名称
-        province_id: undefined, // 省
-        city_id: undefined, // 省
-        district_id: undefined,	// 区
         address: undefined,		// 项目地址
         longitude: undefined,		// 经度
         latitude: undefined,	// 纬度
@@ -257,9 +202,6 @@ export default {
       },
       paramsAddProject: {
         name: undefined,		// 项目名称
-        province_id: undefined, // 省
-        city_id: undefined, // 省
-        district_id: undefined,	// 区
         address: undefined,		// 项目地址
         longitude: undefined,		// 经度
         latitude: undefined,	// 纬度
@@ -274,7 +216,6 @@ export default {
   },
   created() {
     this.getProjectList()
-    this.getProvinces()
   },
   methods: {
     // 进入项目
@@ -297,9 +238,15 @@ export default {
     },
     closeEdit() {
       this.mapEditOpen = false
+      if (this.$refs.editProject !== undefined) {
+        this.$refs.editProject.resetFields()
+      }
     },
     closeAdd() {
       this.isMapOpen = false
+      if (this.$refs.addProject !== undefined) {
+        this.$refs.addProject.clearValidate()
+      }
     },
     rowKey(row) {
       return row.project_id
@@ -351,46 +298,50 @@ export default {
       this.pos.lat = info.latitude
       this.pos.district = info.address
       this.isEditProjectDialog = true
-      getProvinces().then(res => {
-        this.provinceEditOptions = res.data
-      }).catch(err => {
-        console.error(err)
-      })
-      getCities({ province_id: info.province_id }).then(res => {
-        this.cityEditOptions = res.data
-      }).catch(err => {
-        console.error(err)
-      })
-      getDistricts({ city_id: info.city_id }).then(res => {
-        this.districtEditOptions = res.data
-      }).catch(err => {
-        console.error(err)
-      })
+      // getProvinces().then(res => {
+      //   this.provinceEditOptions = res.data
+      // }).catch(err => {
+      //   console.error(err)
+      // })
+      // getCities({ province_id: info.province_id }).then(res => {
+      //   this.cityEditOptions = res.data
+      // }).catch(err => {
+      //   console.error(err)
+      // })
+      // getDistricts({ city_id: info.city_id }).then(res => {
+      //   this.districtEditOptions = res.data
+      // }).catch(err => {
+      //   console.error(err)
+      // })
     },
     // 关闭项目编辑窗口
     closeEditProject() {
-      this.isEditLoading = true
-      const params = {
-        name: this.paramsEditProject.name,
-        project_id: this.paramsEditProject.project_id,
-        district_id: this.paramsEditProject.district_id,
-        address: this.tempEditProject.address,
-        longitude: this.tempEditProject.longitude + '',	// 经度,
-        latitude: this.tempEditProject.latitude + '',
-        label: this.paramsEditProject.label
-      }
-      editProject(params).then(() => {
-        this.$message({
-          type: 'success',
-          message: '项目编辑成功！'
-        })
-        this.getProjectList()
-        this.isEditProjectDialog = false
-        this.isEditLoading = false
-      }).catch(err => {
-        this.isEditProjectDialog = false
-        this.isEditLoading = false
-        console.error(err)
+      this.$refs.editProject.validate(valid => {
+        if (valid) {
+          this.isEditLoading = true
+          const params = {
+            name: this.paramsEditProject.name,
+            project_id: this.paramsEditProject.project_id,
+            district_id: this.paramsEditProject.district_id,
+            address: this.tempEditProject.address,
+            longitude: this.tempEditProject.longitude + '',	// 经度,
+            latitude: this.tempEditProject.latitude + '',
+            label: this.paramsEditProject.label
+          }
+          editProject(params).then(() => {
+            this.$message({
+              type: 'success',
+              message: '项目编辑成功！'
+            })
+            this.getProjectList()
+            this.isEditProjectDialog = false
+            this.isEditLoading = false
+          }).catch(err => {
+            this.isEditProjectDialog = false
+            this.isEditLoading = false
+            console.error(err)
+          })
+        }
       })
     },
     // 搜索
@@ -410,18 +361,17 @@ export default {
       this.tempEditProject.latitude = pos.slat
       this.tempEditProject.address = pos.sname
     },
-    getProvinces() {
-      getProvinces().then(res => {
-        this.provinceOptions = res.data
-      }).catch(err => {
-        console.error(err)
-      })
-    },
+    // getProvinces() {
+    //   getProvinces().then(res => {
+    //     this.provinceOptions = res.data
+    //   }).catch(err => {
+    //     console.error(err)
+    //   })
+    // },
     init() {
-      this.paramsAddProject.province_id = undefined
-      this.paramsAddProject.city_id = undefined
+      // this.paramsAddProject.province_id = undefined
+      // this.paramsAddProject.city_id = undefined
       this.paramsAddProject.name = undefined
-      this.paramsAddProject.district_id = undefined
       this.paramsAddProject.address = undefined
       this.paramsAddProject.longitude = undefined
       this.paramsAddProject.label = undefined
@@ -429,71 +379,75 @@ export default {
       this.districtOptions = []
     },
     // 省份选项改变
-    provinceChange(province_id) {
-      this.paramsAddProject.city_id = undefined
-      this.paramsAddProject.district_id = undefined
-      this.districtOptions = []
-      this.cityOptions = []
-      this.paramsEditProject.city_id = undefined
-      this.paramsEditProject.district_id = undefined
-      this.districtEditOptions = []
-      this.cityEditOptions = []
-      getCities({ province_id }).then(res => {
-        this.cityOptions = res.data
-        this.cityEditOptions = res.data
-      }).catch(err => {
-        console.error(err)
-      })
-    },
+    // provinceChange(province_id) {
+    //   this.paramsAddProject.city_id = undefined
+    //   this.paramsAddProject.district_id = undefined
+    //   this.districtOptions = []
+    //   this.cityOptions = []
+    //   this.paramsEditProject.city_id = undefined
+    //   this.paramsEditProject.district_id = undefined
+    //   this.districtEditOptions = []
+    //   this.cityEditOptions = []
+    //   getCities({ province_id }).then(res => {
+    //     this.cityOptions = res.data
+    //     this.cityEditOptions = res.data
+    //   }).catch(err => {
+    //     console.error(err)
+    //   })
+    // },
     // 市级选项改变
-    cityChange(city_id) {
-      this.districtOptions = []
-      this.paramsAddProject.district_id = undefined
-      this.districtEditOptions = []
-      this.paramsEditProject.district_id = undefined
-      getDistricts({ city_id }).then(res => {
-        this.districtOptions = res.data
-        this.districtEditOptions = res.data
-      }).catch(err => {
-        console.error(err)
-      })
-    },
+    // cityChange(city_id) {
+    //   this.districtOptions = []
+    //   this.paramsAddProject.district_id = undefined
+    //   this.districtEditOptions = []
+    //   this.paramsEditProject.district_id = undefined
+    //   getDistricts({ city_id }).then(res => {
+    //     this.districtOptions = res.data
+    //     this.districtEditOptions = res.data
+    //   }).catch(err => {
+    //     console.error(err)
+    //   })
+    // },
     // 区级选项改变
-    districtChange(did) {
-    },
+    // districtChange(did) {
+    // },
     newProject() {
       this.isProjectDialogVisible = true
       this.isMapOpen = true
     },
     closeAddProject() {
-      this.$confirm('确定要新建项目嘛？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(_ => {
-          const params = {
-            name: this.paramsAddProject.name,			// 项目名称
-            district_id: this.paramsAddProject.district_id,		// 省市区
-            address: this.paramsAddProject.address,		// 项目地址
-            longitude: this.paramsAddProject.longitude + '',		// 经度
-            latitude: this.paramsAddProject.latitude + '',	// 纬度
-            label: this.paramsAddProject.label		// 项目描述
-          }
-          this.loading = true
-          addProject(params).then(() => {
-            // 初始化表单
-            this.init()
-            this.isMapOpen = false
-            this.loading = false
-            this.getProjectList()
-          }).catch(err => {
-            this.isMapOpen = false
-            console.error(err)
-            this.loading = false
+      this.$refs.addProject.validate(valid => {
+        if (valid) {
+          this.$confirm('确定要新建项目嘛？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
           })
-        })
-        .catch(_ => {})
+            .then(_ => {
+              const params = {
+                name: this.paramsAddProject.name,			// 项目名称
+                district_id: this.paramsAddProject.district_id,		// 省市区
+                address: this.paramsAddProject.address,		// 项目地址
+                longitude: this.paramsAddProject.longitude + '',		// 经度
+                latitude: this.paramsAddProject.latitude + '',	// 纬度
+                label: this.paramsAddProject.label		// 项目描述
+              }
+              this.loading = true
+              addProject(params).then(() => {
+                // 初始化表单
+                this.init()
+                this.isMapOpen = false
+                this.loading = false
+                this.getProjectList()
+              }).catch(err => {
+                this.isMapOpen = false
+                console.error(err)
+                this.loading = false
+              })
+            })
+            .catch(_ => {})
+        }
+      })
     },
     getTime(timeStamp) {
       return Formattimestamp2(timeStamp, 'yyyy-MM-dd')
@@ -557,19 +511,19 @@ export default {
   /deep/.el-drawer__body{
     padding: 0 14px 14px 14px;
   }
-  .newProject{
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    form{
-      flex: 1;
-    }
-    button {
-      flex: 0 0 100px;
-    }
-    .dialog-footer{
-      display: flex;
-      justify-content: flex-end;
-    }
-  }
+  // .newProject{
+  //   display: flex;
+  //   flex-direction: column;
+  //   height: 100%;
+  //   form{
+  //     flex: 1;
+  //   }
+  //   button {
+  //     flex: 0 0 100px;
+  //   }
+  //   .dialog-footer{
+  //     display: flex;
+  //     justify-content: flex-end;
+  //   }
+  // }
 </style>

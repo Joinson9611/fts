@@ -1,64 +1,64 @@
 import request from '@/utils/request'
 import qs from 'qs'
 
-// 获取三小场所检测任务
+// 获取安全评估检测任务
 export function getTask(params) {
   return request({
-    url: '/task5s/index',
+    url: '/task4s/index',
     method: 'post',
     data: qs.stringify(params)
   })
 }
 
-// 新建三小场所检测任务
+// 新建安全评估检测任务
 export function newTask(data) {
   return request({
-    url: '/task5s/save',
+    url: '/task4s/save',
     method: 'post',
     data
   })
 }
 
-// 三小场所的检测任务详情
+// 安全评估的检测任务详情
 export function detailTask(params) {
   return request({
-    url: '/task5s/read',
+    url: '/task4s/read',
     method: 'post',
     data: qs.stringify(params)
   })
 }
 
-// 修改三小场所的检测任务
+// 修改安全评估的检测任务
 export function updateTask(data) {
   return request({
-    url: '/task5s/update',
+    url: '/task4s/update',
     method: 'post',
     data
   })
 }
 
-// 删除三小场所的检测任务
+// 删除安全评估的检测任务
 export function deleteTask(params) {
   return request({
-    url: '/task5s/delete',
+    url: '/task4s/delete',
     method: 'post',
     data: qs.stringify(params)
   })
 }
 
-// 获取三小场所的检测任务的列表
+// 获取安全评估的检测任务的列表
 export function getTaskList(params) {
   return request({
-    url: '/task5s/index2',
+    url: '/task4s/index2',
     method: 'post',
     data: qs.stringify(params)
   })
 }
 
-// 获取三小场所检测报告
+// 获取安全评估检测报告
 export function generateReport(params) {
   return request({
-    url: '/task5s/report',
+    url: '/task4s/report',
     method: 'post',
     data: qs.stringify(params)
   })

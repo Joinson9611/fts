@@ -1,14 +1,14 @@
 import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken, setUserID } from '@/utils/auth'
+import { getToken, setToken, removeToken, setUserID, removeUserID, getUserID } from '@/utils/auth'
 import { resetRouter } from '@/router'
 import md5 from '@/utils/md5'
 
 const state = {
   token: getToken(),
+  user_id: getUserID(),
   name: '',
   avatar: '',
   selected_project_id: undefined,
-  userId: undefined,
   level: undefined,
   project_name: '',
   roles: []
@@ -16,7 +16,7 @@ const state = {
 
 const mutations = {
   SET_USER_ID: (state, userId) => {
-    state.userId = userId
+    state.user_id = userId
   },
   SET_SELECTED_PROJECT_ID: (state, project_id) => {
     state.selected_project_id = project_id
@@ -41,6 +41,9 @@ const mutations = {
   },
   SET_COMPANY_ID: (state, cid) => {
     state.company_id = cid
+  },
+  SET_USER_IMAGE: (state, image) => {
+    state.user_image = image
   }
 }
 
@@ -70,7 +73,9 @@ const actions = {
         if (!data) {
           reject('验证失败，请重新登录')
         }
-        const { nickname, level } = data
+        const { nickname, level, user_id, company_id } = data
+        commit('SET_USER_IMAGE', `${process.env.VUE_APP_FILE_API}/image/user_head/${user_id}.jpg`)
+        commit('SET_COMPANY_ID', company_id)
         commit('SET_LEVEL', level)
         commit('SET_NAME', nickname)
         resolve(data)
@@ -87,7 +92,8 @@ const actions = {
         if (!data) {
           reject('验证失败，请重新登录')
         }
-        const { nickname, level, selected_project_id, company_id } = data
+        const { nickname, level, selected_project_id, company_id, user_id } = data
+        commit('SET_USER_IMAGE', `${process.env.VUE_APP_FILE_API}/image/user_head/${user_id}.jpg`)
         commit('SET_COMPANY_ID', company_id)
         commit('SET_ROLES', [level])
         commit('SET_SELECTED_PROJECT_ID', selected_project_id)
@@ -122,6 +128,16 @@ const actions = {
       }).catch(error => {
         reject(error)
       })
+    })
+  },
+  // 前端 登出
+  FedLogOut({ commit }) {
+    return new Promise(resolve => {
+      commit('SET_TOKEN', '')
+      commit('SET_USER_ID', '')
+      removeToken()
+      removeUserID()
+      resolve()
     })
   },
   // remove token

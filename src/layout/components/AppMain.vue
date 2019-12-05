@@ -33,7 +33,11 @@ export default {
   }
 </style>
 
-<style lang="scss">
+<style lang="scss" scoped>
+  // 解决路由跳转时动画特效产生的滚动条
+  /deep/.el-scrollbar__view{
+    overflow: hidden;
+  }
   // fix css style bug in open el-dialog
   .el-popup-parent--hidden {
     .fixed-header {
