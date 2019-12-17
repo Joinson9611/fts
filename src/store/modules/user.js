@@ -8,6 +8,7 @@ const state = {
   user_id: getUserID(),
   name: '',
   avatar: '',
+  user_name: '',
   selected_project_id: undefined,
   level: undefined,
   project_name: '',
@@ -23,6 +24,9 @@ const mutations = {
   },
   SET_TOKEN: (state, token) => {
     state.token = token
+  },
+  SET_USER_NAME: (state, user_name) => {
+    state.user_name = user_name
   },
   SET_NAME: (state, name) => {
     state.name = name
@@ -73,9 +77,10 @@ const actions = {
         if (!data) {
           reject('验证失败，请重新登录')
         }
-        const { nickname, level, user_id, company_id } = data
+        const { nickname, level, user_id, company_id, user_name } = data
         commit('SET_USER_IMAGE', `${process.env.VUE_APP_FILE_API}/image/user_head/${user_id}.jpg`)
         commit('SET_COMPANY_ID', company_id)
+        commit('SET_USER_NAME', user_name)
         commit('SET_LEVEL', level)
         commit('SET_NAME', nickname)
         resolve(data)

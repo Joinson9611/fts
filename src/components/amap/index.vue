@@ -18,10 +18,10 @@
             title="具体地址"
           />
         </el-input>
-        <div v-show="snameMapShow" class="map-wrapper">
-          <div>
-            <el-button type="text" size="mini" @click.stop="snameMapShow = false">收起地图<i class="el-icon-caret-top" /></el-button>
-          </div>
+        <div>
+          <el-button v-show="addForm.sname" type="text" size="mini" @click.stop="snameMapShow = !snameMapShow">{{ snameMapShow ? '收起地图':'展开地图' }}<i :class="snameMapShow ?'el-icon-caret-top':'el-icon-caret-bottom'" /></el-button>
+        </div>
+        <div v-show="snameMapShow && addForm.sname" class="map-wrapper">
           <div id="sNameMap" class="map-self" />
         </div>
       </el-form-item>

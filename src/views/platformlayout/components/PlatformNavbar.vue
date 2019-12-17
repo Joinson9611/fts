@@ -15,6 +15,9 @@
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <el-dropdown-item>
+            <span style="display:block;" @click="userInfoVisible = true">信息修改</span>
+          </el-dropdown-item>
+          <el-dropdown-item divided>
             <span style="display:block;" @click="logout">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -23,16 +26,26 @@
         <Screenfull class="right-menu-item hover-effect" />
       </template>
     </div>
+    <el-dialog :visible.sync="userInfoVisible" :append-to-body="true" :close-on-click-modal="true" title="用户信息修改">
+      <userInfo :visible.sync="userInfoVisible" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import userInfo from '@/views/userinfo/password'
 import { mapGetters } from 'vuex'
 import Screenfull from '@/components/Screenfull'
 
 export default {
   components: {
-    Screenfull
+    Screenfull,
+    userInfo
+  },
+  data() {
+    return {
+      userInfoVisible: false
+    }
   },
   computed: {
     ...mapGetters({

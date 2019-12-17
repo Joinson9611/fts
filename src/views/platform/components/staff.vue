@@ -60,13 +60,13 @@
             <el-tag :type="getAccountTypeStyle(scope.row.level)">{{ getAccountTypeText(scope.row.level) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="有效期" align="center">
+        <el-table-column label="有效期" align="center" width="120">
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ getTime(scope.row.available_time) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="密码重置" align="center">
+        <el-table-column label="密码重置" align="center" width="90">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="resetPassword(scope.row)">重置</el-button>
           </template>
@@ -112,7 +112,7 @@
         </el-form-item>
         <!--有效时间-->
         <el-form-item label="有效期" class="dialog-form-item" prop="u_available_time">
-          <el-date-picker v-model="requestAddCompanyMember.u_available_time" type="datetime" placeholder="请选择有效期" />
+          <el-date-picker v-model="requestAddCompanyMember.u_available_time" placeholder="请选择有效期" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="margin-right: 20px;margin-top: 0;">
@@ -156,7 +156,7 @@
         </el-form-item>
         <!--有效时间-->
         <el-form-item label="有效期" class="dialog-form-item" prop="u_available_time">
-          <el-date-picker v-model="requestEditCompanyMember.u_available_time" type="datetime" placeholder="请选择有效期" />
+          <el-date-picker v-model="requestEditCompanyMember.u_available_time" placeholder="请选择有效期" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" style="margin-right: 20px;margin-top: 0;">
@@ -168,7 +168,7 @@
 </template>
 
 <script>
-import { Formattimestamp } from '@/utils/time'
+import { Formattimestamp2 } from '@/utils/time'
 import { getCompanyByUser } from '@/api/company'
 import { getDepartmentsByCompany } from '@/api/departments'
 import { getCompanyMembers, addCompanyMember, deleteCompanyMember, editCompanyMember } from '@/api/user'
@@ -540,7 +540,7 @@ export default {
      * @Date: 2019/5/6
      **/
     getTime(time) {
-      return Formattimestamp(time)
+      return Formattimestamp2(time)
     },
     resetPassword(info) {
       if (info.level === this.Account_Type) {

@@ -1,7 +1,6 @@
 <template>
   <div class="screenfull-contain" @click="click">
     <svg-icon :icon-class="isFullscreen?'exit-fullscreen':'fullscreen'" class="screenfull-svg" />
-    <!--<span style="font-size: 16px">{{ getText }}</span>-->
   </div>
 </template>
 
@@ -22,7 +21,7 @@ export default {
   },
   methods: {
     click() {
-      if (!screenfull.enabled) {
+      if (!screenfull.isEnabled) {
         this.$message({
           message: '浏览器异常或者禁用全屏',
           type: 'warning'

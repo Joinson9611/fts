@@ -217,7 +217,7 @@ export default {
     // 未建立检测任务执行的操作
     hasTask(val) {
       if (val) {
-        if (this.taskOptions.length === 0) this.$message({ type: 'warning', message: '你还未建立检测任务' })
+        if (this.taskOptions.length === 0) this.$message({ type: 'warning', message: '你还未建立评估任务' })
       }
     },
     merage() {
@@ -309,10 +309,12 @@ export default {
     },
     getTaskList() {
       getTaskList({ project_id: this.project_id }).then(res => {
-        this.taskOptions = res.data.items
-        this.task_name = res.data.items[0].task_name
-        this.paramsGetRecord.task_id = res.data.items[0].task_id
-        this.getRecord()
+        if (res.data.items.length !== 0) {
+          this.taskOptions = res.data.items
+          this.task_name = res.data.items[0].task_name
+          this.paramsGetRecord.task_id = res.data.items[0].task_id
+          this.getRecord()
+        }
       }).catch(err => {
         console.error(err)
       })

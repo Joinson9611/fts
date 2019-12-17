@@ -57,14 +57,14 @@
           <span>{{ scope.row.device_type }}</span>
         </template>
       </el-table-column>
-            <el-table-column label="建筑" align="center">
+      <el-table-column label="建筑" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.building_name }}</span>
         </template>
       </el-table-column>
-            <el-table-column label="楼层" width="80" align="center">
+      <el-table-column label="楼层" width="80" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.floor_name  }}</span>
+          <span>{{ scope.row.floor_name }}</span>
         </template>
       </el-table-column>
       <el-table-column label="具体位置" align="center">
@@ -85,7 +85,7 @@
       <el-table-column label="检测时间" align="center" width="120px">
         <template slot-scope="scope">
           <i class="el-icon-time" />
-          <span>{{scope.row.create_time? getTime2(scope.row.create_time): '/' }}</span>
+          <span>{{ scope.row.create_time? getTime2(scope.row.create_time): '/' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="102">
@@ -133,7 +133,7 @@
                 <span :style="{color:historyInfo.is_pass? '#67C23A':'#F56C6C'}">{{ isPassMap[historyInfo.is_pass] }}</span>
               </el-form-item>
               <el-form-item label="检测时间" class="dialog-form-item">
-                <span><i class="el-icon-time" v-show="historyInfo.create_time" /> {{ historyInfo.create_time? getTime2(historyInfo.create_time): '/' }}</span>
+                <span><i v-show="historyInfo.create_time" class="el-icon-time" /> {{ historyInfo.create_time? getTime2(historyInfo.create_time): '/' }}</span>
               </el-form-item>
             </el-col>
           </el-row>
@@ -327,10 +327,12 @@ export default {
     },
     getTaskList() {
       getTaskList({ project_id: this.project_id }).then(res => {
-        this.taskOptions = res.data.items
-        this.task_name = res.data.items[0].task_name
-        this.paramsGetRecord.task_id = res.data.items[0].task_id
-        this.getRecord()
+        if (res.data.items.length !== 0) {
+          this.taskOptions = res.data.items
+          this.task_name = res.data.items[0].task_name
+          this.paramsGetRecord.task_id = res.data.items[0].task_id
+          this.getRecord()
+        }
       }).catch(err => {
         console.error(err)
       })

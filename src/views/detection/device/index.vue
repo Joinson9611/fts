@@ -1,100 +1,40 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-row>
-        <el-col :span="12">
-          <el-card class="box-card" style="height: 200px" shadow="hover">
-            <div slot="header" class="clearfix">
-              <span>任务信息</span>
-            </div>
-            <!--任务筛选-->
-            <div class="taskSelect">
-              <span class="title">当前任务名称：</span>
-              <el-select v-model="paramsGetDevice.task_id" placeholder="任务列表" size="mini" filterable style="width: 190px" @change="taskChange" @visible-change="hasTask">
-                <el-option v-for="item in taskOptions" :key="item.task_id" :label="item.name" :value="item.task_id" />
-              </el-select>
-            </div>
-            <div class="taskSelect">
-              <span class="title">任务描述：</span>
-              <span class="content">123</span>
-            </div>
-            <div class="taskSelect">
-              <span class="title">任务开始时间：</span>
-              <span class="content">123</span>
-            </div>
-            <div class="taskSelect">
-              <span class="title">任务结束时间：</span>
-              <span class="content">123</span>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :span="12">
-          <el-card class="box-card" style="height: 200px" shadow="hover">
-            <div slot="header" class="clearfix">
-              <span>筛选设备</span>
-            </div>
-            <el-row>
-              <el-col :span="12">
-                <!--系统类型筛选-->
-                <el-select v-model="paramsGetDevice.system_type_id" placeholder="系统类型" filterable clearable @change="systemOptionsChange">
-                  <el-option v-for="item in systemListOptions" :key="item.system_type_id" :label="item.system_type" :value="item.system_type_id" />
-                </el-select>
-              </el-col>
-              <el-col :span="12">
-                <!-- 设备类型筛选 -->
-                <el-select v-model="paramsGetDevice.device_type_id" placeholder="设备类型" filterable clearable style="width：100%" @change="deviceOptionsChange">
-                  <el-option v-for="item in deviceTypeOptions" :key="item.device_type_id" :label="item.device_type" :value="item.device_type_id" />
-                </el-select>
-              </el-col>
-            </el-row>
-            <el-row style="margin-top: 10px;">
-              <el-col :span="12">
-                <!-- 是否符合入市筛选 -->
-                <el-select v-model="paramsGetDevice.is_right" placeholder="是否符合入市" filterable clearable @change="rightOptionsChange">
-                  <el-option v-for="item in rightOptions" :key="item.id" :label="item.name" :value="item.id" />
-                </el-select>
-              </el-col>
-              <el-col :span="12">
-                <!-- 是否合格筛选 -->
-                <el-select v-model="paramsGetDevice.is_certificate" placeholder="是否合格" filterable clearable @change="certificateChange">
-                  <el-option v-for="item in certificateOptions" :key="item.id" :label="item.name" :value="item.id" />
-                </el-select>
-              </el-col>
-            </el-row>
-          </el-card>
-        </el-col>
-      </el-row>
       <!--任务筛选-->
-      <!-- <div class="taskSelect">
-        <span>当前任务名称：</span>
-        <el-select v-model="paramsGetDevice.task_id" placeholder="任务列表" filterable style="width: 190px" class="filter-item" @change="taskChange" @visible-change="hasTask">
+      <div class="taskSelect">
+        <span class="title">当前任务名称：</span>
+        <el-select v-model="paramsGetDevice.task_id" placeholder="任务列表" filterable style="width: 190px" @change="taskChange" @visible-change="hasTask">
           <el-option v-for="item in taskOptions" :key="item.task_id" :label="item.name" :value="item.task_id" />
         </el-select>
-      </div> -->
+      </div>
       <!--系统类型筛选-->
-      <!-- <el-select v-model="paramsGetDevice.system_type_id" placeholder="系统类型" filterable clearable style="width: 244px" class="filter-item" @change="systemOptionsChange">
+      <el-select v-model="paramsGetDevice.system_type_id" placeholder="系统类型" filterable clearable style="width: 244px" class="filter-item" @change="systemOptionsChange">
         <el-option v-for="item in systemListOptions" :key="item.system_type_id" :label="item.system_type" :value="item.system_type_id" />
-      </el-select> -->
+      </el-select>
       <!-- 设备类型筛选 -->
-      <!-- <el-select v-model="paramsGetDevice.device_type_id" placeholder="设备类型" filterable clearable style="width: 175px" class="filter-item" @change="deviceOptionsChange">
+      <el-select v-model="paramsGetDevice.device_type_id" placeholder="设备类型" filterable clearable style="width: 175px" class="filter-item" @change="deviceOptionsChange">
         <el-option v-for="item in deviceTypeOptions" :key="item.device_type_id" :label="item.device_type" :value="item.device_type_id" />
-      </el-select> -->
+      </el-select>
       <!-- 是否符合入市筛选 -->
-      <!-- <el-select v-model="paramsGetDevice.is_right" placeholder="是否符合入市" filterable clearable style="width: 130px" class="filter-item" @change="rightOptionsChange">
+      <el-select v-model="paramsGetDevice.is_right" placeholder="是否符合入市" filterable clearable style="width: 130px" class="filter-item" @change="rightOptionsChange">
         <el-option v-for="item in rightOptions" :key="item.id" :label="item.name" :value="item.id" />
-      </el-select> -->
+      </el-select>
       <!-- 是否合格筛选 -->
-      <!-- <el-select v-model="paramsGetDevice.is_certificate" placeholder="是否合格" filterable clearable style="width: 106px" class="filter-item" @change="certificateChange">
+      <el-select v-model="paramsGetDevice.is_certificate" placeholder="是否合格" filterable clearable style="width: 106px" class="filter-item" @change="certificateChange">
         <el-option v-for="item in certificateOptions" :key="item.id" :label="item.name" :value="item.id" />
-      </el-select> -->
+      </el-select>
 
     </div>
-    <el-card shadow="hover" class="device-list">
-      <div class="button" style="float: right">
-        <!--新建任务-->
-        <el-button v-waves class="filter-item" type="primary" icon="el-icon-plus" @click="openNewDevice">新建设备</el-button>
-        <!--删除按钮-->
-        <el-button v-waves :disabled="multipleSelection.length===0" style="margin-left:0" class="filter-item" type="danger" icon="el-icon-delete" @click="deleteDevice">删除设备</el-button>
+    <el-card shadow="never" class="device-list" body-style="padding: 0;">
+      <div slot="header" class="clearfix">
+        <span style="line-height: 29px">设备列表</span>
+        <div class="button" style="float: right">
+          <!--新建任务-->
+          <el-button v-waves class="filter-item" type="primary" icon="el-icon-plus" size="mini" @click="openNewDevice">新建设备</el-button>
+          <!--删除按钮-->
+          <el-button v-waves :disabled="multipleSelection.length===0" style="margin-left:0" size="mini" class="filter-item" type="danger" icon="el-icon-delete" @click="deleteDevice">删除设备</el-button>
+        </div>
       </div>
       <!--任务列表-->
       <el-table
@@ -281,6 +221,11 @@ export default {
         is_certificate: undefined,
         quantity: 0	 // 数量
       },
+      taskInfo: {
+        label: '',
+        testting_time: '',
+        testing_completion_time: ''
+      },
       // 当前的task_id
       task_id: undefined,
       multipleSelection: [],
@@ -326,7 +271,7 @@ export default {
       this.paramsDeviceInfo.producer = info.producer
       this.paramsDeviceInfo.product_time = info.product_time
       this.paramsDeviceInfo.is_right = info.is_right
-      this.paramsDeviceInfo.is_certificate = info.is_right
+      this.paramsDeviceInfo.is_certificate = info.is_certificate
       this.paramsDeviceInfo.quantity = info.quantity
       this.getDeviceTypes2(info.system_type_id)
       this.paramsDeviceInfo.product_time = Formattimestamp2(this.paramsDeviceInfo.product_time)
@@ -423,6 +368,13 @@ export default {
         }
       })
     },
+    // getTaskDetail() {
+    //   detailTaskFire({ task_id: this.task_id }).then(res => {
+    //     this.taskInfo.label = res.data.label
+    //     this.taskInfo.testing_completion_time = res.data.testing_completion_time
+    //     this.taskInfo.testting_time = res.data.testting_time
+    //   })
+    // },
     // 获取系统列表
     getSystemTypes() {
       getSystemTypes({ task_type_id: 1 }).then(res => {
@@ -497,10 +449,12 @@ export default {
     // 获取任务列表
     getTaskList() {
       getTaskList({ project_id: this.project_id }).then(res => {
-        this.taskOptions = res.data.items
-        this.paramsGetDevice.task_id = res.data.items[0].task_id
-        this.task_id = res.data.items[0].task_id
-        this.getDeviceInfoList()
+        if (res.data.items.length !== 0) {
+          this.taskOptions = res.data.items
+          this.paramsGetDevice.task_id = res.data.items[0].task_id
+          this.task_id = res.data.items[0].task_id
+          this.getDeviceInfoList()
+        }
       }).catch(err => {
         console.error(err)
       })
@@ -538,24 +492,14 @@ export default {
   .device-list {
     .button {
       float: right;
-      margin-bottom: 20px;
     }
   }
   .taskSelect{
-    height: 100%;
-    font-size: 14px;
-    margin-bottom: 10px;
     vertical-align: top;
+    display: inline-block;
+    font-size: 14px;
     /deep/.filter-item{
       margin-bottom: 0;
-    }
-    .title {
-      display: inline-block;
-      width: 100px;
-      text-align: right;
-    }
-    .content {
-      color: #909399;
     }
   }
   .demo-table-expand {
