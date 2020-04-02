@@ -6,7 +6,7 @@ import { getNowFormatDate } from '@/utils/time'
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  withCredentials: true, // send cookies when cross-domain requests
+  withCredentials: false, // send cookies when cross-domain requests
   timeout: 5000, // request timeout
   headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' }
 })
@@ -39,9 +39,7 @@ service.interceptors.response.use(
     if (response.config.responseType === 'blob') {
       return response
     }
-
     const res = response.data
-
     // 服务端返回的响应码不等于1的时候显示错误提示
     if (res.code !== '1') {
       if (res.code !== '10001' && res.code !== '10002') {

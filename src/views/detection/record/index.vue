@@ -1,13 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <!--任务筛选-->
-      <div class="taskSelect">
-        <span>当前任务名称：</span>
-        <el-select v-model="paramsGetRecord.task_id" placeholder="任务列表" filterable style="width: 190px" class="filter-item" @change="taskChange" @visible-change="hasTask">
-          <el-option v-for="item in taskOptions" :key="item.task_id" :label="item.name" :value="item.task_id" />
-        </el-select>
-      </div>
       <!--系统类型筛选-->
       <el-select v-model="paramsGetRecord.system_type_id" placeholder="系统类型" filterable clearable style="width: 244px" class="filter-item" @change="systemOptionsChange">
         <el-option v-for="item in systemListOptions" :key="item.system_type_id" :label="item.system_type" :value="item.system_type_id" />
@@ -110,7 +103,6 @@
       direction="ltr"
       size="51%"
     >
-
       <div class="history">
         <el-form label-width="100px">
           <el-row>
@@ -202,7 +194,6 @@ import { mapGetters } from 'vuex'
 import { getBuildingList } from '@/api/building'
 import { getFloorList } from '@/api/floor'
 import { getHistoryFireFac } from '@/api/history1'
-import { getTaskList } from '@/api/task1'
 import { getSystemTypes } from '@/api/system'
 import { getDeviceTypes } from '@/api/device'
 import { Formattimestamp, Formattimestamp2 } from '@/utils/time'
@@ -225,7 +216,7 @@ export default {
       isPassMap: ['不合格', '合格'],
       // 参数-获取检测记录
       paramsGetRecord: {
-        task_id: undefined,
+        project_id: this.project_id,
         page: 1,
         limit: 20,
         building_id: undefined,
@@ -249,7 +240,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['project_id']),
+    ...mapGetters(['company_id', 'project_type_id', 'project_id']),
     imageUrl() {
       let imgList
       if (this.historyInfo.image === '') {
@@ -261,7 +252,6 @@ export default {
     }
   },
   created() {
-    this.getTaskList()
     this.getSystemTypes()
     this.getBuildingList()
   },
@@ -306,6 +296,7 @@ export default {
     },
     getRecord() {
       this.isRecordListLoadingShow = true
+      this.paramsGetRecord.project_id = this.project_id
       getHistoryFireFac(this.paramsGetRecord).then(res => {
         this.total = res.data.total
         this.recordTable = res.data.items
@@ -315,31 +306,15 @@ export default {
         this.isRecordListLoadingShow = false
       })
     },
-    taskChange(id) {
-      this.paramsGetRecord.task_id = id
-      this.getRecord()
-    },
     getTime(timestamp) {
       return Formattimestamp(timestamp)
     },
     getTime2(timestamp) {
       return Formattimestamp2(timestamp)
     },
-    getTaskList() {
-      getTaskList({ project_id: this.project_id }).then(res => {
-        if (res.data.items.length !== 0) {
-          this.taskOptions = res.data.items
-          this.task_name = res.data.items[0].task_name
-          this.paramsGetRecord.task_id = res.data.items[0].task_id
-          this.getRecord()
-        }
-      }).catch(err => {
-        console.error(err)
-      })
-    },
     // 获取系统列表
     getSystemTypes() {
-      getSystemTypes({ task_type_id: 1 }).then(res => {
+      getSystemTypes({ project_type_id: this.project_type_id }).then(res => {
         this.systemListOptions = res.data.items
       }).catch(err => {
         console.error(err)
@@ -347,8 +322,9 @@ export default {
     },
     // 获取建筑物列表
     getBuildingList() {
-      const project_id = this.project_id
-      getBuildingList({ project_id }).then(res => {
+      console.log(this.project_id, 111)
+
+      getBuildingList({ project_id: this.project_id }).then(res => {
         this.buildingOptions = res.data.items
       }).catch(err => {
         console.error(err)
@@ -382,7 +358,7 @@ export default {
         this.getDeviceTypes(id)
       }
       this.paramsGetRecord.page = 1
-      if (this.paramsGetRecord.task_id) this.getRecord()
+      this.getRecord()
     },
     buildChange(id) {
       this.paramsGetRecord.floor_id = undefined
@@ -394,7 +370,7 @@ export default {
         this.getFloorList(id)
       }
       this.paramsGetRecord.page = 1
-      if (this.paramsGetRecord.task_id) this.getRecord()
+      this.getRecord()
     },
     floorChange(id) {
       if (id === '') {
@@ -403,7 +379,7 @@ export default {
         this.paramsGetRecord.floor_id = id
       }
       this.paramsGetRecord.page = 1
-      if (this.paramsGetRecord.task_id) this.getRecord()
+      this.getRecord()
     },
     passChange(id) {
       if (id === '') {
@@ -412,7 +388,7 @@ export default {
         this.paramsGetRecord.is_pass = id
       }
       this.paramsGetRecord.page = 1
-      if (this.paramsGetRecord.task_id) this.getRecord()
+      this.getRecord()
     },
     // 设备类型改变
     deviceOptionsChange(id) {
@@ -420,7 +396,7 @@ export default {
         this.paramsGetRecord.device_type_id = undefined
       }
       this.paramsGetRecord.page = 1
-      if (this.paramsGetRecord.task_id) this.getRecord()
+      this.getRecord()
     }
   }
 }

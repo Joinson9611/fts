@@ -32,7 +32,7 @@ export default {
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
       const first = matched[0]
       if (!this.isDashboard(first)) {
-        matched = [{ path: '/project/projectDetail', meta: { title: '项目详情' }}].concat(matched)
+        matched = [{ path: '/projects/info', meta: { title: '项目详情' }}].concat(matched)
       }
       this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
     },

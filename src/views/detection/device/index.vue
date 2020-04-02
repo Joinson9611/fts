@@ -1,13 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <!--任务筛选-->
-      <div class="taskSelect">
-        <span class="title">当前任务名称：</span>
-        <el-select v-model="paramsGetDevice.task_id" placeholder="任务列表" filterable style="width: 190px" @change="taskChange" @visible-change="hasTask">
-          <el-option v-for="item in taskOptions" :key="item.task_id" :label="item.name" :value="item.task_id" />
-        </el-select>
-      </div>
       <!--系统类型筛选-->
       <el-select v-model="paramsGetDevice.system_type_id" placeholder="系统类型" filterable clearable style="width: 244px" class="filter-item" @change="systemOptionsChange">
         <el-option v-for="item in systemListOptions" :key="item.system_type_id" :label="item.system_type" :value="item.system_type_id" />
@@ -17,14 +10,15 @@
         <el-option v-for="item in deviceTypeOptions" :key="item.device_type_id" :label="item.device_type" :value="item.device_type_id" />
       </el-select>
       <!-- 是否符合入市筛选 -->
-      <el-select v-model="paramsGetDevice.is_right" placeholder="是否符合入市" filterable clearable style="width: 130px" class="filter-item" @change="rightOptionsChange">
+      <el-select v-model="paramsGetDevice.is_right" placeholder="是否符合入市" filterable clearable style="width: 140px" class="filter-item" @change="rightOptionsChange">
         <el-option v-for="item in rightOptions" :key="item.id" :label="item.name" :value="item.id" />
       </el-select>
       <!-- 是否合格筛选 -->
       <el-select v-model="paramsGetDevice.is_certificate" placeholder="是否合格" filterable clearable style="width: 106px" class="filter-item" @change="certificateChange">
         <el-option v-for="item in certificateOptions" :key="item.id" :label="item.name" :value="item.id" />
       </el-select>
-
+      <el-button type="success" plain class="filter-item" @click="exportDevice">导出设备信息</el-button>
+      <el-button type="success" plain class="filter-item" style="margin-left:0" @click="dialogImportVisible = true">导入设备信息</el-button>
     </div>
     <el-card shadow="never" class="device-list" body-style="padding: 0;">
       <div slot="header" class="clearfix">
@@ -98,7 +92,7 @@
         </el-table-column>
         <el-table-column label="创建时间" align="center" width="120">
           <template slot-scope="scope">
-            <i class="el-icon-time" />
+            <i v-show="scope.row.create_time" class="el-icon-time" />
             <span>{{ scope.row.create_time? getTime(scope.row.create_time) : '/' }}</span>
           </template>
         </el-table-column>
@@ -110,12 +104,12 @@
     <el-dialog :visible.sync="dialogVisible" :append-to-body="true" :close-on-click-modal="false" :title="isEdit?'编辑':'新建'" @closed="closeDialog">
       <el-form ref="formDevice" :model="paramsDeviceInfo" :rules="deviceInfoRules" label-width="120px">
         <el-form-item label="系统类型：" class="dialog-form-item" prop="system_type_id">
-          <el-select v-model="paramsDeviceInfo.system_type_id" placeholder="系统类型" filterable clearable style="width: 190px" class="filter-item" @change="systemDialogChange">
+          <el-select v-model="paramsDeviceInfo.system_type_id" placeholder="系统类型" :disabled="isEdit" filterable clearable style="width: 190px" class="filter-item" @change="systemDialogChange">
             <el-option v-for="item in systemListOptions" :key="item.system_type_id" :label="item.system_type" :value="item.system_type_id" />
           </el-select>
         </el-form-item>
         <el-form-item label="设备类型：" class="dialog-form-item" prop="device_type_id">
-          <el-select v-model="paramsDeviceInfo.device_type_id" placeholder="设备类型" filterable clearable style="width: 175px" class="filter-item">
+          <el-select v-model="paramsDeviceInfo.device_type_id" placeholder="设备类型" :disabled="isEdit" filterable clearable style="width: 175px" class="filter-item">
             <el-option v-for="item in deviceTypeDialogOptions" :key="item.device_type_id" :label="item.device_type" :value="item.device_type_id" />
           </el-select>
         </el-form-item>
@@ -154,13 +148,44 @@
         <el-button v-waves type="primary" :loading="isLoading" @click.native="onSubmit">确定</el-button>
       </div>
     </el-dialog>
+    <!--弹出导入窗口-->
+    <el-dialog :visible.sync="dialogImportVisible" :append-to-body="true" :close-on-click-modal="false" style="text-align: center; min-width: 800px">
+      <el-upload
+        ref="upload"
+        :multiple="false"
+        :auto-upload="false"
+        :on-change="onUploadChange"
+        :before-upload="onUploadFileCheck"
+        :before-remove="onUploadFileRemove"
+        :on-exceed="onUploadFileLimit"
+        :http-request="UploadFile"
+        :limit="1"
+        drag
+        accept=".xls,.xlsx"
+        action="customize"
+      >
+        <i class="el-icon-upload" />
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div slot="tip" class="el-upload__tip">请上传有效的excel文件</div>
+      </el-upload>
+      <div slot="footer" class="dialog-footer">
+        <el-button v-waves @click.native="onUploadButtonCancel">取消</el-button>
+        <el-button
+          v-waves
+          :loading="isButtonUploadLoadingShow"
+          :disabled="isUploadButtonDisable"
+          type="primary"
+          @click.native="onUploadButtonSubmit"
+        >上传
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import Pagination from '@/components/Pagination'
-import { getTaskList } from '@/api/task1'
-import { getDeviceFirefac, addDeviceFirefac, deleteDeviceFirefac, updateDeviceFirefac } from '@/api/device1'
+import { getDevice1, addDevice1, deleteDevice1, updateDevice1, importDevice1, exportDevice1 } from '@/api/device1'
 import { getSystemTypes } from '@/api/system'
 import { getDeviceTypes } from '@/api/device'
 import { mapGetters } from 'vuex'
@@ -176,6 +201,9 @@ export default {
   },
   data() {
     return {
+      isButtonUploadLoadingShow: false,
+      dialogImportVisible: false,
+      isUploadButtonDisable: false,
       rightMap: ['不符合', '符合'],
       certificateMap: ['不合格', '合格'],
       rightOptions: [{ id: 0, name: '不符合' }, { id: 1, name: '符合' }],
@@ -204,13 +232,14 @@ export default {
         device_type_id: undefined
       },
       paramsGetDevice: {
-        task_id: undefined,
+        project_id: this.project_id,
         page: 1,
         limit: 20,
         system_type_id: undefined,
         device_type_id: undefined
       },
       paramsDeviceInfo: {
+        project_id: this.project_id,
         device_id: undefined,	// 任务ID
         system_type_id: undefined, // 系统ID
         device_type_id: undefined,		// 设备类型ID
@@ -241,14 +270,104 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'project_id'
+      'project_id',
+      'project_type_id'
     ])
   },
   created() {
-    this.getTaskList()
+    this.getDeviceInfoList()
     this.getSystemTypes()
   },
   methods: {
+    exportDevice() {
+      exportDevice1({ project_id: this.project_id }).then(res => {
+        this.$message({ type: 'success', message: '导出成功' })
+        const fileName = '设备信息' + '.xlsx'
+        const fileDownload = require('js-file-download')
+        fileDownload(res.data, fileName)
+      }).catch(err => {
+        console.error(err)
+      })
+    },
+    onUploadChange() {
+      this.isUploadButtonDisable = false
+    },
+    /**
+     * @Description: 上传对话框文件删除时回调
+     * @Date: 2019/5/5
+     **/
+    onUploadFileRemove() {
+      this.isUploadButtonDisable = true
+    },
+    /**
+     * @Description: 取消上传操作
+     * @Date: 2019/5/5
+     **/
+    onUploadButtonCancel() {
+      this.dialogImportVisible = false
+    },
+    /**
+     * @Description: 上传文件事件
+     * @Date: 2019/5/5
+     **/
+    onUploadButtonSubmit() {
+      this.$refs.upload.submit()
+    },
+    /**
+     * @Description: 上传文件类型大小限制
+     * @Date: 2019/5/5
+     **/
+    onUploadFileCheck(file) {
+      const testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      const extension = testmsg === 'xls'
+      const extension2 = testmsg === 'xlsx'
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!extension && !extension2) {
+        this.$message({
+          message: '上传文件只能是 xls、xlsx格式',
+          type: 'warning'
+        })
+      }
+      if (!isLt2M) {
+        this.$message({
+          message: '上传文件大小不能超过 2MB',
+          type: 'warning'
+        })
+      }
+      return extension || extension2 && isLt2M
+    },
+    /**
+     * @Description: 文件数量限制
+     * @Date: 2019/5/5
+     **/
+    onUploadFileLimit() {
+      this.$message({
+        message: '只能上传一个文件',
+        type: 'warning'
+      })
+    },
+    /**
+     * @Description: 文件上传操作
+     * @Date: 2019/5/5
+     **/
+    UploadFile(content) {
+      this.isButtonUploadLoadingShow = true
+      const formData = new FormData()
+      formData.append('excel', content.file, content.file.name)
+      formData.append('project_id', this.project_id)
+      importDevice1(formData).then(() => {
+        this.getDeviceInfoList()
+        this.$message({
+          type: 'success',
+          message: '导入成功'
+        })
+        this.isButtonUploadLoadingShow = false
+        this.dialogImportVisible = false
+      }).catch(err => {
+        console.error(err)
+        this.isButtonUploadLoadingShow = false
+      })
+    },
     getTime(timeStamp) {
       return Formattimestamp2(timeStamp)
     },
@@ -276,11 +395,6 @@ export default {
       this.getDeviceTypes2(info.system_type_id)
       this.paramsDeviceInfo.product_time = Formattimestamp2(this.paramsDeviceInfo.product_time)
     },
-    // 任务列表改变
-    taskChange(id) {
-      this.task_id = id
-      this.getDeviceInfoList()
-    },
     hasTask(val) {
       if (val) {
         if (this.taskOptions.length === 0) this.$message({ type: 'warning', message: '你还未建立检测任务' })
@@ -289,7 +403,8 @@ export default {
     // 获取设备信息列表
     getDeviceInfoList() {
       this.isDeviceListLoadingShow = true
-      getDeviceFirefac(this.paramsGetDevice).then(res => {
+      this.paramsGetDevice.project_id = this.project_id
+      getDevice1(this.paramsGetDevice).then(res => {
         this.total = res.data.total
         this.deviceTable = res.data.items
         this.isDeviceListLoadingShow = false
@@ -322,7 +437,7 @@ export default {
         if (valid) {
           this.isLoading = true
           if (this.isEdit) {
-            updateDeviceFirefac(this.paramsDeviceInfo).then(() => {
+            updateDevice1(this.paramsDeviceInfo).then(() => {
               this.isLoading = false
               this.dialogVisible = false
               this.$message({
@@ -339,7 +454,7 @@ export default {
             })
           } else {
             const params = {
-              task_id: this.task_id,		// 任务ID
+              project_id: this.project_id,		// 任务ID
               system_type_id: this.paramsDeviceInfo.system_type_id,	// 系统ID
               device_type_id: this.paramsDeviceInfo.device_type_id,			// 设备类型ID
               label: this.paramsDeviceInfo.label,		// label
@@ -349,7 +464,7 @@ export default {
               is_certificate: this.paramsDeviceInfo.is_certificate,	// 是否合规
               quantity: this.paramsDeviceInfo.quantity
             }
-            addDeviceFirefac(params).then(() => {
+            addDevice1(params).then(() => {
               this.isLoading = false
               this.dialogVisible = false
               this.$message({
@@ -359,7 +474,6 @@ export default {
               this.getDeviceInfoList()
               this.init()
             }).catch(err => {
-              this.$message.error('新建失败')
               this.dialogVisible = false
               this.isLoading = false
               console.error(err)
@@ -368,16 +482,9 @@ export default {
         }
       })
     },
-    // getTaskDetail() {
-    //   detailTaskFire({ task_id: this.task_id }).then(res => {
-    //     this.taskInfo.label = res.data.label
-    //     this.taskInfo.testing_completion_time = res.data.testing_completion_time
-    //     this.taskInfo.testting_time = res.data.testting_time
-    //   })
-    // },
     // 获取系统列表
     getSystemTypes() {
-      getSystemTypes({ task_type_id: 1 }).then(res => {
+      getSystemTypes({ project_type_id: this.project_type_id }).then(res => {
         this.systemListOptions = res.data.items
       }).catch(err => {
         console.error(err)
@@ -414,7 +521,7 @@ export default {
         this.getDeviceTypes(id)
       }
       this.paramsGetDevice.page = 1
-      if (this.paramsGetDevice.task_id) this.getDeviceInfoList()
+      this.getDeviceInfoList()
     },
     // 设备类型改变
     deviceOptionsChange(id) {
@@ -422,21 +529,21 @@ export default {
         this.paramsGetDevice.device_type_id = undefined
       }
       this.paramsGetDevice.page = 1
-      if (this.paramsGetDevice.task_id) this.getDeviceInfoList()
+      this.getDeviceInfoList()
     },
     rightOptionsChange(id) {
       if (id === '') {
         this.paramsGetDevice.is_right = undefined
       }
       this.paramsGetDevice.page = 1
-      if (this.paramsGetDevice.task_id) this.getDeviceInfoList()
+      this.getDeviceInfoList()
     },
     certificateChange(id) {
       if (id === '') {
         this.paramsGetDevice.is_certificate = undefined
       }
       this.paramsGetDevice.page = 1
-      if (this.paramsGetDevice.task_id) this.getDeviceInfoList()
+      this.getDeviceInfoList()
     },
     // 对话框系统类型改变
     systemDialogChange(id) {
@@ -446,27 +553,10 @@ export default {
         this.deviceTypeDialogOptions = []
       } else this.getDeviceTypes2(id)
     },
-    // 获取任务列表
-    getTaskList() {
-      getTaskList({ project_id: this.project_id }).then(res => {
-        if (res.data.items.length !== 0) {
-          this.taskOptions = res.data.items
-          this.paramsGetDevice.task_id = res.data.items[0].task_id
-          this.task_id = res.data.items[0].task_id
-          this.getDeviceInfoList()
-        }
-      }).catch(err => {
-        console.error(err)
-      })
-    },
     // 打开新建设备窗口
     openNewDevice() {
-      if (this.taskOptions.length === 0) {
-        this.$message({ type: 'warning', message: '你还未建立检测任务' })
-      } else {
-        if (this.$refs.formDevice !== undefined) this.$refs.formDevice.clearValidate()
-        this.dialogVisible = true
-      }
+      if (this.$refs.formDevice !== undefined) this.$refs.formDevice.clearValidate()
+      this.dialogVisible = true
     },
     // 删除设备
     deleteDevice() {
@@ -477,7 +567,7 @@ export default {
         const deleteParam = {
           device_id_list: this.multipleSelection.map(item => item.device_id)
         }
-        deleteDeviceFirefac(deleteParam).then(() => {
+        deleteDevice1(deleteParam).then(() => {
           this.getDeviceInfoList()
         }).catch(err => {
           console.log(err)

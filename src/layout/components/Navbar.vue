@@ -3,18 +3,17 @@
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb class="breadcrumb-container" />
-
     <div class="right-menu">
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div>
           <div class="avatar-wrapper">
-            <img :src="user_image+'?imageView2/1/w/80/h/80'" class="user-avatar" onerror="this.src='http://192.168.3.101/fts/public/image/user_head/0.png?imageView2/1/w/80/h/80'">
+            <img :src="user_image+'?imageView2/1/w/80/h/80'" class="user-avatar" @error="imgErr">
           </div>
           <span class="username-item">{{ name }}</span>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <a target="_blank" @click="$router.push({ path: '/projects' })">
-            <el-dropdown-item>管理平台</el-dropdown-item>
+          <a target="_blank" @click="toProjectSelect">
+            <el-dropdown-item>重选项目</el-dropdown-item>
           </a>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">退出登录</span>
@@ -33,6 +32,7 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
+import Cookies from 'js-cookie'
 
 export default {
   components: {
@@ -44,10 +44,26 @@ export default {
     ...mapGetters([
       'sidebar',
       'user_image',
-      'name'
+      'name',
+      'project_type_id'
     ])
   },
   methods: {
+    toProjectSelect() {
+      this.$store.dispatch('user/reelectProject').then(() => {
+        this.$router.push({
+          path: '/project/project' + Cookies.get('project_type_id')
+        })
+      }).catch(err => {
+        console.error(err)
+        this.$message({ type: 'danger', message: '重选失败' })
+      })
+    },
+    imgErr(event) {
+      const img = event.srcElement
+      img.src = process.env.VUE_APP_HEAD_IMAGE_URL + '0.png?imageView2/1/w/80/h/80'
+      img.onerror = null
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },

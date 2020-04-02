@@ -3,6 +3,7 @@
     <el-input
       id="search-input"
       v-model="searchValue"
+      size="mini"
       class="input-with"
       placeholder="请输入地址"
       clearable
@@ -17,7 +18,6 @@
         @click="handelSearch"
       >搜索</el-button>
     </el-input>
-
     <div id="searchResultPanel" />
     <el-row class="margin-top-10 address">
       当前地址是： {{ formattedAddress }}
@@ -27,7 +27,6 @@
         @click="handelSave"
       >使用该地址</el-button>
     </el-row>
-
     <div id="custom-amap" />
   </div>
 </template>

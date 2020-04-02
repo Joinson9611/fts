@@ -6,6 +6,7 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 import PlatformLayout from '@/views/platformlayout/PlatformLayout'
+import projectLayout from '@/projectLayout'
 import test from '@/views/login/index'
 import report from '@/views/report/task'
 /**
@@ -51,12 +52,60 @@ export const constantRoutes = [
   {
     path: '/',
     component: PlatformLayout,
-    redirect: '/projects',
-    name: 'Platform',
-    hidden: true,
+    hidden: false,
+    redirect: '/project',
     children: [{
-      path: 'projects',
-      component: () => import('@/views/platform')
+      hidden: true,
+      path: 'project',
+      name: 'project',
+      component: () => import('@/views/project')
+    }, {
+      hidden: true,
+      path: 'mangment',
+      name: 'mangment',
+      component: () => import('@/views/mangment')
+    }]
+  },
+  {
+    path: '/project',
+    hidden: true,
+    component: projectLayout,
+    children: [{
+      path: 'project1',
+      component: () => import('@/views/detection/project')
+    }, {
+      path: 'project4',
+      component: () => import('@/views/detection/project')
+    }, {
+      path: 'project5',
+      component: () => import('@/views/detection/project')
+    }]
+  },
+  // {
+  //   path: '/project4',
+  //   hidden: true,
+  //   component: projectLayout,
+  //   children: [{
+  //     path: 'info',
+  //     component: () => import('@/views/security/project')
+  //   }]
+  // },
+  // {
+  //   path: '/project5',
+  //   hidden: true,
+  //   component: projectLayout,
+  //   children: [{
+  //     path: 'info',
+  //     component: () => import('@/views/establishments/project')
+  //   }]
+  // },
+  {
+    path: '/projects',
+    component: Layout,
+    children: [{
+      path: 'info',
+      component: () => import('@/views/projectInfo'),
+      meta: { title: '项目详情', icon: 'building' }
     }]
   },
   {
@@ -68,36 +117,46 @@ export const constantRoutes = [
 
 export const asyncRouterMap = [
   {
-    path: '/project',
-    component: Layout,
-    children: [{
-      path: 'projectDetail',
-      name: 'home',
-      component: () => import('@/views/home'),
-      meta: { title: '项目详情', icon: 'home', roles: [2] }
-    }]
-  },
-  {
     path: '/location',
     component: Layout,
     redirect: 'noredirect',
     name: 'Location',
     alwaysShow: true,
-    meta: { title: '建筑管理', icon: 'location', roles: [2] },
+    meta: { title: '建筑管理', icon: 'location', roles: [1] },
     children: [
       {
         path: 'building',
         name: 'Building',
         component: () => import('@/views/location/building'),
-        meta: { title: '建筑物', icon: 'building', roles: [2] }
+        meta: { title: '建筑物', icon: 'building', roles: [1] }
       },
       {
         path: 'floor',
         name: 'Floor',
-        meta: { title: '楼层', icon: 'floor', roles: [2] },
+        meta: { title: '楼层', icon: 'floor', roles: [1] },
         component: () => import('@/views/location/floor')
       }
     ]
+  },
+  {
+    path: '/device1',
+    component: Layout,
+    hidden: false,
+    children: [{
+      path: 'administration',
+      component: () => import('@/views/detection/device'),
+      meta: { title: '设备管理', icon: 'devices', roles: [1] }
+    }]
+  },
+  {
+    path: '/fireFighting',
+    component: Layout,
+    hidden: false,
+    children: [{
+      path: 'record',
+      component: () => import('@/views/detection/record'),
+      meta: { title: '检测记录', icon: 'devices', roles: [1] }
+    }]
   },
   {
     path: '/fireFighting',
@@ -107,12 +166,6 @@ export const asyncRouterMap = [
     alwaysShow: true,
     meta: { title: '消防设施', icon: 'fireFighting', roles: [2] },
     children: [
-      {
-        path: 'task',
-        name: 'task',
-        component: () => import('@/views/detection/task'),
-        meta: { title: '检测任务', icon: 'tasks', roles: [2] }
-      },
       {
         path: 'device',
         name: 'device',
@@ -127,6 +180,7 @@ export const asyncRouterMap = [
       }
     ]
   },
+
   {
     path: '/security',
     component: Layout,
@@ -135,12 +189,6 @@ export const asyncRouterMap = [
     alwaysShow: true,
     meta: { title: '安全评估', icon: 'security', roles: [2] },
     children: [
-      {
-        path: 'task',
-        name: 'task',
-        component: () => import('@/views/security/task'),
-        meta: { title: '评估任务', icon: 'tasks', roles: [2] }
-      },
       {
         path: 'record',
         name: 'record',
@@ -157,12 +205,6 @@ export const asyncRouterMap = [
     alwaysShow: true,
     meta: { title: '三小场所', icon: 'establishments', roles: [2] },
     children: [
-      {
-        path: 'task',
-        name: 'task',
-        component: () => import('@/views/establishments/task'),
-        meta: { title: '检测任务', icon: 'tasks', roles: [2] }
-      },
       {
         path: 'record',
         name: 'record',

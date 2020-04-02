@@ -1,31 +1,29 @@
 <template>
-  <div>
-    <el-form ref="addForm" v-model="addForm" :rules="addRules">
-      <el-form-item label="具体地址：" prop="sname" label-width="110px">
-        <el-input
-          id="sname"
-          v-model.trim="addForm.sname"
-          clearable
-          type="text"
-          placeholder="请输入项目具体地址"
-          @input="placeAutoInput('sname')"
-          @keyup.delete.native="deletePlace('sname')"
-          @clear="clearAddress"
-        >
-          <i
-            slot="suffix"
-            class="el-icon-location-outline el-input__icon"
-            title="具体地址"
-          />
-        </el-input>
-        <div>
+  <div style="position: relative">
+    <el-form-item label="项目地址：" prop="sname" size="mini">
+      <el-input
+        id="sname"
+        v-model.trim="addForm.sname"
+        clearable
+        type="text"
+        placeholder="请输入项目具体地址"
+        @input="placeAutoInput('sname')"
+        @keyup.delete.native="deletePlace('sname')"
+        @clear="clearAddress"
+      >
+        <i
+          slot="suffix"
+          class="el-icon-location-outline el-input__icon"
+          title="具体地址"
+        />
+      </el-input>
+      <div class="map-wrapper">
+        <div class="btn-toggle-map">
           <el-button v-show="addForm.sname" type="text" size="mini" @click.stop="snameMapShow = !snameMapShow">{{ snameMapShow ? '收起地图':'展开地图' }}<i :class="snameMapShow ?'el-icon-caret-top':'el-icon-caret-bottom'" /></el-button>
         </div>
-        <div v-show="snameMapShow && addForm.sname" class="map-wrapper">
-          <div id="sNameMap" class="map-self" />
-        </div>
-      </el-form-item>
-    </el-form>
+        <div v-show="snameMapShow && addForm.sname" id="sNameMap" class="map-self" />
+      </div>
+    </el-form-item>
     <!--地址模糊搜索子组件-->
     <place-search
       v-if="resultVisible"
@@ -60,7 +58,7 @@ export default {
   watch: {
     position: {
       handler(item) {
-        if (item) {
+        if (item&&item.lng) {
           this.resultVisible = false
           this.snameMapShow = true
           if(item) {
@@ -114,6 +112,8 @@ export default {
   },
   mounted() {
     // document添加onclick监听，点击时隐藏地址下拉浮窗
+    document.addEventListener('click', this.hiddenMap, false)
+    // document添加onclick监听，点击时隐藏地址下拉浮窗
     document.addEventListener('click', this.hidePlaces, false)
     // window添加onresize监听，当改变窗口大小时同时修改地址下拉浮窗的位置
     window.addEventListener('resize', this.changePos, false)
@@ -122,6 +122,9 @@ export default {
     document.removeEventListener('click', this.hidePlaces, false)
   },
   methods: {
+    hiddenMap(event) {
+      if(event.target !== 'canvas.amap-labels') this.snameMapShow = false
+    },
     parseNumer(num) {
       return parseFloat(((num * 100000)/100000).toFixed(6))
     },
@@ -154,8 +157,6 @@ export default {
             this.result = result.tips
             this.inputId = inputId
             this.resultVisible = true
-            console.log(1);
-
           }
         })
       })
@@ -188,7 +189,7 @@ export default {
         this.resultVisible = false
         if (item.location && item.location.getLat()) {
           this.pickAddress(this.inputId, item.location.getLng(), item.location.getLat())
-          this.$refs.addForm.validateField(this.inputId)
+          // this.$refs.addForm.validateField(this.inputId)
           this.$emit('pos',this.addForm)
         } else {
           this.geocoder(item.name, this.inputId)
@@ -243,7 +244,7 @@ export default {
               // 如果地理编码返回的粗略经纬度数据不需要在地图上显示，就不需要调用地图选址，且要隐藏地图
               // this.pickAddress("sname", geocode[0].location.getLng(), geocode[0].location.getLat());
               this.snameMapShow = false
-              this.$refs.addForm.validateField('sname')
+              // this.$refs.addForm.validateField('sname')
             }
           }
         }
@@ -254,14 +255,30 @@ export default {
       if (inputId === 'sname') {
         this.addForm.slat = 0
         this.addForm.slon = 0
-        this.$refs.addForm.validateField('sname')
+        // this.$refs.addForm.validateField('sname')
       }
     }
   }
 }
 </script>
-<style>
-    .map-wrapper .map-self{
-      height: 150px;
+<style lang="scss" scopde >
+    .map-wrapper {
+      position: absolute;
+      z-index: 1000;
+      top:23px;
+      left: 0;
+      width: 100%;
+      /deep/.el-button--mini, .el-button--mini.is-round {
+        padding: 0 8px;
+      }
+      .btn-toggle-map {
+        text-align: right;
+      }
+      .map-self {
+        border: 1px solid #C0C4CC;
+        border-radius: 4px;
+        height: 200px;
+        width: 100%;
+      }
     }
 </style>

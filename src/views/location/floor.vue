@@ -6,6 +6,7 @@
       </el-select>
       <el-button v-if="false" v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-search" @click="onSearch">搜索</el-button>
       <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-plus" @click="openDialogFloorAdd">新建楼层</el-button>
+      <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-plus" @click="batchAddFloor">批量新建楼层</el-button>
       <el-button v-waves :disabled="multipleSelection.length===0" class="filter-item" type="danger" icon="el-icon-delete" @click="onFloorsDelete">删除楼层</el-button>
     </div>
 
@@ -66,6 +67,26 @@
         <el-button v-waves :loading="isDialogAddFloorLoadingShow" type="primary" @click.native="onFloorAdd">确定</el-button>
       </div>
     </el-dialog>
+    <!-- 批量添加楼层 -->
+    <el-dialog :visible.sync="isDialogBatchAddFloorShow" :append-to-body="true" :close-on-click-modal="false" title="批量新建楼层">
+      <el-form ref="formBatchAddFloor" :model="requestParam_batchAddFloor" :rules="FloorInfoRules2" label-width="100px">
+        <el-form-item label="所属建筑" class="dialog-form-item" prop="building_id">
+          <el-select v-model="requestParam_batchAddFloor.building_id" placeholder="请选择所属建筑">
+            <el-option v-for="item in dialogBuildingOptions" :key="item.building_id" :label="item.building" :value="item.building_id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="起始楼层" class="dialog-form-item" prop="start_index">
+          <el-input v-model="requestParam_batchAddFloor.start_index" type="text" />
+        </el-form-item>
+        <el-form-item label="结束楼层" class="dialog-form-item" prop="end_index">
+          <el-input v-model="requestParam_batchAddFloor.end_index" type="text" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer" style="margin-right: 20px;margin-top: 0;">
+        <el-button v-waves @click.native="isDialogBatchAddFloorShow = false">取消</el-button>
+        <el-button v-waves :loading="isDialogAddFloorLoadingShow" type="primary" @click.native="onBatchFloorAdd">确定</el-button>
+      </div>
+    </el-dialog>
 
     <el-dialog :visible.sync="isDialogEditFloorShow" :append-to-body="true" :close-on-click-modal="false" title="编辑楼层">
       <el-form ref="formEditFloor" :model="requestParam_eidtFloor" :rules="FloorInfoRules" label-width="100px">
@@ -86,7 +107,7 @@
 
 <script>
 import { getBuildingList } from '@/api/building'
-import { getFloorInfoList, addFloor, deleteFloor, updateFloor } from '@/api/floor'
+import { getFloorInfoList, addFloor, batchAddFloor, deleteFloor, updateFloor } from '@/api/floor'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -105,6 +126,7 @@ export default {
       floorInfoList: [],
 
       isFloorInfoListLoadingShow: false,
+      isDialogBatchAddFloorShow: false,
       isDialogAddFloorShow: false,
       isDialogAddFloorLoadingShow: false,
       isDialogEditFloorShow: false,
@@ -122,6 +144,11 @@ export default {
         floor: undefined,
         label: undefined
       },
+      requestParam_batchAddFloor: {
+        building_id: undefined,
+        start_index: undefined,
+        end_index: undefined
+      },
       requestParam_eidtFloor: {
         floor_id: undefined,
         floor: undefined,
@@ -130,6 +157,21 @@ export default {
 
       FloorInfoRules: {
         floor: [{ required: true, trigger: 'change', message: '请输入楼层名称' }],
+        building_id: [{ required: true, trigger: 'change', message: '请选择所属建筑' }]
+      },
+      FloorInfoRules2: {
+        start_index: [{ required: true, trigger: 'blur', message: '请输入起始楼层' }],
+        end_index: [{ required: true, trigger: 'blur', validator: (rule, value, callback) => {
+          if (value === undefined || value === '') {
+            callback(new Error('请输入结束楼层'))
+          } else {
+            if (value * 1 <= this.requestParam_batchAddFloor.start_index * 1) {
+              callback(new Error('结束楼层不能小于起始楼层'))
+            } else {
+              callback()
+            }
+          }
+        } }],
         building_id: [{ required: true, trigger: 'change', message: '请选择所属建筑' }]
       }
     }
@@ -216,6 +258,15 @@ export default {
         })
       })
     },
+    batchAddFloor() {
+      this.requestParam_batchAddFloor.start_index = undefined
+      this.requestParam_batchAddFloor.building_id = undefined
+      this.requestParam_batchAddFloor.end_index = undefined
+      if (this.$refs.formBatchAddFloor !== undefined) {
+        this.$refs.formBatchAddFloor.resetFields()
+      }
+      this.isDialogBatchAddFloorShow = true
+    },
     /**
      * @Description: 打开楼层添加对话框
      * @Date: 2019/6/28
@@ -253,10 +304,38 @@ export default {
             this.isDialogAddFloorLoadingShow = false
             this.getFloorInfoList()
             this.$message({
-              message: '新建成功',
+              message: '批量新建成功',
               type: 'success'
             })
             this.isDialogAddFloorShow = false
+          }).catch(err => {
+            this.isDialogAddFloorLoadingShow = false
+            console.error(err)
+          })
+        }
+      })
+    },
+    /**
+     * @Description: 确认批量楼层添加
+     * @Date: 2020/3/30
+     **/
+    onBatchFloorAdd() {
+      this.$refs.formBatchAddFloor.validate(valid => {
+        if (valid) {
+          this.isDialogAddFloorLoadingShow = true
+          const Params = {
+            start_index: this.requestParam_batchAddFloor.start_index,
+            building_id: this.requestParam_batchAddFloor.building_id,
+            end_index: this.requestParam_batchAddFloor.end_index
+          }
+          batchAddFloor(Params).then(() => {
+            this.isDialogAddFloorLoadingShow = false
+            this.getFloorInfoList()
+            this.$message({
+              message: '新建成功',
+              type: 'success'
+            })
+            this.isDialogBatchAddFloorShow = false
           }).catch(err => {
             this.isDialogAddFloorLoadingShow = false
             console.error(err)

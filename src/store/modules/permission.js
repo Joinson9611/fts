@@ -39,7 +39,8 @@ const permission = {
 
   state: {
     routers: constantRoutes,
-    addRouters: []
+    addRouters: [],
+    roles: []
   },
 
   mutations: {
@@ -50,6 +51,9 @@ const permission = {
     REMOVE_ROUTERS: (state) => {
       state.addRouters = []
       state.routers = constantRoutes
+    },
+    SET_ROLES: (state, roles) => {
+      state.roles = roles
     }
   },
 
@@ -61,6 +65,7 @@ const permission = {
         const accessedRouters = filterAsyncRouter(asyncRouterMap, roles)
         // 存储路由表到本地
         commit('SET_ROUTERS', accessedRouters)
+        commit('SET_ROLES', roles)
         resolve()
       })
     },

@@ -1,5 +1,7 @@
 <template>
-  <div class="project">项目首页(待写中...)</div>
+  <div>
+    项目详情
+  </div>
 </template>
 
 <script>

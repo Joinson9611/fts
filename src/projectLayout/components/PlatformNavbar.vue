@@ -2,7 +2,7 @@
   <div class="navbar">
     <div class="left-menu">
       <template>
-        <span class="left-menu-item">利盾消防检查系统</span>
+        <span class="left-menu-item"><a @click="$router.push('/project')">利盾消防检查系统</a> / <span style="color:#909399">{{ projectType }}</span></span>
       </template>
     </div>
     <div class="right-menu">
@@ -15,10 +15,10 @@
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <el-dropdown-item>
-            <span style="display:block;" @click="userInfoVisible = true">信息修改</span>
+            <span style="display:block;" @click="onProjectTypeSelect">重选项目类型</span>
           </el-dropdown-item>
           <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">退出登录</span>
+            <span style="display:block;text-align:center" @click="logout">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -36,6 +36,7 @@
 import userInfo from '@/views/userinfo/password'
 import { mapGetters } from 'vuex'
 import Screenfull from '@/components/Screenfull'
+import Cookies from 'js-cookie'
 
 export default {
   components: {
@@ -48,12 +49,25 @@ export default {
     }
   },
   computed: {
+    projectType() {
+      const typeName = ['消防检测及建筑防火', '维保', '电气检测', '安全评估', '三小场所']
+      return typeName[Cookies.get('project_type_id') - 1]
+    },
     ...mapGetters({
       nick_name: 'name',
       user_image: 'user_image'
     })
   },
   methods: {
+    onProjectTypeSelect() {
+      this.$store.dispatch('user/reelectProjectType').then(() => {
+        this.$router.push({
+          path: '/project'
+        })
+      }).catch(err => {
+        console.error(err)
+      })
+    },
     imgErr(event) {
       const img = event.srcElement
       img.src = process.env.VUE_APP_HEAD_IMAGE_URL + '0.png?imageView2/1/w/80/h/80'

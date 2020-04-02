@@ -1,6 +1,7 @@
 import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken, setUserID, removeUserID, getUserID } from '@/utils/auth'
+import { getToken, setToken, removeToken, setUserID, removeUserID, getUserID, getProjectTypeId, setProjectTypeId, getProjectId, setProjectId } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import Cookies from 'js-cookie'
 import md5 from '@/utils/md5'
 
 const state = {
@@ -9,18 +10,21 @@ const state = {
   name: '',
   avatar: '',
   user_name: '',
-  selected_project_id: undefined,
+  selected_project_id: getProjectId(),
+  project_type_id: getProjectTypeId(),
   level: undefined,
   project_name: '',
   roles: []
 }
-
 const mutations = {
   SET_USER_ID: (state, userId) => {
     state.user_id = userId
   },
   SET_SELECTED_PROJECT_ID: (state, project_id) => {
     state.selected_project_id = project_id
+  },
+  SET_PROJECT_TYPE_ID: (state, project_type_id) => {
+    state.project_type_id = project_type_id
   },
   SET_TOKEN: (state, token) => {
     state.token = token
@@ -83,6 +87,7 @@ const actions = {
         commit('SET_USER_NAME', user_name)
         commit('SET_LEVEL', level)
         commit('SET_NAME', nickname)
+        commit('SET_ROLES', [])
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -97,25 +102,56 @@ const actions = {
         if (!data) {
           reject('验证失败，请重新登录')
         }
-        const { nickname, level, selected_project_id, company_id, user_id } = data
+        const { nickname, company_id, user_id } = data
         commit('SET_USER_IMAGE', `${process.env.VUE_APP_FILE_API}/image/user_head/${user_id}.jpg`)
         commit('SET_COMPANY_ID', company_id)
-        commit('SET_ROLES', [level])
-        commit('SET_SELECTED_PROJECT_ID', selected_project_id)
+        // commit('SET_ROLES', [level])
+        commit('SET_SELECTED_PROJECT_ID', Cookies.get('project_id'))
         commit('SET_NAME', nickname)
-        resolve(data)
+        let roles = []
+        const project_type_id = Cookies.get('project_type_id')
+        if (project_type_id === '1') {
+          roles = [1]
+        }
+        commit('SET_ROLES', roles)
+        resolve(roles)
       }).catch(error => {
         reject(error)
       })
     })
   },
-
-  // 存储选择的项目id
-  SelectProject({ commit }, info) {
+  // 项目选择
+  SelectProject({ commit }, id) {
     return new Promise(resolve => {
-      commit('SET_SELECTED_PROJECT_ID', info.project_id)
-      commit('SET_SELECTED_PROJECT_NAME', info.name)
-      commit('SET_ROLES', [])
+      setProjectId(id)
+      commit('SET_SELECTED_PROJECT_ID', id)
+      resolve()
+    })
+  },
+
+  // 项目类型选择
+  selectProjectType({ commit }, pid) {
+    return new Promise(resolve => {
+      commit('SET_PROJECT_TYPE_ID', pid)
+      setProjectTypeId(pid)
+      resolve()
+    })
+  },
+
+  // 重选项目
+  reelectProject({ commit }) {
+    return new Promise(resolve => {
+      Cookies.set('project_id', '')
+      commit('SET_SELECTED_PROJECT_ID', '')
+      resolve()
+    })
+  },
+
+  // 重选项目类型
+  reelectProjectType({ commit }) {
+    return new Promise(resolve => {
+      Cookies.set('project_type_id', '')
+      commit('SET_PROJECT_TYPE_ID', '')
       resolve()
     })
   },

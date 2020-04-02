@@ -15,16 +15,14 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
   // set page title
   document.title = getPageTitle(to.meta.title)
-
   // determine whether the user has logged in
   const hasToken = getToken()
-
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
-      next({ path: '/projects' })
+      next({ path: '/home' })
       NProgress.done()
-    } else if (to.path === '/projects') {
+    } else if (['/home', '/project', '/mangment', '/project/project1', '/project/project2', '/project/project3', '/project/project4', '/project/project5'].includes(to.path)) {
       store.dispatch('user/getInfo').then(() => { // 拉取用户信息
         next()
       }).catch(error => {
@@ -35,11 +33,8 @@ router.beforeEach((to, from, next) => {
         NProgress.done()
       })
     } else {
-      if (store.getters.roles.length !== 0) {
-        next()
-      } else {
-        store.dispatch('user/getInfo2').then(() => { // 拉取用户信息
-          const roles = store.getters.roles
+      if (store.getters.roles.length === 0) {
+        store.dispatch('user/getInfo2').then((roles) => { // 拉取用户信息
           // 根据roles权限生成可访问的路由表
           store.dispatch('GenerateRoutes', { roles }).then(() => {
           // 动态添加可访问路由表
@@ -61,6 +56,8 @@ router.beforeEach((to, from, next) => {
           next(`/login?redirect=${to.path}`)
           NProgress.done()
         })
+      } else {
+        next()
       }
     }
   } else {

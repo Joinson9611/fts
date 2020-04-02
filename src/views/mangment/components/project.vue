@@ -129,7 +129,6 @@
         </div>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
@@ -139,6 +138,7 @@ import { getProjectList, addProject, editProject, deleteProject, selectProject }
 import Pagination from '@/components/Pagination'
 import amap from '@/components/amap'
 import { mapGetters } from 'vuex'
+
 export default {
   name: 'Project',
   components: {
@@ -361,16 +361,7 @@ export default {
       this.tempEditProject.latitude = pos.slat
       this.tempEditProject.address = pos.sname
     },
-    // getProvinces() {
-    //   getProvinces().then(res => {
-    //     this.provinceOptions = res.data
-    //   }).catch(err => {
-    //     console.error(err)
-    //   })
-    // },
     init() {
-      // this.paramsAddProject.province_id = undefined
-      // this.paramsAddProject.city_id = undefined
       this.paramsAddProject.name = undefined
       this.paramsAddProject.address = undefined
       this.paramsAddProject.longitude = undefined
@@ -378,39 +369,6 @@ export default {
       this.cityOptions = []
       this.districtOptions = []
     },
-    // 省份选项改变
-    // provinceChange(province_id) {
-    //   this.paramsAddProject.city_id = undefined
-    //   this.paramsAddProject.district_id = undefined
-    //   this.districtOptions = []
-    //   this.cityOptions = []
-    //   this.paramsEditProject.city_id = undefined
-    //   this.paramsEditProject.district_id = undefined
-    //   this.districtEditOptions = []
-    //   this.cityEditOptions = []
-    //   getCities({ province_id }).then(res => {
-    //     this.cityOptions = res.data
-    //     this.cityEditOptions = res.data
-    //   }).catch(err => {
-    //     console.error(err)
-    //   })
-    // },
-    // 市级选项改变
-    // cityChange(city_id) {
-    //   this.districtOptions = []
-    //   this.paramsAddProject.district_id = undefined
-    //   this.districtEditOptions = []
-    //   this.paramsEditProject.district_id = undefined
-    //   getDistricts({ city_id }).then(res => {
-    //     this.districtOptions = res.data
-    //     this.districtEditOptions = res.data
-    //   }).catch(err => {
-    //     console.error(err)
-    //   })
-    // },
-    // 区级选项改变
-    // districtChange(did) {
-    // },
     newProject() {
       this.isProjectDialogVisible = true
       this.isMapOpen = true
@@ -511,19 +469,4 @@ export default {
   /deep/.el-drawer__body{
     padding: 0 14px 14px 14px;
   }
-  // .newProject{
-  //   display: flex;
-  //   flex-direction: column;
-  //   height: 100%;
-  //   form{
-  //     flex: 1;
-  //   }
-  //   button {
-  //     flex: 0 0 100px;
-  //   }
-  //   .dialog-footer{
-  //     display: flex;
-  //     justify-content: flex-end;
-  //   }
-  // }
 </style>

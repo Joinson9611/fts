@@ -7,7 +7,7 @@ import qs from 'qs'
  **/
 export function getBuildingInfoList(Params) {
   return request({
-    url: '/buildings/index',
+    url: '/building1s/index',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -19,7 +19,7 @@ export function getBuildingInfoList(Params) {
  **/
 export function getBuildingList(params) {
   return request({
-    url: '/buildings/index2',
+    url: '/building1s/index2',
     method: 'post',
     data: qs.stringify(params)
   })
@@ -31,7 +31,7 @@ export function getBuildingList(params) {
  **/
 export function deleteBuildings(Params) {
   return request({
-    url: '/buildings/delete',
+    url: '/building1s/delete',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -43,7 +43,7 @@ export function deleteBuildings(Params) {
  **/
 export function addBuilding(Params) {
   return request({
-    url: '/buildings/save',
+    url: '/building1s/save',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -55,7 +55,7 @@ export function addBuilding(Params) {
  **/
 export function getBuildingInfo(Params) {
   return request({
-    url: '/buildings/read',
+    url: '/building1s/read',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -67,7 +67,7 @@ export function getBuildingInfo(Params) {
  **/
 export function updateBuilding(Params) {
   return request({
-    url: '/buildings/update',
+    url: '/building1s/update',
     method: 'post',
     data: qs.stringify(Params)
   })
