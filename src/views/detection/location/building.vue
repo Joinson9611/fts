@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { getBuildingInfoList, deleteBuildings, addBuilding, updateBuilding } from '@/api/building'
+import { getBuildingInfoList, deleteBuildings, addBuilding, updateBuilding } from '@/api/building1'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'

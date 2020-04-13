@@ -118,10 +118,6 @@
       </template>
       <div class="project">
         <el-form ref="newProjectRuleForm" :model="paramsNewProjects" :rules="projectTules">
-          <!-- <div class="button">
-            <el-button type="success" plain @click="exportTemp">导出项目信息</el-button>
-            <el-button type="success" plain @click="dialogImportVisible = true">导入项目信息</el-button>
-          </div> -->
           <div class="title">项目信息</div>
           <div class="projectInfo">
             <el-row>
@@ -160,7 +156,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <amap v-if="mapOpen" :position="pos" @pos="getPos" />
+                <amap :position="pos" @getPos="getPos" />
                 <el-form-item label="建筑类型：" class="dialog-form-item" prop="building_type" :size="size">
                   <el-input v-model="paramsNewProjects.building_type" class="dialog-form-item" type="text" />
                 </el-form-item>
@@ -170,8 +166,8 @@
                 <el-form-item label="建筑楼层：" class="dialog-form-item" prop="building_floors" :size="size">
                   <el-input v-model="paramsNewProjects.building_floors" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
                 </el-form-item>
-                <el-form-item label="建筑高度(米)：" class="dialog-form-item" prop="building_hight" :size="size">
-                  <el-input v-model="paramsNewProjects.building_hight" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
+                <el-form-item label="建筑高度(米)：" class="dialog-form-item" prop="building_height" :size="size">
+                  <el-input v-model="paramsNewProjects.building_height" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
                 </el-form-item>
                 <el-form-item label="联系人：" class="dialog-form-item" prop="contacts" :size="size">
                   <el-input v-model="paramsNewProjects.contacts" class="dialog-form-item" type="text" />
@@ -598,9 +594,9 @@ export default {
         name: '/'
       },
       pos: {
-        lng: undefined,
-        lat: undefined,
-        district: undefined
+        sname: '', // 地点名称
+        slat: 0, // 纬度
+        slon: 0 // 经度
       },
       tempEditProject: {
         longitude: undefined,
@@ -666,7 +662,7 @@ export default {
         total_building_area: [{ required: true, message: '请填写建筑总面积', trigger: 'blur' }],
         building_type: [{ required: true, message: '请填写建筑类型', trigger: 'blur' }],
         building_floors: [{ required: true, message: '请填写建筑楼层', trigger: 'blur' }],
-        building_hight: [{ required: true, message: '请填写建筑高度', trigger: 'blur' }],
+        building_height: [{ required: true, message: '请填写建筑高度', trigger: 'blur' }],
         testing_time: [{ required: true, message: '请填写检测日期', trigger: 'change' }],
         testing_completion_time: [{ required: true, message: '请填写检测完成日期', trigger: 'change' }],
         contacts: [{ required: true, message: '请填写联系人', trigger: 'blur' }],
@@ -717,7 +713,7 @@ export default {
         total_building_area: undefined,	// 建筑总面积(平方米)
         building_type: undefined,	// 建筑类型
         building_floors: undefined,	// 建筑楼层
-        building_hight: undefined,		// 建筑高度(米)
+        building_height: undefined,		// 建筑高度(米)
         testing_time: undefined, // 检测日期
         testing_completion_time: undefined, // 检测完成日期
         contacts: undefined,	// 联系人
@@ -1247,8 +1243,9 @@ export default {
       detailProjectFire({ project_id }).then(res => {
         const obj = {}
         const data = res.data
-        this.pos.lng = data.longitude
-        this.pos.lat = data.latitude
+        this.pos.slon = data.longitude
+        this.pos.slat = data.latitude
+        this.pos.sname = data.address
         for (const key in data) {
           if (!['project_id', 'id', 'testing_scheme', 'testing_contract_copy', 'testing2_contract_copy', 'is_finished', 'extension', 'status'].includes(key)) {
             obj[key] = data[key]
@@ -1335,8 +1332,7 @@ export default {
       }).then(() => {
         this.isProjectListLoadingShow = true
         const deleteParam = {
-          project_id_list: this.multipleSelection.map(item => item.project_id).toString(),
-          project_id: this.selected_project_id
+          project_id_list: this.multipleSelection.map(item => item.project_id).toString()
         }
         deleteProjectFire(deleteParam).then(() => {
           this.isProjectListLoadingShow = false

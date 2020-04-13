@@ -3,11 +3,11 @@ import qs from 'qs'
 
 /**
  * @Description: 获取楼层信息列表
- * @Date: 2019/6/28
+ * @Date: 2020/4/10
  **/
 export function getFloorInfoList(Params) {
   return request({
-    url: '/floor1s/index',
+    url: '/floor4s/index',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -15,11 +15,11 @@ export function getFloorInfoList(Params) {
 
 /**
  * @Description: 获取指定建筑的楼层列表(下拉菜单)
- * @Date: 2019/6/28
+ * @Date: 2020/4/10
  **/
 export function getFloorList(Params) {
   return request({
-    url: '/floor1s/index2',
+    url: '/floor4s/index2',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -27,11 +27,11 @@ export function getFloorList(Params) {
 
 /**
  * @Description: 添加楼层
- * @Date: 2019/6/28
+ * @Date: 2020/4/10
  **/
 export function addFloor(Params) {
   return request({
-    url: '/floor1s/save',
+    url: '/floor4s/save',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -43,7 +43,7 @@ export function addFloor(Params) {
  **/
 export function batchAddFloor(Params) {
   return request({
-    url: '/floor1s/save2',
+    url: '/floor4s/save2',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -51,11 +51,11 @@ export function batchAddFloor(Params) {
 
 /**
  * @Description: 删除指定ID的楼层
- * @Date: 2019/6/28
+ * @Date: 2020/4/10
  **/
 export function deleteFloor(Params) {
   return request({
-    url: '/floor1s/delete',
+    url: '/floor4s/delete',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -63,11 +63,11 @@ export function deleteFloor(Params) {
 
 /**
  * @Description: 修改对应ID 的楼层信息
- * @Date: 2019/6/28
+ * @Date: 2020/4/10
  **/
 export function updateFloor(Params) {
   return request({
-    url: '/floor1s/update',
+    url: '/floor4s/update',
     method: 'post',
     data: qs.stringify(Params)
   })

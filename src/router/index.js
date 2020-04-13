@@ -75,10 +75,10 @@ export const constantRoutes = [
       component: () => import('@/views/detection/project')
     }, {
       path: 'project4',
-      component: () => import('@/views/detection/project')
+      component: () => import('@/views/security/project')
     }, {
       path: 'project5',
-      component: () => import('@/views/detection/project')
+      component: () => import('@/views/establishments/project')
     }]
   },
   // {
@@ -104,8 +104,9 @@ export const constantRoutes = [
     component: Layout,
     children: [{
       path: 'info',
+      name: 'projectInfo',
       component: () => import('@/views/projectInfo'),
-      meta: { title: '项目详情', icon: 'building' }
+      meta: { title: '项目详情', icon: 'project' }
     }]
   },
   {
@@ -117,9 +118,9 @@ export const constantRoutes = [
 
 export const asyncRouterMap = [
   {
-    path: '/location',
+    path: '/location1',
     component: Layout,
-    redirect: 'noredirect',
+    redirect: 'noRedirect',
     name: 'Location',
     alwaysShow: true,
     meta: { title: '建筑管理', icon: 'location', roles: [1] },
@@ -127,14 +128,28 @@ export const asyncRouterMap = [
       {
         path: 'building',
         name: 'Building',
-        component: () => import('@/views/location/building'),
+        component: () => import('@/views/detection/location/building'),
         meta: { title: '建筑物', icon: 'building', roles: [1] }
       },
       {
         path: 'floor',
         name: 'Floor',
         meta: { title: '楼层', icon: 'floor', roles: [1] },
-        component: () => import('@/views/location/floor')
+        component: () => import('@/views/detection/location/floor')
+      }
+    ]
+  },
+  {
+    path: '/location4',
+    component: Layout,
+    // redirect: 'noRedirect',
+    // name: 'Location',
+    children: [
+      {
+        path: 'building',
+        name: 'Building',
+        component: () => import('@/views/security/building'),
+        meta: { title: '建筑物', icon: 'building', roles: [4] }
       }
     ]
   },
@@ -155,7 +170,7 @@ export const asyncRouterMap = [
     children: [{
       path: 'record',
       component: () => import('@/views/detection/record'),
-      meta: { title: '检测记录', icon: 'devices', roles: [1] }
+      meta: { title: '检测记录', icon: 'record', roles: [1] }
     }]
   },
   {
@@ -181,34 +196,34 @@ export const asyncRouterMap = [
     ]
   },
 
-  {
-    path: '/security',
-    component: Layout,
-    redirect: 'noredirect',
-    name: 'security',
-    alwaysShow: true,
-    meta: { title: '安全评估', icon: 'security', roles: [2] },
-    children: [
-      {
-        path: 'record',
-        name: 'record',
-        meta: { title: '评估记录', icon: 'record', roles: [2] },
-        component: () => import('@/views/security/record')
-      }
-    ]
-  },
+  // {
+  //   path: '/security',
+  //   component: Layout,
+  //   redirect: 'noredirect',
+  //   name: 'security',
+  //   alwaysShow: true,
+  //   meta: { title: '安全评估', icon: 'security', roles: [4] },
+  //   children: [
+  //     {
+  //       path: 'record',
+  //       name: 'record',
+  //       meta: { title: '评估记录', icon: 'record', roles: [4] },
+  //       component: () => import('@/views/security/record')
+  //     }
+  //   ]
+  // },
   {
     path: '/establishments',
     component: Layout,
     redirect: 'noredirect',
     name: 'establishments',
     alwaysShow: true,
-    meta: { title: '三小场所', icon: 'establishments', roles: [2] },
+    meta: { title: '三小场所', icon: 'establishments', roles: [5] },
     children: [
       {
         path: 'record',
         name: 'record',
-        meta: { title: '检测记录', icon: 'record', roles: [2] },
+        meta: { title: '检测记录', icon: 'record', roles: [5] },
         component: () => import('@/views/establishments/record')
       }
     ]

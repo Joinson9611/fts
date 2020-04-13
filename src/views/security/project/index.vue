@@ -1,205 +1,240 @@
 <template>
   <div class="app-container">
-
-    <div class="filter-container">
-      <!--新建任务-->
-      <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-plus" @click="openNewTaskDialog">新建任务</el-button>
-      <!--删除按钮-->
-      <el-button v-waves :disabled="multipleSelection.length===0" class="filter-item" type="danger" icon="el-icon-delete" @click="deleteTasks">删除任务</el-button>
-    </div>
-
-    <!--任务列表-->
-    <el-table
-      v-loading="isTaskListLoadingShow"
-      :data="TaskList"
-      element-loading-text="Loading"
-      style="width: 100%;"
-      border
-      fit
-      highlight-current-row
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column
-        type="selection"
-        align="center"
-        width="50"
-      />
-      <el-table-column label="序号" align="center" width="70">
-        <template slot-scope="scope"><span>{{ scope.$index+(paramsGetTasks.page - 1) * paramsGetTasks.limit + 1 }} </span></template>
-      </el-table-column>
-      <el-table-column label="任务名称" align="center">
-        <template slot-scope="scope">
-          <a style="color: #409EFF" @click="openEditTask(scope.row.task_id)"><i>{{ scope.row.name }}</i></a>
-        </template>
-      </el-table-column>
-      <el-table-column label="任务描述" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.label }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="负责人" align="center" width="120">
+    <!-- <div class="filter-container">
+      <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-plus" @click="openNewProjectDialog">新建项目</el-button>
+      <el-button v-waves :disabled="multipleSelection.length===0" class="filter-item" type="danger" icon="el-icon-delete" @click="deleteProjects">删除项目</el-button>
+    </div> -->
+    <el-card shadow="never" class="project-list" body-style="padding: 0;">
+      <div slot="header" class="clearfix">
+        <span style="line-height: 29px">项目列表</span>
+        <div class="button" style="float: right">
+          <!--新建-->
+          <el-button v-waves class="filter-item" style="margin-left: 10px" size="small" type="primary" icon="el-icon-plus" @click="openNewProjectDialog">新建项目</el-button>
+          <!--删除-->
+          <el-button v-waves :disabled="multipleSelection.length===0" size="small" class="filter-item" type="danger" icon="el-icon-delete" @click="deleteProjects">删除项目</el-button>
+        </div>
+      </div>
+      <!--项目列表-->
+      <el-table
+        v-loading="isProjectListLoadingShow"
+        :data="ProjectList"
+        element-loading-text="Loading"
+        style="width: 100%;"
+        border
+        fit
+        highlight-current-row
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column
+          type="selection"
+          align="center"
+          width="50"
+        />
+        <el-table-column label="序号" align="center" width="70">
+          <template slot-scope="scope"><span>{{ scope.$index+(paramsGetProjects.page - 1) * paramsGetProjects.limit + 1 }} </span></template>
+        </el-table-column>
+        <el-table-column label="项目名称" align="center">
+          <template slot-scope="scope">
+            <a style="color: #409EFF" @click="openEditProject(scope.row.project_id)"><i>{{ scope.row.name }}</i></a>
+          </template>
+        </el-table-column>
+        <el-table-column label="项目描述" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.label }}</span>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column label="负责人" align="center" width="120">
         <template slot-scope="scope">
           <span>{{ scope.row.leader | leader }}</span>
         </template>
-      </el-table-column>
-      <el-table-column label="评估时段" align="center" width="190">
-        <template slot-scope="scope">
-          <span>{{ `${getTime(scope.row.testting_time)}~${ getTime(scope.row.testing_completion_time)}` }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="完成时间" align="center" width="110">
-        <template slot-scope="scope">
-          <span>{{ scope.row.finished_time? getTime(scope.row.finished_time) : '/' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="是否完成" align="center" width="80">
-        <template slot-scope="scope">
-          <span :style="{color:scope.row.is_finished? '#67C23A':'#F56C6C'}">{{ isFinished[scope.row.is_finished] }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        align="center"
-        label="操作"
-        width="102"
-      >
-        <template slot-scope="scope" class="tab-btn">
-          <el-button
-            class="btn"
-            type="primary"
-            size="mini"
-            plain
-            @click="checkReport(scope.row)"
-          >
-            查看报告
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!--页码导航-->
-    <pagination v-show="total>0" :total="total" :page.sync="paramsGetTasks.page" :limit.sync="paramsGetTasks.limit" @pagination="getTask" />
-
-    <!-- 新建检测任务的窗口 -->
+      </el-table-column> -->
+        <el-table-column label="评估时段" align="center" width="190">
+          <template slot-scope="scope">
+            <span>{{ `${getTime(scope.row.testing_time)}~${ getTime(scope.row.testing_completion_time)}` }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="完成时间" align="center" width="110">
+          <template slot-scope="scope">
+            <span>{{ scope.row.finished_time? getTime(scope.row.finished_time) : '/' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否完成" align="center" width="80">
+          <template slot-scope="scope">
+            <span :style="{color:scope.row.is_finished? '#67C23A':'#F56C6C'}">{{ isFinished[scope.row.is_finished] }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="操作"
+          width="200"
+        >
+          <template slot-scope="scope" class="tab-btn">
+            <el-button
+              class="btn"
+              type="primary"
+              size="mini"
+              plain
+              @click="checkReport(scope.row)"
+            >
+              查看报告
+            </el-button>
+            <el-button
+              class="btn"
+              type="primary"
+              size="mini"
+              @click="enterProject(scope.row.project_id)"
+            >
+              进入项目
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!--页码导航-->
+      <pagination v-show="total>0" :total="total" :page.sync="paramsGetProjects.page" :limit.sync="paramsGetProjects.limit" @pagination="getProject" />
+    </el-card>
+    <!-- 新建检测项目的窗口 -->
     <el-drawer
       ref="drawer"
-      :title="isEdit?'任务编辑': '新建检测任务'"
+      :title="isEdit?'项目编辑': '新建检测项目'"
       :visible.sync="isNewDialogShow"
       direction="ltr"
       size="100%"
       @closed="closeDialog"
     >
-      <div class="task">
-        <el-form ref="newTaskRuleForm" :model="paramsNewTasks" :rules="taskTules">
+      <template slot="title">
+        <div class="content">
+          {{ isEdit ? '新建项目' : '编辑项目' }}
+        </div>
+        <div class="button" style="text-align:right;margin-right:15px">
+          <el-button type="success" plain @click="exportTemp">导出项目信息</el-button>
+          <el-button type="success" plain @click="dialogImportVisible = true">导入项目信息</el-button>
+        </div>
+      </template>
+      <div class="project">
+        <el-form ref="newProjectRuleForm" :model="paramsNewProjects" :rules="taskTules">
+          <div class="title">项目信息</div>
           <el-row>
-            <el-col :span="11">
-              <el-form-item label="任务名称：" class="dialog-form-item" prop="name" :size="size">
-                <el-input v-model="paramsNewTasks.name" class="dialog-form-item" type="text" />
+            <el-col :span="12">
+              <el-form-item label="项目名称：" class="dialog-form-item" prop="name" :size="size">
+                <el-input v-model="paramsNewProjects.name" class="dialog-form-item" type="text" />
               </el-form-item>
-              <el-form-item label="任务描述：" class="dialog-form-item" prop="label" :size="size">
-                <el-input v-model="paramsNewTasks.label" class="dialog-form-item" type="text" />
+              <el-form-item label="项目描述：" class="dialog-form-item" prop="label" :size="size">
+                <el-input v-model="paramsNewProjects.label" class="dialog-form-item" type="text" />
               </el-form-item>
-              <el-form-item label="任务开始时间：" class="dialog-form-item" prop="testting_time" :size="size">
+              <amap :position="pos" @getPos="getPos" />
+              <el-form-item label="项目开始时间：" class="dialog-form-item" prop="testing_time" :size="size">
                 <el-date-picker
-                  v-model="paramsNewTasks.testting_time"
-                  placeholder="请选择任务开始时间"
+                  v-model="paramsNewProjects.testing_time"
+                  placeholder="请选择项目开始时间"
                   style="width: 100%;"
                   value-format="yyyy-MM-dd"
                 />
               </el-form-item>
-              <el-form-item label="任务结束时间：" class="dialog-form-item" prop="testing_completion_time" :size="size">
+              <el-form-item label="项目结束时间：" class="dialog-form-item" prop="testing_completion_time" :size="size">
                 <el-date-picker
-                  v-model="paramsNewTasks.testing_completion_time"
-                  placeholder="请选择任务结束时间"
+                  v-model="paramsNewProjects.testing_completion_time"
+                  placeholder="请选择项目结束时间"
                   style="width: 100%;"
                   value-format="yyyy-MM-dd"
                 />
               </el-form-item>
               <el-form-item label="委托单位：" class="dialog-form-item" prop="constructing_unit" :size="size">
-                <el-input v-model="paramsNewTasks.constructing_unit" class="dialog-form-item" type="text" />
+                <el-input v-model="paramsNewProjects.constructing_unit" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="委托单位联系电话：" class="dialog-form-item" prop="constructing_contact_number" :size="size">
-                <el-input v-model="paramsNewTasks.constructing_contact_number" oninput="value=value.replace(/[^\d.]/g,'')" class="dialog-form-item" type="text" />
+                <el-input v-model="paramsNewProjects.constructing_contact_number" oninput="value=value.replace(/[^\d.]/g,'')" class="dialog-form-item" type="text" />
+              </el-form-item>
+              <el-form-item label="委托单位联系人：" class="dialog-form-item" prop="constructing_contacts" :size="size">
+                <el-input v-model="paramsNewProjects.constructing_contacts" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="委托单位地址：" class="dialog-form-item" prop="constructing_address" :size="size">
-                <el-input v-model="paramsNewTasks.constructing_address" class="dialog-form-item" type="text" />
+                <el-input v-model="paramsNewProjects.constructing_address" class="dialog-form-item" type="text" />
               </el-form-item>
+              <!-- <el-form-item label="管理单位：" class="dialog-form-item" prop="management_unit" :size="size">
+                <el-input v-model="paramsNewProjects.management_unit" class="dialog-form-item" type="text" />
+              </el-form-item> -->
+            </el-col>
+            <el-col :span="12">
               <el-form-item label="统一社会信用代码：" class="dialog-form-item" prop="constructing_unit_code" :size="size">
-                <el-input v-model="paramsNewTasks.constructing_unit_code" class="dialog-form-item" type="text" />
+                <el-input v-model="paramsNewProjects.constructing_unit_code" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="设计单位：" class="dialog-form-item" prop="designed_unit" :size="size">
-                <el-input v-model="paramsNewTasks.designed_unit" class="dialog-form-item" type="text" />
+                <el-input v-model="paramsNewProjects.designed_unit" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="施工单位：" class="dialog-form-item" prop="construction_unit" :size="size">
-                <el-input v-model="paramsNewTasks.construction_unit" class="dialog-form-item" type="text" />
+                <el-input v-model="paramsNewProjects.construction_unit" class="dialog-form-item" type="text" />
               </el-form-item>
-              <el-form-item label="管理单位：" class="dialog-form-item" prop="management_unit" :size="size">
-                <el-input v-model="paramsNewTasks.management_unit" class="dialog-form-item" type="text" />
+              <el-form-item label="竣工图纸提供情况：" class="dialog-form-item" prop="asbuild_drawings" :size="size">
+                <el-input v-model="paramsNewProjects.asbuild_drawings" show-word-limit maxlength="25" class="dialog-form-item" type="text" />
               </el-form-item>
-              <el-form-item label="建筑地址：" class="dialog-form-item" prop="building_address" :size="size">
-                <el-input v-model="paramsNewTasks.building_address" class="dialog-form-item" type="text" />
+              <el-form-item label="竣工日期：" class="dialog-form-item" prop="asbuild_time" :size="size">
+                <el-date-picker
+                  v-model="paramsNewProjects.asbuild_time"
+                  placeholder="请选择竣工日期"
+                  style="width: 100%;"
+                  value-format="yyyy-MM-dd"
+                />
               </el-form-item>
-            </el-col>
-            <el-col :span="2" style="height:505px">
-              <div class="divider">
-                <el-divider direction="vertical" />
-              </div>
-            </el-col>
-            <el-col :span="11">
               <el-form-item label="消防验收日期：" class="dialog-form-item" prop="fire_acceptance_time" :size="size">
                 <el-date-picker
-                  v-model="paramsNewTasks.fire_acceptance_time"
+                  v-model="paramsNewProjects.fire_acceptance_time"
                   placeholder="请选择消防验收日期"
                   style="width: 100%;"
                   value-format="yyyy-MM-dd"
                 />
               </el-form-item>
-              <el-form-item label="建筑名称：" class="dialog-form-item" prop="building_name" :size="size">
-                <el-input v-model="paramsNewTasks.building_name" class="dialog-form-item" type="text" />
+              <!-- <el-form-item label="建筑名称：" class="dialog-form-item" prop="building_name" :size="size">
+                <el-input v-model="paramsNewProjects.building_name" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="占地面积：" class="dialog-form-item" prop="area" :size="size">
-                <el-input v-model="paramsNewTasks.area" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
+                <el-input v-model="paramsNewProjects.area" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
               </el-form-item>
               <el-form-item label="地上几层：" class="dialog-form-item" prop="building_floor1" :size="size">
-                <el-input v-model="paramsNewTasks.building_floor1" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
+                <el-input v-model="paramsNewProjects.building_floor1" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
               </el-form-item>
               <el-form-item label="地下几层：" class="dialog-form-item" prop="building_floor2" :size="size">
-                <el-input v-model="paramsNewTasks.building_floor2" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
+                <el-input v-model="paramsNewProjects.building_floor2" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
+              </el-form-item>
+              <el-form-item label="建筑地址：" class="dialog-form-item" prop="building_address" :size="size">
+                <el-input v-model="paramsNewProjects.building_address" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="建筑面积：" class="dialog-form-item" prop="building_area" :size="size">
-                <el-input v-model="paramsNewTasks.building_area" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
+                <el-input v-model="paramsNewProjects.building_area" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
               </el-form-item>
-              <el-form-item label="建筑高度(米)：" class="dialog-form-item" prop="building_hight" :size="size">
-                <el-input v-model="paramsNewTasks.building_hight" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
-              </el-form-item>
-              <el-form-item label="建筑类型：" class="dialog-form-item" prop="building_type" :size="size">
-                <el-select v-model="paramsNewTasks.building_type" filterable placeholder="所属建筑" style="width: 150px" clearable class="filter-item">
-                  <el-option v-for="item in buildingOptions" :key="item.building_type" :label="item.building_name" :value="item.building_type" />
+              <el-form-item label="建筑高度(米)：" class="dialog-form-item" prop="building_height" :size="size">
+                <el-input v-model="paramsNewProjects.building_height" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
+              </el-form-item> -->
+              <el-form-item label="建筑类型：" class="dialog-form-item" prop="building_type_id" :size="size">
+                <el-select v-model="paramsNewProjects.building_type_id" filterable placeholder="所属建筑" style="width: 150px" clearable class="filter-item">
+                  <el-option v-for="item in buildingOptions" :key="item.building_type_id" :label="item.building_name" :value="item.building_type_id" />
                 </el-select>
               </el-form-item>
-              <el-form-item label="耐火等级：" class="dialog-form-item" prop="fire_rating" :size="size">
-                <el-input v-model="paramsNewTasks.fire_rating" class="dialog-form-item" type="text" />
+              <!-- <el-form-item label="耐火等级：" class="dialog-form-item" prop="fire_rating" :size="size">
+                <el-input v-model="paramsNewProjects.fire_rating" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="使用功能 ：" class="dialog-form-item" prop="use_function" :size="size">
-                <el-input v-model="paramsNewTasks.use_function" class="dialog-form-item" type="text" />
-              </el-form-item>
+                <el-input v-model="paramsNewProjects.use_function" class="dialog-form-item" type="text" />
+              </el-form-item> -->
               <el-form-item label="评估范围 ：" class="dialog-form-item" prop="testing_scope" :size="size">
-                <el-input v-model="paramsNewTasks.testing_scope" class="dialog-form-item" type="text" />
+                <el-input v-model="paramsNewProjects.testing_scope" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="评估建筑面积(平方米) ：" class="dialog-form-item" prop="testing_area" :size="size">
-                <el-input v-model="paramsNewTasks.testing_area" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
+                <el-input v-model="paramsNewProjects.testing_area" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
               <el-form-item label="评估批文：" class="dialog-form-item" prop="testing_appvoval" :size="size">
-                <el-input v-model="paramsNewTasks.testing_appvoval" class="dialog-form-item" type="textarea" />
+                <el-input v-model="paramsNewProjects.testing_appvoval" class="dialog-form-item" type="textarea" />
               </el-form-item>
             </el-col>
           </el-row>
+          <div class="title">检测人员信息</div>
           <el-row>
             <el-col :span="24">
               <el-form-item label="项目负责人：" class="dialog-form-item" prop="leader" :size="size">
-                <el-select v-model="paramsNewTasks.leader" filterable value-key="user_id" placeholder="请选择项目负责人" style="width: 100%">
+                <el-select v-model="paramsNewProjects.leader" filterable value-key="user_id" placeholder="请选择项目负责人" style="width: 100%">
                   <el-option
                     v-for="item in userOptions"
                     :key="item.user_id"
@@ -213,7 +248,7 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label="审核人：" class="dialog-form-item" prop="auditor" :size="size">
-                <el-select v-model="paramsNewTasks.auditor" filterable value-key="user_id" placeholder="请选择项目负责人" style="width: 100%">
+                <el-select v-model="paramsNewProjects.auditor" filterable value-key="user_id" placeholder="请选择项目负责人" style="width: 100%">
                   <el-option
                     v-for="item in userOptions"
                     :key="item.user_id"
@@ -227,7 +262,7 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label="评估人员：" class="dialog-form-item" prop="testing_users" :size="size">
-                <el-select v-model="paramsNewTasks.testing_users" multiple filterable value-key="user_id" placeholder="请选择检测人员" style="width: 100%">
+                <el-select v-model="paramsNewProjects.testing_users" multiple filterable value-key="user_id" placeholder="请选择检测人员" style="width: 100%">
                   <el-option
                     v-for="item in userOptions"
                     :key="item.user_id"
@@ -246,7 +281,7 @@
       </div>
     </el-drawer>
     <!--弹出查看报告窗口-->
-    <el-dialog :visible.sync="dialogVisible" :append-to-body="true" :close-on-click-modal="true" :title="'任务名称-'+reportFile.name">
+    <el-dialog :visible.sync="dialogVisible" :append-to-body="true" :close-on-click-modal="true" :title="'项目名称-'+reportFile.name">
       <el-table
         v-loading="isGenerateReportLoading"
         :data="reportFile.list"
@@ -272,44 +307,46 @@
         <el-button v-waves :disabled="reportFile.list.length===0 || isGenerateReportLoading" plain type="success" @click="downloadReport">下载报告</el-button>
       </div>
     </el-dialog>
-
+    <!--弹出导入窗口-->
+    <el-dialog :visible.sync="dialogImportVisible" :append-to-body="true" :close-on-click-modal="false" style="text-align: center; min-width: 800px">
+      <uploadFile @uploadFile="uploadFile" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getTask, newTask, detailTask, updateTask, deleteTask, generateReport } from '@/api/task4'
+import { getProject, newProject, detailProject, updateProject, deleteProject, generateReport, exportTemp, importTemp } from '@/api/project4s'
 import { getUsersByCompany } from '@/api/user'
+import { uploadFile } from '@/components/uploadFile'
 import { Formattimestamp, Formattimestamp2 } from '@/utils/time'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
+import amap from '@/components/amap'
 
 export default {
-  name: 'Detectiontasks',
-  components: { Pagination },
+  name: 'Securitytasks',
+  components: { Pagination, amap, uploadFile },
   directives: { waves },
-  filters: {
-    leader(user) {
-      if (user !== '') return JSON.parse(user).user_name
-    }
-  },
   data() {
     return {
       isFinished: ['否', '是'],
       buildingOptions: [
-        { building_type: 1, building_name: '甲乙类厂房' },
-        { building_type: 2, building_name: '其他厂房' },
-        { building_type: 3, building_name: '仓库' },
-        { building_type: 4, building_name: '民用建筑' }
+        { building_type_id: 1, building_name: '甲乙类厂房' },
+        { building_type_id: 2, building_name: '其他厂房' },
+        { building_type_id: 3, building_name: '仓库' },
+        { building_type_id: 4, building_name: '民用建筑' }
       ],
-
+      pos: {
+        sname: '', // 地点名称
+        slat: 0, // 纬度
+        slon: 0 // 经度
+      },
+      dialogImportVisible: false,
       isGenerateReportLoading: false,
       isButtonDownLoading: false,
-      // 新建任务加载显示
+      // 新建项目加载显示
       isNewLoading: false,
-
-      // 当前的任务ID
-      task_id: undefined,
       dialogVisible: false,
       userOptions: [],
       systemTypeOptions: [],
@@ -317,11 +354,11 @@ export default {
       // 报告加载显示
       isReportLoading: false,
       isNewDialogShow: false,
-      isTasksDeleteShow: false,
+      isProjectsDeleteShow: false,
       multipleSelection: [],
-      TaskList: [],
+      ProjectList: [],
       total: 0,
-      isTaskListLoadingShow: true,
+      isProjectListLoadingShow: true,
       tempFilterOptions: {
         task_name: undefined,
         task_type2_id: undefined,
@@ -329,8 +366,8 @@ export default {
       },
 
       taskTules: {
-        name: [{ required: true, message: '请填写任务名称', trigger: 'blur' }],
-        label: [{ required: true, message: '请填写任务描述', trigger: 'blur' }],
+        name: [{ required: true, message: '请填写项目名称', trigger: 'blur' }],
+        label: [{ required: true, message: '请填写项目描述', trigger: 'blur' }],
         area: [{ required: true, message: '请填写占地面积', trigger: 'blur' }],
         constructing_unit: [{ required: true, message: '请填写委托单位', trigger: 'blur' }],
         constructing_contact_number: [{ required: true, message: '请填写委托单位联系电话', trigger: 'blur' }],
@@ -341,14 +378,14 @@ export default {
         designed_unit: [{ required: true, message: '请填写设计单位', trigger: 'blur' }],
         construction_unit: [{ required: true, message: '请填写施工单位', trigger: 'blur' }],
         building_address: [{ required: true, message: '请填写建筑地址', trigger: 'blur' }],
-        building_type: [{ required: true, message: '请选择建筑类型', trigger: 'change' }],
+        building_type_id: [{ required: true, message: '请选择建筑类型', trigger: 'change' }],
         building_name: [{ required: true, message: '请填写建筑名称', trigger: 'blur' }],
         building_area: [{ required: true, message: '请填写建筑面积', trigger: 'blur' }],
         building_floor1: [{ required: true, message: '请填写地上几层', trigger: 'blur' }],
         building_floor2: [{ required: true, message: '请填写地下几层', trigger: 'blur' }],
-        building_hight: [{ required: true, message: '请填写建筑高度', trigger: 'blur' }],
-        testting_time: [{ required: true, message: '请选择任务开始时间', trigger: 'change' }],
-        testing_completion_time: [{ required: true, message: '请选择任务结束时间', trigger: 'change' }],
+        building_height: [{ required: true, message: '请填写建筑高度', trigger: 'blur' }],
+        testing_time: [{ required: true, message: '请选择项目开始时间', trigger: 'change' }],
+        testing_completion_time: [{ required: true, message: '请选择项目结束时间', trigger: 'change' }],
         testing_scope: [{ required: true, message: '请选择检测范围', trigger: 'blur' }],
         testing_part: [{ required: true, message: '请填写检测部位', trigger: 'blur' }],
         testing_appvoval: [{ required: true, message: '请填写检测批文', trigger: 'blur' }],
@@ -358,10 +395,12 @@ export default {
         fire_acceptance_time: [{ required: true, message: '请选择消防验收日期', trigger: 'change' }],
         leader: [{ required: true, message: '请选择项目负责人', trigger: 'blur' }],
         auditor: [{ required: true, message: '请选择审核人', trigger: 'blur' }],
-        testing_users: [{ required: true, message: '请选择评估人员', trigger: 'blur' }]
+        testing_users: [{ required: true, message: '请选择评估人员', trigger: 'blur' }],
+        asbuild_time: [{ required: true, message: '请选择竣工日期', trigger: 'change' }],
+        asbuild_drawings: [{ required: true, message: '请填写竣工图纸提供情况', trigger: 'blur' }]
       },
-      paramsGetTasks: {
-        project_id: undefined,
+      paramsGetProjects: {
+        company_id: undefined,
         page: 1,
         limit: 20
       },
@@ -369,6 +408,7 @@ export default {
       reportFile: {
         is_reported: 0,
         list: [],
+        project_id: undefined,
         url: ''
       },
       // 是否生成过报告
@@ -376,12 +416,11 @@ export default {
       // 报告生成时间
       report_time: undefined,
       isEdit: false,
-      // 检测任务的formdata对象
+      // 检测项目的formdata对象
       taskFormData: new FormData(),
-      paramsNewTasks: {
-        project_id: undefined,		// 项目ID
-        name: undefined,			// 任务名称
-        label: undefined,		// 任务描述
+      paramsNewProjects: {
+        name: undefined,			// 项目名称
+        label: undefined,		// 项目描述
         constructing_unit: undefined, // 委托单位(建设单位)
         constructing_unit_code: undefined,	// 统一信用代码(建设单位)
         constructing_contacts: undefined, // 委托单位联系人
@@ -389,21 +428,25 @@ export default {
         constructing_address: undefined,	// 委托单位地址
         designed_unit: undefined,	// 设计单位
         construction_unit: undefined, // 施工单位(维保单位)
-        management_unit: undefined,	// 管理单位
-        building_name: undefined,		// 建筑名称
-        building_address: undefined,	// 建筑地址
-        building_floor1: undefined,		// 地上几层
-        building_floor2: undefined,	// 地下几层
-        area: undefined,	// 占地面积(44)
-        building_area: undefined, // 建筑面积(平方米)
-        building_hight: undefined,		// 建筑高度(米)
-        building_type: undefined,	// 建筑类型	1=甲乙类厂房、2=其他厂房、3=仓库、4=民用建筑
-        fire_rating: undefined,	// 耐火等级
-        use_function: undefined,		// 使用功能
+        // management_unit: undefined,	// 管理单位
+        // building_name: undefined,		// 建筑名称’
+        // building_address: undefined,	// 建筑地址
+        // building_floor1: undefined,		// 地上几层
+        // building_floor2: undefined,	// 地下几层
+        asbuild_time: undefined, // 竣工日期
+        asbuild_drawings: undefined,	// 竣工图纸提供情况
+        // area: undefined,	// 占地面积(44)
+        // building_area: undefined, // 建筑面积(平方米)
+        // building_height: undefined,		// 建筑高度(米)
+        building_type_id: undefined,	// 建筑类型	1=甲乙类厂房、2=其他厂房、3=仓库、4=民用建筑
+        // fire_rating: undefined,	// 耐火等级
+        // use_function: undefined,		// 使用功能
         fire_acceptance_time: undefined,	// 消防验收日期
         testing_appvoval: undefined,	// 评估批文
         testing_scope: undefined,	// 评估范围
         testing_area: undefined,		// 评估建筑面积(平方米)
+        testing_time: undefined,
+        testing_completion_time: undefined,
         leader: undefined,			// 项目负责人
         auditor: undefined,		// 审核人
         testing_users: undefined		// 评估人
@@ -412,15 +455,46 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'project_id',
       'company_id'
     ])
   },
   created() {
-    this.getTask()
+    this.getProject()
     this.getUserList()
   },
   methods: {
+    enterProject(pid) {
+      this.$store.dispatch('user/SelectProject', pid).then(() => {
+        this.$store.dispatch('RemoveRoutes').then(() => {
+          this.$router.push({ path: '/projects/info' })
+        })
+      }).catch(err => {
+        console.error(err)
+      })
+    },
+    exportTemp() {
+      exportTemp({ project_id: this.project_id }).then(res => {
+        this.$message({ type: 'success', message: '导出成功' })
+        const fileName = '项目模板' + '.xlsx'
+        const fileDownload = require('js-file-download')
+        fileDownload(res.data, fileName)
+      }).catch(err => {
+        console.error(err)
+      })
+    },
+    uploadFile(formData) {
+      importTemp(formData).then(res => {
+        console.log('导入成功')
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    // 获取从amap组件得到的位置信息
+    getPos(pos) {
+      this.paramsNewProjects.longitude = pos.slon
+      this.paramsNewProjects.latitude = pos.slat
+      this.paramsNewProjects.address = pos.sname
+    },
     // 关闭查看报告对话框
     closeReport() {
       this.report_time = undefined
@@ -434,13 +508,13 @@ export default {
         type: 'warning'
       }).then(() => {
         this.isGenerateReportLoading = true
-        generateReport({ task_id: this.reportFile.task_id }).then((res) => {
+        generateReport({ project_id: this.reportFile.project_id }).then((res) => {
           const filename = res.data.report_path.split('/').pop()
           this.reportFile.list = [{
             time: Formattimestamp(res.data.report_time),
             filename
           }]
-          this.getTask()
+          this.getProject()
           this.reportFile.url = process.env.VUE_APP_FILE_API + res.data.report_path
           this.isGenerateReportLoading = false
           this.$message({
@@ -470,7 +544,7 @@ export default {
       if (!info.is_reported) {
         fileInfo = {
           list: [],
-          task_id: info.task_id,
+          project_id: info.project_id,
           name: info.name
         }
       } else {
@@ -480,7 +554,7 @@ export default {
             time: Formattimestamp(info.report_time),
             filename
           }],
-          task_id: info.task_id,
+          project_id: info.project_id,
           name: info.name
         }
         fileInfo.url = process.env.VUE_APP_FILE_API + info.report_path
@@ -492,7 +566,7 @@ export default {
       if (this.isEdit) {
         this.init()
       } else {
-        this.$refs.newTaskRuleForm.clearValidate()
+        this.$refs.newProjectRuleForm.clearValidate()
       }
       this.isEdit = false
     },
@@ -504,47 +578,46 @@ export default {
         console.error(err)
       })
     },
-    // 打开新建检测任务窗口
-    openNewTaskDialog() {
+    // 打开新建检测项目窗口
+    openNewProjectDialog() {
       this.isNewDialogShow = true
     },
-    // 确定新建检测任务
+    // 确定新建检测项目
     onNewSubmit() {
-      this.$refs.newTaskRuleForm.validate(valid => {
+      this.$refs.newProjectRuleForm.validate(valid => {
         if (valid) {
           this.isNewLoading = true
-          for (const key in this.paramsNewTasks) {
+          for (const key in this.paramsNewProjects) {
             if (['testing_users', 'leader', 'auditor'].includes(key)) {
-              this.taskFormData.set(key, JSON.stringify(this.paramsNewTasks[key]))
+              this.taskFormData.set(key, JSON.stringify(this.paramsNewProjects[key]))
             } else {
-              this.taskFormData.set(key, this.paramsNewTasks[key])
+              this.taskFormData.set(key, this.paramsNewProjects[key])
             }
           }
           // 是否是编辑
           if (this.isEdit) {
-            this.taskFormData.set('task_id', this.task_id)
-            updateTask(this.taskFormData).then(() => {
+            this.taskFormData.set('project_id', this.project_id)
+            updateProject(this.taskFormData).then(() => {
               this.isNewLoading = false
               this.$message({
                 type: 'success',
-                message: '编辑任务成功！'
+                message: '编辑项目成功！'
               })
-              this.getTask()
+              this.getProject()
               this.isNewLoading = false
               this.isNewDialogShow = false
             }).catch(() => {
               this.isNewLoading = false
             })
           } else {
-            this.taskFormData.set('project_id', this.project_id)
-            newTask(this.taskFormData).then(() => {
+            newProject(this.taskFormData).then(() => {
               this.isNewLoading = false
               this.$message({
                 type: 'success',
-                message: '新建任务成功！'
+                message: '新建项目成功！'
               })
               this.init()
-              this.getTask()
+              this.getProject()
               this.isNewLoading = false
               this.isNewDialogShow = false
             }).catch(() => {
@@ -556,53 +629,58 @@ export default {
     },
     // 初始化表单
     init() {
-      if (this.$refs.newTaskRuleForm !== undefined) this.$refs.newTaskRuleForm.resetFields()
+      if (this.$refs.newProjectRuleForm !== undefined) this.$refs.newProjectRuleForm.resetFields()
       // this.schemefileList = []
       this.contractfileList = []
       this.taskFormData = new FormData()
-      for (const key in this.paramsNewTasks) {
-        this.paramsNewTasks[key] = undefined
+      for (const key in this.paramsNewProjects) {
+        this.paramsNewProjects[key] = undefined
       }
     },
     getTime(time) {
       return Formattimestamp2(time)
     },
     // 打开编辑窗口
-    openEditTask(task_id) {
-      this.task_id = task_id
+    openEditProject(project_id) {
+      console.log(project_id)
+
+      this.project_id = project_id
       this.isEdit = true
       this.isNewDialogShow = true
-      detailTask({ task_id }).then(res => {
+      detailProject({ project_id }).then(res => {
         const obj = {}
         const data = res.data
+        this.pos.slon = data.longitude
+        this.pos.slat = data.latitude
+        this.pos.sname = data.address
         for (const key in data) {
           if (!['project_id', 'id', 'is_finished'].includes(key)) {
             obj[key] = data[key]
           }
-          if (['fire_acceptance_time', 'testting_time', 'testing_completion_time'].includes(key)) {
+          if (['fire_acceptance_time', 'testing_time', 'testing_completion_time', 'asbuild_time'].includes(key)) {
             obj[key] = Formattimestamp(data[key])
           }
           if (['leader', 'auditor', 'testing_users'].includes(key)) {
             obj[key] = JSON.parse(data[key])
           }
         }
-        this.paramsNewTasks = obj
+        this.paramsNewProjects = obj
       })
     },
     /**
-     * @Description: 获取任务列表
+     * @Description: 获取项目列表
      * @Date: 2019/5/7
      **/
-    getTask() {
-      this.isTaskListLoadingShow = true
-      this.paramsGetTasks.project_id = this.project_id
-      getTask(this.paramsGetTasks).then(response => {
-        this.TaskList = response.data.items
+    getProject() {
+      this.isProjectListLoadingShow = true
+      this.paramsGetProjects.company_id = this.company_id
+      getProject(this.paramsGetProjects).then(response => {
+        this.ProjectList = response.data.items
         this.total = response.data.total
-        this.isTaskListLoadingShow = false
+        this.isProjectListLoadingShow = false
       }).catch(err => {
         console.error(err)
-        this.isTaskListLoadingShow = false
+        this.isProjectListLoadingShow = false
       })
     },
     /**
@@ -610,8 +688,8 @@ export default {
      * @Date: 2019/5/7
      **/
     onSearch() {
-      this.paramsGetTasks.page = 1
-      this.getTask()
+      this.paramsGetProjects.page = 1
+      this.getProject()
     },
     /**
      * @Description: 列表勾选回调
@@ -621,24 +699,24 @@ export default {
       this.multipleSelection = val
     },
     /**
-     * @Description: 删除任务
+     * @Description: 删除项目
      * @Date: 2019/5/7
      **/
-    deleteTasks() {
-      this.$confirm('确认删除选中的任务吗？', '提示', {
+    deleteProjects() {
+      this.$confirm('确认删除选中的项目吗？', '提示', {
         type: 'warning'
       }).then(() => {
-        this.isTaskListLoadingShow = true
+        this.isProjectListLoadingShow = true
         const deleteParam = {
-          task_id_list: this.multipleSelection.map(item => item.task_id).toString(),
+          project_id_list: this.multipleSelection.map(item => item.project_id).toString(),
           project_id: this.selected_project_id
         }
-        deleteTask(deleteParam).then(() => {
-          this.isTaskListLoadingShow = false
-          this.getTask()
+        deleteProject(deleteParam).then(() => {
+          this.isProjectListLoadingShow = false
+          this.getProject()
         }).catch(err => {
           console.log(err)
-          this.isTaskListLoadingShow = false
+          this.isProjectListLoadingShow = false
         })
       })
     }
@@ -671,14 +749,25 @@ export default {
     padding: 0;
     height: 0
   }
-  .task {
-    padding: 20px 20px;
+  .project {
     overflow: auto;
     flex: 1;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
     display: flex;
     flex-direction: column;
     height: 100%;
+    .title {
+      width: 100%;
+      height: 50px;
+      font-size: 17px;
+      line-height: 50px;
+      color: #666c75;
+      padding-left: 25px;
+      font-weight: 500;
+      border-top:1px solid #dcdfe6;
+      border-bottom: 1px solid #dcdfe6;
+      margin-bottom: 15px;
+    }
     /deep/.el-form-item__label {
       width: 170px;
       text-align: right;

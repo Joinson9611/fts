@@ -147,7 +147,7 @@
 import waves from '@/directive/waves'
 import { mapGetters } from 'vuex'
 import { getHistory, getHistoryDetail } from '@/api/history4'
-import { getTaskList } from '@/api/task4'
+import { getProjectList } from '@/api/project4s'
 import { getSystemTypes } from '@/api/system'
 import { getDeviceTypes } from '@/api/device'
 import { Formattimestamp2 } from '@/utils/time'

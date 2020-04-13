@@ -44,7 +44,7 @@
 // import AMap from 'amap'
 import placeSearch from './components/placeSearch'
 
-import AMapJS from "amap-js";
+import AMapJS from 'amap-js'
 
 export default {
   props:{
@@ -58,12 +58,11 @@ export default {
   watch: {
     position: {
       handler(item) {
-        if (item&&item.lng) {
+        if (item&&item.slon) {
           this.resultVisible = false
           this.snameMapShow = true
           if(item) {
-            this.pickAddress('sname',this.parseNumer(item.lng), this.parseNumer(item.lat) )
-            // this.$refs.addForm.validateField(this.inputId)
+            this.pickAddress('sname',this.parseNumber(item.slon), this.parseNumber(item.slat))
           } else {
             this.geocoder(item.name, 'sname')
           }
@@ -125,7 +124,7 @@ export default {
     hiddenMap(event) {
       if(event.target !== 'canvas.amap-labels') this.snameMapShow = false
     },
-    parseNumer(num) {
+    parseNumber(num) {
       return parseFloat(((num * 100000)/100000).toFixed(6))
     },
     clearAddress() {
@@ -140,7 +139,7 @@ export default {
       AMap.plugin('AMap.Autocomplete', () => {
         // 实例化Autocomplete
         const autoOptions = {
-          city: this.city ? this.city : '全国',
+          city: this.city || '全国',
           citylimit:true
         }
         const autoComplete = new AMap.Autocomplete(autoOptions) // 初始化autocomplete
@@ -189,8 +188,7 @@ export default {
         this.resultVisible = false
         if (item.location && item.location.getLat()) {
           this.pickAddress(this.inputId, item.location.getLng(), item.location.getLat())
-          // this.$refs.addForm.validateField(this.inputId)
-          this.$emit('pos',this.addForm)
+          this.$emit('getPos',this.addForm)
         } else {
           this.geocoder(item.name, this.inputId)
         }
@@ -214,15 +212,12 @@ export default {
             this.addForm.slat = positionResult.position.lat
             this.addForm.slon = positionResult.position.lng
             this.addForm.sname = positionResult.address
-            this.$emit('pos',this.addForm)
+            this.$emit('getPos',this.addForm)
           })
           positionPicker.on('fail', (positionResult) => {
             this.$message.error('地址选取失败')
           })
           positionPicker.start()
-          // this.snameMap.addControl(new AMap.ToolBar({
-          //   liteStyle: true
-          // }))
         })
       }
     },
@@ -244,7 +239,6 @@ export default {
               // 如果地理编码返回的粗略经纬度数据不需要在地图上显示，就不需要调用地图选址，且要隐藏地图
               // this.pickAddress("sname", geocode[0].location.getLng(), geocode[0].location.getLat());
               this.snameMapShow = false
-              // this.$refs.addForm.validateField('sname')
             }
           }
         }
@@ -255,7 +249,6 @@ export default {
       if (inputId === 'sname') {
         this.addForm.slat = 0
         this.addForm.slon = 0
-        // this.$refs.addForm.validateField('sname')
       }
     }
   }

@@ -112,6 +112,8 @@ const actions = {
         const project_type_id = Cookies.get('project_type_id')
         if (project_type_id === '1') {
           roles = [1]
+        } else if (project_type_id === '4') {
+          roles = [4]
         }
         commit('SET_ROLES', roles)
         resolve(roles)

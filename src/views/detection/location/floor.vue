@@ -106,8 +106,8 @@
 </template>
 
 <script>
-import { getBuildingList } from '@/api/building'
-import { getFloorInfoList, addFloor, batchAddFloor, deleteFloor, updateFloor } from '@/api/floor'
+import { getBuildingList } from '@/api/building1'
+import { getFloorInfoList, addFloor, batchAddFloor, deleteFloor, updateFloor } from '@/api/floor1'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
