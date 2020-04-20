@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="tempFilterOptions.building" placeholder="建筑名称" style="width: 300px;" class="filter-item" @keyup.enter.native="onSearch" />
-      <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-search" @click="onSearch">搜索</el-button>
+      <!-- <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-search" @click="onSearch">搜索</el-button> -->
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-plus" @click="openDialogBuildingAdd">新建建筑</el-button>
       <el-button v-waves :disabled="multipleSelection.length===0" class="filter-item" type="danger" icon="el-icon-delete" @click="onBuildingsDelete">删除建筑</el-button>
     </div>

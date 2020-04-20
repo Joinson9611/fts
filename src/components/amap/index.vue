@@ -122,7 +122,7 @@ export default {
   },
   methods: {
     hiddenMap(event) {
-      if(event.target !== 'canvas.amap-labels') this.snameMapShow = false
+      if(!['canvas.amap-labels'].includes(event.target)) this.snameMapShow = false
     },
     parseNumber(num) {
       return parseFloat(((num * 100000)/100000).toFixed(6))

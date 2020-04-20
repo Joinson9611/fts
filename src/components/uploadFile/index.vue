@@ -33,10 +33,15 @@
 </template>
 
 <script>
+import waves from '@/directive/waves'
 export default {
-  name: 'UploadFile',
+  name: 'Upload',
+  directives: {
+    waves
+  },
   data() {
     return {
+      isButtonUploadLoadingShow: false,
       isUploadButtonDisable: false
     }
   },
@@ -104,28 +109,12 @@ export default {
     const formData = new FormData()
     formData.append('excel', content.file, content.file.name)
     this.$emit('onUpload', formData)
-    // importTemp(formData).then((res) => {
-    //   const data = res.data
-    //   for (const key in data) {
-    //     if (['asbuild_time', 'testing_time', 'testing_completion_time', 'testing2_time', 'testing2_completion_time'].includes(key)) {
-    //       this.paramsNewProjects[key] = Formattimestamp2(data[key])
-    //     } else if (key === 'testing_id_list' || key === 'testing2_id_list') {
-    //       // 将字符串转化为数组并将将数组项映射成number类型
-    //       this.paramsNewProjects[key] = data[key].split(',').map(item => item * 1)
-    //     } else {
-    //       this.paramsNewProjects[key] = data[key]
-    //     }
-    //   }
-    //   this.$message({
-    //     type: 'success',
-    //     message: '导入成功'
-    //   })
-    //   this.isButtonUploadLoadingShow = false
-    //   this.dialogImportVisible = false
-    // }).catch(err => {
-    //   console.error(err)
-    //   this.isButtonUploadLoadingShow = false
-    // })
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .dialog-footer {
+    padding: 10px 20px 0 20px
+  }
+</style>

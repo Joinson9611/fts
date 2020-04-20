@@ -67,7 +67,7 @@
       </el-table-column>
       <el-table-column label="备注" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.note }}</span>
+          <span>{{ scope.row.note || '-' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="是否合格" align="center" width="88px">
@@ -78,7 +78,7 @@
       <el-table-column label="检测时间" align="center" width="120px">
         <template slot-scope="scope">
           <i class="el-icon-time" />
-          <span>{{ scope.row.create_time? getTime2(scope.row.create_time): '/' }}</span>
+          <span>{{ scope.row.create_time? getTime2(scope.row.create_time): '-' }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="102">
@@ -107,8 +107,8 @@
         <el-form label-width="100px">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="任务名称" class="dialog-form-item" prop="building">
-                <span>{{ historyInfo.task_name }}</span>
+              <el-form-item label="项目名称" class="dialog-form-item" prop="building">
+                <span>{{ historyInfo.project_name }}</span>
               </el-form-item>
               <el-form-item label="所属建筑" class="dialog-form-item">
                 <span>{{ historyInfo.building_name }}</span>
@@ -119,7 +119,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="备注" class="dialog-form-item">
-                <span>{{ historyInfo.note }}</span>
+                <span>{{ historyInfo.note || '-' }}</span>
               </el-form-item>
               <el-form-item label="是否合格" class="dialog-form-item">
                 <span :style="{color:historyInfo.is_pass? '#67C23A':'#F56C6C'}">{{ isPassMap[historyInfo.is_pass] }}</span>
@@ -254,6 +254,7 @@ export default {
   created() {
     this.getSystemTypes()
     this.getBuildingList()
+    this.getRecord()
   },
   methods: {
     gradeColor(grade) {
@@ -322,8 +323,6 @@ export default {
     },
     // 获取建筑物列表
     getBuildingList() {
-      console.log(this.project_id, 111)
-
       getBuildingList({ project_id: this.project_id }).then(res => {
         this.buildingOptions = res.data.items
       }).catch(err => {

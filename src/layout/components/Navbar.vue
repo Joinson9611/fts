@@ -13,7 +13,7 @@
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <a target="_blank" @click="toProjectSelect">
-            <el-dropdown-item>重选项目</el-dropdown-item>
+            <el-dropdown-item>选择项目</el-dropdown-item>
           </a>
           <el-dropdown-item divided>
             <span style="display:block;" @click="logout">退出登录</span>

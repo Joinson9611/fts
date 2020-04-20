@@ -43,11 +43,6 @@
             <span>{{ scope.row.label }}</span>
           </template>
         </el-table-column>
-        <!-- <el-table-column label="负责人" align="center" width="120">
-        <template slot-scope="scope">
-          <span>{{ scope.row.leader | leader }}</span>
-        </template>
-      </el-table-column> -->
         <el-table-column label="评估时段" align="center" width="190">
           <template slot-scope="scope">
             <span>{{ `${getTime(scope.row.testing_time)}~${ getTime(scope.row.testing_completion_time)}` }}</span>
@@ -66,7 +61,7 @@
         <el-table-column
           align="center"
           label="操作"
-          width="200"
+          width="210"
         >
           <template slot-scope="scope" class="tab-btn">
             <el-button
@@ -95,7 +90,6 @@
     <!-- 新建检测项目的窗口 -->
     <el-drawer
       ref="drawer"
-      :title="isEdit?'项目编辑': '新建检测项目'"
       :visible.sync="isNewDialogShow"
       direction="ltr"
       size="100%"
@@ -103,7 +97,7 @@
     >
       <template slot="title">
         <div class="content">
-          {{ isEdit ? '新建项目' : '编辑项目' }}
+          {{ isEdit ? '编辑项目' : '新建项目' }}
         </div>
         <div class="button" style="text-align:right;margin-right:15px">
           <el-button type="success" plain @click="exportTemp">导出项目信息</el-button>
@@ -121,7 +115,7 @@
               <el-form-item label="项目描述：" class="dialog-form-item" prop="label" :size="size">
                 <el-input v-model="paramsNewProjects.label" class="dialog-form-item" type="text" />
               </el-form-item>
-              <amap :position="pos" @getPos="getPos" />
+              <amap v-if="isNewDialogShow" :position="pos" @getPos="getPos" />
               <el-form-item label="项目开始时间：" class="dialog-form-item" prop="testing_time" :size="size">
                 <el-date-picker
                   v-model="paramsNewProjects.testing_time"
@@ -150,19 +144,19 @@
               <el-form-item label="委托单位地址：" class="dialog-form-item" prop="constructing_address" :size="size">
                 <el-input v-model="paramsNewProjects.constructing_address" class="dialog-form-item" type="text" />
               </el-form-item>
-              <!-- <el-form-item label="管理单位：" class="dialog-form-item" prop="management_unit" :size="size">
-                <el-input v-model="paramsNewProjects.management_unit" class="dialog-form-item" type="text" />
-              </el-form-item> -->
-            </el-col>
-            <el-col :span="12">
               <el-form-item label="统一社会信用代码：" class="dialog-form-item" prop="constructing_unit_code" :size="size">
                 <el-input v-model="paramsNewProjects.constructing_unit_code" class="dialog-form-item" type="text" />
               </el-form-item>
+            </el-col>
+            <el-col :span="12">
               <el-form-item label="设计单位：" class="dialog-form-item" prop="designed_unit" :size="size">
                 <el-input v-model="paramsNewProjects.designed_unit" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="施工单位：" class="dialog-form-item" prop="construction_unit" :size="size">
                 <el-input v-model="paramsNewProjects.construction_unit" class="dialog-form-item" type="text" />
+              </el-form-item>
+              <el-form-item label="管理单位：" class="dialog-form-item" prop="management_unit" :size="size">
+                <el-input v-model="paramsNewProjects.management_unit" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="竣工图纸提供情况：" class="dialog-form-item" prop="asbuild_drawings" :size="size">
                 <el-input v-model="paramsNewProjects.asbuild_drawings" show-word-limit maxlength="25" class="dialog-form-item" type="text" />
@@ -183,38 +177,11 @@
                   value-format="yyyy-MM-dd"
                 />
               </el-form-item>
-              <!-- <el-form-item label="建筑名称：" class="dialog-form-item" prop="building_name" :size="size">
-                <el-input v-model="paramsNewProjects.building_name" class="dialog-form-item" type="text" />
-              </el-form-item>
-              <el-form-item label="占地面积：" class="dialog-form-item" prop="area" :size="size">
-                <el-input v-model="paramsNewProjects.area" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
-              </el-form-item>
-              <el-form-item label="地上几层：" class="dialog-form-item" prop="building_floor1" :size="size">
-                <el-input v-model="paramsNewProjects.building_floor1" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
-              </el-form-item>
-              <el-form-item label="地下几层：" class="dialog-form-item" prop="building_floor2" :size="size">
-                <el-input v-model="paramsNewProjects.building_floor2" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
-              </el-form-item>
-              <el-form-item label="建筑地址：" class="dialog-form-item" prop="building_address" :size="size">
-                <el-input v-model="paramsNewProjects.building_address" class="dialog-form-item" type="text" />
-              </el-form-item>
-              <el-form-item label="建筑面积：" class="dialog-form-item" prop="building_area" :size="size">
-                <el-input v-model="paramsNewProjects.building_area" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
-              </el-form-item>
-              <el-form-item label="建筑高度(米)：" class="dialog-form-item" prop="building_height" :size="size">
-                <el-input v-model="paramsNewProjects.building_height" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
-              </el-form-item> -->
               <el-form-item label="建筑类型：" class="dialog-form-item" prop="building_type_id" :size="size">
                 <el-select v-model="paramsNewProjects.building_type_id" filterable placeholder="所属建筑" style="width: 150px" clearable class="filter-item">
                   <el-option v-for="item in buildingOptions" :key="item.building_type_id" :label="item.building_name" :value="item.building_type_id" />
                 </el-select>
               </el-form-item>
-              <!-- <el-form-item label="耐火等级：" class="dialog-form-item" prop="fire_rating" :size="size">
-                <el-input v-model="paramsNewProjects.fire_rating" class="dialog-form-item" type="text" />
-              </el-form-item>
-              <el-form-item label="使用功能 ：" class="dialog-form-item" prop="use_function" :size="size">
-                <el-input v-model="paramsNewProjects.use_function" class="dialog-form-item" type="text" />
-              </el-form-item> -->
               <el-form-item label="评估范围 ：" class="dialog-form-item" prop="testing_scope" :size="size">
                 <el-input v-model="paramsNewProjects.testing_scope" class="dialog-form-item" type="text" />
               </el-form-item>
@@ -309,7 +276,35 @@
     </el-dialog>
     <!--弹出导入窗口-->
     <el-dialog :visible.sync="dialogImportVisible" :append-to-body="true" :close-on-click-modal="false" style="text-align: center; min-width: 800px">
-      <uploadFile @uploadFile="uploadFile" />
+      <el-upload
+        ref="upload"
+        :multiple="false"
+        :auto-upload="false"
+        :on-change="onUploadChange"
+        :before-upload="onUploadFileCheck"
+        :before-remove="onUploadFileRemove"
+        :on-exceed="onUploadFileLimit"
+        :http-request="UploadFile"
+        :limit="1"
+        drag
+        accept=".xls,.xlsx"
+        action="customize"
+      >
+        <i class="el-icon-upload" />
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div slot="tip" class="el-upload__tip">请上传有效的excel文件</div>
+      </el-upload>
+      <div slot="footer" class="dialog-footer">
+        <el-button v-waves @click.native="onUploadButtonCancel">取消</el-button>
+        <el-button
+          v-waves
+          :loading="isButtonUploadLoadingShow"
+          :disabled="isUploadButtonDisable"
+          type="primary"
+          @click.native="onUploadButtonSubmit"
+        >上传
+        </el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -317,7 +312,6 @@
 <script>
 import { getProject, newProject, detailProject, updateProject, deleteProject, generateReport, exportTemp, importTemp } from '@/api/project4s'
 import { getUsersByCompany } from '@/api/user'
-import { uploadFile } from '@/components/uploadFile'
 import { Formattimestamp, Formattimestamp2 } from '@/utils/time'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
@@ -326,7 +320,7 @@ import amap from '@/components/amap'
 
 export default {
   name: 'Securitytasks',
-  components: { Pagination, amap, uploadFile },
+  components: { Pagination, amap },
   directives: { waves },
   data() {
     return {
@@ -343,6 +337,8 @@ export default {
         slon: 0 // 经度
       },
       dialogImportVisible: false,
+      isButtonUploadLoadingShow: false,
+      isUploadButtonDisable: false,
       isGenerateReportLoading: false,
       isButtonDownLoading: false,
       // 新建项目加载显示
@@ -428,7 +424,7 @@ export default {
         constructing_address: undefined,	// 委托单位地址
         designed_unit: undefined,	// 设计单位
         construction_unit: undefined, // 施工单位(维保单位)
-        // management_unit: undefined,	// 管理单位
+        management_unit: undefined,	// 管理单位
         // building_name: undefined,		// 建筑名称’
         // building_address: undefined,	// 建筑地址
         // building_floor1: undefined,		// 地上几层
@@ -463,6 +459,91 @@ export default {
     this.getUserList()
   },
   methods: {
+    onUploadChange() {
+      this.isUploadButtonDisable = false
+    },
+    /**
+     * @Description: 上传对话框文件删除时回调
+     * @Date: 2019/5/5
+     **/
+    onUploadFileRemove() {
+      this.isUploadButtonDisable = true
+    },
+    /**
+     * @Description: 取消上传操作
+     * @Date: 2019/5/5
+     **/
+    onUploadButtonCancel() {
+      this.dialogImportVisible = false
+    },
+    /**
+     * @Description: 上传文件事件
+     * @Date: 2019/5/5
+     **/
+    onUploadButtonSubmit() {
+      this.$refs.upload.submit()
+    },
+    /**
+     * @Description: 上传文件类型大小限制
+     * @Date: 2019/5/5
+     **/
+    onUploadFileCheck(file) {
+      const testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      const extension = testmsg === 'xls'
+      const extension2 = testmsg === 'xlsx'
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!extension && !extension2) {
+        this.$message({
+          message: '上传文件只能是 xls、xlsx格式',
+          type: 'warning'
+        })
+      }
+      if (!isLt2M) {
+        this.$message({
+          message: '上传文件大小不能超过 2MB',
+          type: 'warning'
+        })
+      }
+      return extension || extension2 && isLt2M
+    },
+    /**
+     * @Description: 文件数量限制
+     * @Date: 2019/5/5
+     **/
+    onUploadFileLimit() {
+      this.$message({
+        message: '只能上传一个文件',
+        type: 'warning'
+      })
+    },
+    /**
+     * @Description: 文件上传操作
+     * @Date: 2019/5/5
+     **/
+    UploadFile(content) {
+      this.isButtonUploadLoadingShow = true
+      const formData = new FormData()
+      formData.append('excel', content.file, content.file.name)
+      importTemp(formData).then((res) => {
+        const data = res.data
+        for (const key in data) {
+          if (['asbuild_time', 'testing_time', 'testing_completion_time', 'fire_acceptance_time'].includes(key)) {
+            this.paramsNewProjects[key] = Formattimestamp2(data[key])
+          } else {
+            this.paramsNewProjects[key] = data[key]
+          }
+        }
+        this.$message({
+          type: 'success',
+          message: '导入成功'
+        })
+        this.isButtonUploadLoadingShow = false
+        this.dialogImportVisible = false
+      }).catch(err => {
+        console.error(err)
+        this.isButtonUploadLoadingShow = false
+      })
+    },
     enterProject(pid) {
       this.$store.dispatch('user/SelectProject', pid).then(() => {
         this.$store.dispatch('RemoveRoutes').then(() => {
@@ -475,7 +556,7 @@ export default {
     exportTemp() {
       exportTemp({ project_id: this.project_id }).then(res => {
         this.$message({ type: 'success', message: '导出成功' })
-        const fileName = '项目模板' + '.xlsx'
+        const fileName = (this.paramsNewProjects.name || '安全评估') + '.xlsx'
         const fileDownload = require('js-file-download')
         fileDownload(res.data, fileName)
       }).catch(err => {
@@ -580,50 +661,60 @@ export default {
     },
     // 打开新建检测项目窗口
     openNewProjectDialog() {
+      this.project_id = ''
+      this.pos.slon = 0
+      this.pos.slat = 0
+      this.pos.sname = ''
       this.isNewDialogShow = true
     },
     // 确定新建检测项目
     onNewSubmit() {
       this.$refs.newProjectRuleForm.validate(valid => {
         if (valid) {
-          this.isNewLoading = true
-          for (const key in this.paramsNewProjects) {
-            if (['testing_users', 'leader', 'auditor'].includes(key)) {
-              this.taskFormData.set(key, JSON.stringify(this.paramsNewProjects[key]))
-            } else {
-              this.taskFormData.set(key, this.paramsNewProjects[key])
+          if (this.paramsNewProjects.address && this.paramsNewProjects.longitude) {
+            this.isNewLoading = true
+            for (const key in this.paramsNewProjects) {
+              if (['testing_users', 'leader', 'auditor'].includes(key)) {
+                this.taskFormData.set(key, JSON.stringify(this.paramsNewProjects[key]))
+              } else {
+                this.taskFormData.set(key, this.paramsNewProjects[key])
+              }
             }
-          }
-          // 是否是编辑
-          if (this.isEdit) {
-            this.taskFormData.set('project_id', this.project_id)
-            updateProject(this.taskFormData).then(() => {
-              this.isNewLoading = false
-              this.$message({
-                type: 'success',
-                message: '编辑项目成功！'
+            // 是否是编辑
+            if (this.isEdit) {
+              this.taskFormData.set('project_id', this.project_id)
+              updateProject(this.taskFormData).then(() => {
+                this.isNewLoading = false
+                this.$message({
+                  type: 'success',
+                  message: '编辑项目成功！'
+                })
+                this.getProject()
+                this.isNewLoading = false
+                this.isNewDialogShow = false
+              }).catch(() => {
+                this.isNewLoading = false
               })
-              this.getProject()
-              this.isNewLoading = false
-              this.isNewDialogShow = false
-            }).catch(() => {
-              this.isNewLoading = false
-            })
+            } else {
+              newProject(this.taskFormData).then(() => {
+                this.isNewLoading = false
+                this.$message({
+                  type: 'success',
+                  message: '新建项目成功！'
+                })
+                this.init()
+                this.getProject()
+                this.isNewLoading = false
+                this.isNewDialogShow = false
+              }).catch(() => {
+                this.isNewLoading = false
+              })
+            }
           } else {
-            newProject(this.taskFormData).then(() => {
-              this.isNewLoading = false
-              this.$message({
-                type: 'success',
-                message: '新建项目成功！'
-              })
-              this.init()
-              this.getProject()
-              this.isNewLoading = false
-              this.isNewDialogShow = false
-            }).catch(() => {
-              this.isNewLoading = false
-            })
+            this.$message({ type: 'warning', message: '请完善项目地址' })
           }
+        } else {
+          this.$message({ type: 'warning', message: '请完善项目信息' })
         }
       })
     },
@@ -642,8 +733,6 @@ export default {
     },
     // 打开编辑窗口
     openEditProject(project_id) {
-      console.log(project_id)
-
       this.project_id = project_id
       this.isEdit = true
       this.isNewDialogShow = true
@@ -740,9 +829,9 @@ export default {
       height: 100%;
     }
   }
-  /deep/.el-dialog__body{
-    padding-top: 0;
-  }
+  // /deep/.el-dialog__body{
+  //   padding-top: 0;
+  // }
   /deep/.el-drawer__body{
     display: flex;
     flex-direction: column;

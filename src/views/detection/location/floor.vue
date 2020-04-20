@@ -4,7 +4,7 @@
       <el-select v-model="requestParam_getFloorInfoList.building_id" filterable placeholder="所属建筑" style="width: 220px" class="filter-item" @change="floorChange">
         <el-option v-for="item in buildingOptions" :key="item.building_id" :label="item.building" :value="item.building_id" />
       </el-select>
-      <el-button v-if="false" v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-search" @click="onSearch">搜索</el-button>
+      <!-- <el-button v-if="false" v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-search" @click="onSearch">搜索</el-button> -->
       <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-plus" @click="openDialogFloorAdd">新建楼层</el-button>
       <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-plus" @click="batchAddFloor">批量新建楼层</el-button>
       <el-button v-waves :disabled="multipleSelection.length===0" class="filter-item" type="danger" icon="el-icon-delete" @click="onFloorsDelete">删除楼层</el-button>

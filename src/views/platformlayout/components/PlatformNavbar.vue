@@ -2,7 +2,7 @@
   <div class="navbar">
     <div class="left-menu">
       <template>
-        <span class="left-menu-item">利盾消防检查系统</span>
+        <a class="left-menu-item" @click="$router.push('/project')">利盾消防检测系统</a>
       </template>
     </div>
     <div class="right-menu">

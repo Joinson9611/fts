@@ -14,22 +14,22 @@
         <el-col :span="20">
           <el-form ref="formDevicesInfo" :model="reportInfo" label-width="90px">
             <el-form-item class="reportInfo-item" label="项目名称 ：">
-              <span>{{ reportInfo.project_name }}</span>
+              <span>{{ reportInfo.project_name || '-' }}</span>
             </el-form-item>
             <el-form-item class="reportInfo-item" label="项目地址 ：">
-              <span>{{ reportInfo.address }}</span>
+              <span>{{ reportInfo.address|| '-' }}</span>
             </el-form-item>
             <el-form-item class="reportInfo-item" label="单位名称 ：">
-              <span>{{ reportInfo.constructing_unit }}</span>
+              <span>{{ reportInfo.constructing_unit|| '-' }}</span>
             </el-form-item>
             <el-form-item class="reportInfo-item" label="检测单位 ：">
-              <span>{{ reportInfo.testing_unit }}</span>
+              <span>{{ reportInfo.testing_unit|| '-' }}</span>
             </el-form-item>
             <!-- <el-form-item class="reportInfo-item" label="是否完成 ：">
               <span>{{ reportInfo.is_finished }}</span>
             </el-form-item> -->
             <el-form-item class="reportInfo-item" label="完成日期 ：">
-              <span>{{ reportInfo.finished_time ? getTime(reportInfo.finished_time) : '/' }}</span>
+              <span>{{ reportInfo.finished_time ? getTime(reportInfo.finished_time) : '-' }}</span>
             </el-form-item>
             <el-form-item class="reportInfo-item" label="报告文件 ：">
               <a style="color: #409EFF" @click="downloadReport(reportInfo.report_path)">{{ reportInfo.report_code }}</a>
@@ -62,8 +62,8 @@ export default {
         report_path: ''
       },
       requestParams: {
-        task_type_id: undefined,
-        task_id: undefined
+        project_type_id: undefined,
+        project_id: undefined
       }
     }
   },
@@ -83,8 +83,8 @@ export default {
      * @Date: 2019/5/7
      **/
     getParams() {
-      this.requestParams.task_type_id = this.$route.query.type.toString()
-      this.requestParams.task_id = this.$route.query.id.toString()
+      this.requestParams.project_type_id = this.$route.query.type.toString()
+      this.requestParams.project_id = this.$route.query.id.toString()
     },
     /**
      * @Description: 获取设备详情

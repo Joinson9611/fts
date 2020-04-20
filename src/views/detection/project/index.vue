@@ -1,13 +1,5 @@
 <template>
   <div class="app-container">
-    <!-- <div class="app-title-item">
-      <span class="tip-text title">消防设施及建筑防火</span>
-      <span class="tip-text" style="color:#909399">-下方可以新建、编辑、删除消防设施及建筑防火项目-</span>
-    </div> -->
-    <!-- <div class="filter-container">
-      <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-plus" @click="openNewProjectDialog">新建项目</el-button>
-      <el-button v-waves :disabled="multipleSelection.length===0" class="filter-item" type="danger" icon="el-icon-delete" @click="deleteProjects">删除项目</el-button>
-    </div> -->
     <!--项目列表-->
     <el-card shadow="never" class="project-list" body-style="padding: 0;">
       <div slot="header" class="clearfix">
@@ -35,7 +27,7 @@
           width="50"
         />
         <el-table-column label="序号" align="center" width="70">
-          <template slot-scope="scope"><span>{{ ( scope.$index+(paramsGetProjects.page - 1) * paramsGetProjects.limit + 1) | page }} </span></template>
+          <template slot-scope="scope"><span>{{ scope.$index+(paramsGetProjects.page - 1) * paramsGetProjects.limit + 1 }} </span></template>
         </el-table-column>
         <el-table-column label="项目名称" align="center">
           <template slot-scope="scope">
@@ -50,28 +42,13 @@
         <el-table-column label="创建时间" align="center" width="120">
           <template slot-scope="scope">
             <i v-show="scope.row.create_time" class="el-icon-time" />
-            <span>{{ scope.row.create_time ? getTime(scope.row.create_time) : '/' }}</span>
+            <span>{{ scope.row.create_time ? getTime(scope.row.create_time) : '-' }}</span>
           </template>
         </el-table-column>
-        <!-- <el-table-column label="负责人" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.leader | leader }}</span>
-        </template>
-      </el-table-column> -->
-        <!-- <el-table-column label="检测时段" align="center" width="210">
-        <template slot-scope="scope">
-          <span>{{ `${getTime(scope.row.testing_time)}~${ getTime(scope.row.testing_completion_time)}` }}</span>
-        </template>
-      </el-table-column> -->
-        <!-- <el-table-column label="是否完成" align="center" width="80">
-          <template slot-scope="scope">
-            <span :style="{color:scope.row.is_finished? '#67C23A':'#F56C6C'}">{{ isFinished[scope.row.is_finished] }}</span>
-          </template>
-        </el-table-column> -->
         <el-table-column
           align="center"
           label="操作"
-          width="200"
+          width="210"
           fixed="right"
         >
           <template slot-scope="scope" class="tab-btn">
@@ -109,7 +86,7 @@
     >
       <template slot="title">
         <div class="content">
-          {{ isEdit ? '新建项目' : '编辑项目' }}
+          {{ isEdit ? '编辑项目' : '新建项目' }}
         </div>
         <div class="button" style="text-align:right;margin-right:15px">
           <el-button type="success" plain @click="exportTemp">导出项目信息</el-button>
@@ -156,7 +133,7 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <amap :position="pos" @getPos="getPos" />
+                <amap v-if="isNewDialogShow" :position="pos" @getPos="getPos" />
                 <el-form-item label="建筑类型：" class="dialog-form-item" prop="building_type" :size="size">
                   <el-input v-model="paramsNewProjects.building_type" class="dialog-form-item" type="text" />
                 </el-form-item>
@@ -317,7 +294,7 @@
               <el-row>
                 <el-col :span="12">
                   <el-form-item label="项目类型：" class="dialog-form-item" prop="testing2_type_id" :size="size">
-                    <el-select v-model="paramsNewProjects.testing2_type_id" filterable placeholder="请选择项目类型" style="width: 100%">
+                    <el-select v-model="paramsNewProjects.testing2_type_id" :clearable="true" filterable placeholder="请选择项目类型" style="width: 100%">
                       <el-option
                         v-for="item in projectTypeOptions"
                         :key="item.type_id"
@@ -454,12 +431,12 @@
             <span>{{ scope.row.project_type }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="报告文件名称" align="center">
+        <el-table-column label="报告文件名称" align="center" width="160">
           <template slot-scope="scope">
-            <a style="color: #409EFF" @click="downloadReport">{{ scope.row.is_reported ? scope.row.filename : '/' }}</a>
+            <a style="color: #409EFF" @click="downloadReport">{{ scope.row.is_reported ? scope.row.filename : '-' }}</a>
           </template>
         </el-table-column>
-        <el-table-column label="报告生成日期" align="center" width="160">
+        <el-table-column label="报告生成日期" align="center" width="110">
           <template slot-scope="scope">
             <span>{{ scope.row.report_time }}</span>
           </template>
@@ -471,8 +448,7 @@
         </el-table-column>
         <el-table-column label="完成日期" align="center" width="100">
           <template slot-scope="scope">
-            <!-- <i v-show="scope.row.finished_time" class="el-icon-time" /> -->
-            <span>{{ scope.row.finished_time ? getTime(scope.row.finished_time) : '/' }}</span>
+            <span>{{ scope.row.finished_time ? getTime(scope.row.finished_time) : '-' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="操作" align="center" width="190">
@@ -482,10 +458,6 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- <div slot="footer" class="dialog-footer" style="margin-right: 20px;margin-top: 0;">
-        <el-button v-waves :loading="isGenerateReportLoading" type="primary" plain @click="generateReport">生成报告</el-button>
-        <el-button v-waves :disabled="reportFile.list.length===0 || isGenerateReportLoading || !reportFile.is_reported" plain type="success" @click="downloadReport">下载报告</el-button>
-      </div> -->
     </el-dialog>
 
     <!--弹出导入窗口-->
@@ -529,7 +501,7 @@ import { getUsersByCompany } from '@/api/user'
 import { getSystemTypes } from '@/api/system'
 import { getDeviceTypes } from '@/api/device'
 import amap from '@/components/amap'
-import { Formattimestamp, Formattimestamp2 } from '@/utils/time'
+import { Formattimestamp2 } from '@/utils/time'
 import waves from '@/directive/waves'
 import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
@@ -557,7 +529,7 @@ export default {
       isFinished: ['否', '是'],
       mapOpen: false,
       projectTypeOptions: [
-        { type_id: 0, type_name: '新家' },
+        { type_id: 0, type_name: '新建' },
         { type_id: 1, type_name: '扩建' },
         { type_id: 2, type_name: '装修' },
         { type_id: 3, type_name: '建筑保温' },
@@ -576,22 +548,22 @@ export default {
         list: [{
           is_finished: 0,
           is_reported: 0,
-          finished_time: '/',
+          finished_time: '-',
           project_type: '消防检测',
-          report_path: '/',
-          time: '/',
-          filename: '/'
+          report_path: '-',
+          time: '-',
+          filename: '-'
         }, {
           is_finished: 0,
           is_reported: 0,
-          finished_time: '/',
+          finished_time: '-',
           project_type: '建筑防火',
-          report_path: '/',
-          time: '/',
-          filename: '/'
+          report_path: '-',
+          time: '-',
+          filename: '-'
         }],
         project_id: undefined,
-        name: '/'
+        name: '-'
       },
       pos: {
         sname: '', // 地点名称
@@ -695,6 +667,7 @@ export default {
       // 检测项目的formdata对象
       projectFormData: new FormData(),
       paramsNewProjects: {
+        name: undefined,
         project_id: undefined,
         address: '',
         longitude: undefined,
@@ -765,57 +738,6 @@ export default {
     this.getUserList()
   },
   methods: {
-    // objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-    //   if ([0, 1, 2, 3, 4, 8].includes(columnIndex)) {
-    //     if (this.spanArr[rowIndex]) {
-    //       return {
-    //         rowspan: this.spanArr[rowIndex],
-    //         colspan: 1
-    //       }
-    //     } else {
-    //       return {
-    //         rowspan: 0,
-    //         colspan: 0
-    //       }
-    //     }
-    //   }
-    // },
-    // initChartData() {
-    //   let contactDot = 0
-    //   this.spanArr = []
-    //   this.ProjectList.forEach((item, index) => {
-    //     if (index === 0) {
-    //       this.spanArr.push(1)
-    //     } else {
-    //       if (item.project_id === this.ProjectList[index - 1].project_id) {
-    //         this.spanArr[contactDot] += 1
-    //         this.spanArr.push(0)
-    //       } else {
-    //         contactDot = index
-    //         this.spanArr.push(1)
-    //       }
-    //     }
-    //   })
-    // },
-    // parseProjectData(list) {
-    //   const tempArr = []
-    //   list.forEach(item => {
-    //     const l1 = { project_type: '消防设施' }
-    //     const l2 = { project_type: '建筑防火' }
-    //     for (const key in item) {
-    //       if (['is_finished', 'finished_time', 'is_reported', 'report_time', 'report_path'].includes(key)) {
-    //         l1[key] = item[key]
-    //       } else if (['is_finished2', 'finished_time2', 'is_reported2', 'report_time2', 'report_path2'].includes(key)) {
-    //         l2[key.substr(0, key.length - 1)] = item[key]
-    //       } else {
-    //         l1[key] = item[key]
-    //         l2[key] = item[key]
-    //       }
-    //     }
-    //     tempArr.push(l1, l2)
-    //   })
-    //   return tempArr
-    // },
     onUploadChange() {
       this.isUploadButtonDisable = false
     },
@@ -887,8 +809,7 @@ export default {
           if (['asbuild_time', 'testing_time', 'testing_completion_time', 'testing2_time', 'testing2_completion_time'].includes(key)) {
             this.paramsNewProjects[key] = Formattimestamp2(data[key])
           } else if (key === 'testing_id_list' || key === 'testing2_id_list') {
-            // 将字符串转化为数组并将将数组项映射成number类型
-            this.paramsNewProjects[key] = data[key].split(',').map(item => item * 1)
+            this.paramsNewProjects[key] = data[key] ? data[key].split(',').map(item => item * 1) : []
           } else {
             this.paramsNewProjects[key] = data[key]
           }
@@ -907,7 +828,7 @@ export default {
     exportTemp() {
       exportTemp({ project_id: this.project_id }).then(res => {
         this.$message({ type: 'success', message: '导出成功' })
-        const fileName = '项目模板' + '.xlsx'
+        const fileName = (this.paramsNewProjects.name || '消防设施及建筑防火') + '.xlsx'
         const fileDownload = require('js-file-download')
         fileDownload(res.data, fileName)
       }).catch(err => {
@@ -916,11 +837,7 @@ export default {
     },
     downloadReport(info) {
       if (info.is_reported) {
-        // open(encodeURIComponent(encodeURI(info.report_path)), 'newBLANK', 'toolbar=yes', 'location=yes')
-        // const pathArr = info.report_path.split('/')
-        // const filename = pathArr.pop()
-        // console.log(pathArr.join('/') + '/' + encodeURI(filename))
-        window.open(info.report_path, 'newBLANK', 'toolbar=yes', 'location=yes')
+        window.open(info.report_path)
       }
       return
     },
@@ -930,7 +847,7 @@ export default {
     },
     handleCheckedChange1(value) {
       const checkedCount = value.length
-      this.checkAll1 = checkedCount === this.paramsNewProjects.testing_id_list.length
+      this.checkAll1 = checkedCount === this.systemTypeOptions.length
       this.isIndeterminate1 = checkedCount > 0 && checkedCount < this.systemTypeOptions.length
     },
     handleCheckAllChange2(val) {
@@ -939,7 +856,7 @@ export default {
     },
     handleCheckedChange2(value) {
       const checkedCount = value.length
-      this.checkAll2 = checkedCount === this.paramsNewProjects.testing2_id_list.length
+      this.checkAll2 = checkedCount === this.deviceTypeOptions.length
       this.isIndeterminate2 = checkedCount > 0 && checkedCount < this.deviceTypeOptions.length
     },
     // 生成报告
@@ -950,7 +867,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.isGenerateReportLoading = true
-        const project_type_id = this.reportFile.project_type === '消防设施' ? 1 : 2
+        const project_type_id = info.project_type === '消防设施' ? 1 : 2
         generateReport({ project_id: this.reportFile.project_id, project_type_id }).then((res) => {
           const data = res.data
           const filename = data.report_path.split('/').pop()
@@ -958,12 +875,12 @@ export default {
             this.reportFile.list[0].filename = filename
             this.reportFile.list[0].is_reported = data.is_reported
             this.reportFile.list[0].report_path = process.env.VUE_APP_FILE_API + data.report_path
-            this.reportFile.list[0].report_time = data.is_reported ? Formattimestamp(info.report_time) : '/'
+            this.reportFile.list[0].report_time = data.is_reported ? Formattimestamp2(res.data.report_time) : '-'
           } else {
             this.reportFile.list[1].filename = filename
             this.reportFile.list[1].is_reported = data.is_reported
             this.reportFile.list[1].report_path = process.env.VUE_APP_FILE_API + data.report_path
-            this.reportFile.list[1].report_time = data.is_reported ? Formattimestamp(info.report_time) : '/'
+            this.reportFile.list[1].report_time = data.is_reported ? Formattimestamp2(res.datareport_time) : '-'
           }
           this.isGenerateReportLoading = false
           this.$message({
@@ -981,11 +898,6 @@ export default {
         })
       })
     },
-    // 下载报告
-    // downloadReport() {
-    //   if (this.reportFile.url !== '') window.open(this.reportFile.url)
-    //   return
-    // },
     // 查看报告
     checkReport(info) {
       this.dialogVisible = true
@@ -994,9 +906,9 @@ export default {
           is_finished: info.is_finished,
           is_reported: info.is_reported,
           finished_time: info.finished_time,
-          project_type: '消防检测',
+          project_type: '消防设施',
           report_path: process.env.VUE_APP_FILE_API + info.report_path,
-          report_time: info.is_reported ? Formattimestamp(info.report_time) : '/',
+          report_time: info.is_reported ? Formattimestamp2(info.report_time) : '-',
           filename: info.report_path.split('/').pop()
         }, {
           is_finished: info.is_finished2,
@@ -1004,7 +916,7 @@ export default {
           is_reported: info.is_reported2,
           project_type: '建筑防火',
           report_path: process.env.VUE_APP_FILE_API + info.report_path2,
-          report_time: info.is_reported2 ? Formattimestamp(info.report_time2) : '/',
+          report_time: info.is_reported2 ? Formattimestamp2(info.report_time2) : '-',
           filename: info.report_path2.split('/').pop()
         }],
         project_id: info.project_id,
@@ -1017,6 +929,8 @@ export default {
     exportFile(name) {
       if (name === 'testing_contract_copy') {
         window.open(this.fileContractCopy.url)
+      } else if (name === 'testing2_contract_copy') {
+        window.open(this.fileContractCopy2.url)
       } else {
         window.open(this.fileTestingScheme.url)
       }
@@ -1141,6 +1055,9 @@ export default {
     // 打开新建检测项目窗口
     openNewProjectDialog() {
       this.project_id = ''
+      this.pos.slon = 0
+      this.pos.slat = 0
+      this.pos.sname = ''
       this.mapOpen = true
       this.isNewDialogShow = true
     },
@@ -1148,53 +1065,69 @@ export default {
     onNewSubmit() {
       this.$refs.newProjectRuleForm.validate(valid => {
         if (valid) {
-          this.isNewLoading = true
-          for (const key in this.paramsNewProjects) {
-            if (this.paramsNewProjects.is_testing && !this.paramsNewProjects.is_testing2) {
-              if (!this.building_str_list.includes(key)) {
-                this.projectFormData.set(key, this.paramsNewProjects[key])
+          if (this.paramsNewProjects.address && this.paramsNewProjects.longitude) {
+            this.isNewLoading = true
+            for (const key in this.paramsNewProjects) {
+              if (this.paramsNewProjects.is_testing && !this.paramsNewProjects.is_testing2) {
+                if (!this.building_str_list.includes(key)) {
+                  this.projectFormData.set(key, this.paramsNewProjects[key])
+                }
+                if (key === 'testing_contract_amount') {
+                  this.projectFormData.set(key, (this.paramsNewProjects[key] || 0))
+                }
+              } else if (!this.paramsNewProjects.is_testing && this.paramsNewProjects.is_testing2) {
+                if (!this.fire_str_list.includes(key)) {
+                  this.projectFormData.set(key, this.paramsNewProjects[key])
+                }
+                if (key === 'testing2_contract_amount') {
+                  this.projectFormData.set(key, (this.paramsNewProjects[key] || 0))
+                }
+              } else {
+                if (['testing2_contract_amount', 'testing_contract_amount'].includes(key)) {
+                  this.projectFormData.set(key, (this.paramsNewProjects[key] || 0))
+                } else {
+                  this.projectFormData.set(key, this.paramsNewProjects[key])
+                }
               }
-            } else if (!this.paramsNewProjects.is_testing && this.paramsNewProjects.is_testing2) {
-              if (!this.fire_str_list.includes(key)) {
-                this.projectFormData.set(key, this.paramsNewProjects[key])
+              if (['testing_users', 'leader', 'auditor'].includes(key)) {
+                this.projectFormData.set(key, JSON.stringify(this.paramsNewProjects[key]))
               }
+            }
+            // 是否是编辑
+            if (this.isEdit) {
+              this.projectFormData.set('project_id', this.project_id)
+              updateProjectFire(this.projectFormData).then(() => {
+                this.isNewLoading = false
+                this.$message({
+                  type: 'success',
+                  message: '编辑检测项目成功！'
+                })
+                this.getProjectFire()
+                this.isNewLoading = false
+                this.isNewDialogShow = false
+              }).catch(() => {
+                this.isNewLoading = false
+              })
             } else {
-              this.projectFormData.set(key, this.paramsNewProjects[key])
-            }
-            if (['testing_users', 'leader', 'auditor'].includes(key)) {
-              this.projectFormData.set(key, JSON.stringify(this.paramsNewProjects[key]))
-            }
-          }
-          // 是否是编辑
-          if (this.isEdit) {
-            this.projectFormData.set('project_id', this.project_id)
-            updateProjectFire(this.projectFormData).then(() => {
-              this.isNewLoading = false
-              this.$message({
-                type: 'success',
-                message: '编辑检测项目成功！'
+              addProjectFire(this.projectFormData).then(() => {
+                this.isNewLoading = false
+                this.init()
+                this.$message({
+                  type: 'success',
+                  message: '新建检测项目成功！'
+                })
+                this.getProjectFire()
+                this.isNewLoading = false
+                this.isNewDialogShow = false
+              }).catch(() => {
+                this.isNewLoading = false
               })
-              this.getProjectFire()
-              this.isNewLoading = false
-              this.isNewDialogShow = false
-            }).catch(() => {
-              this.isNewLoading = false
-            })
+            }
           } else {
-            addProjectFire(this.projectFormData).then(() => {
-              this.isNewLoading = false
-              this.init()
-              this.$message({
-                type: 'success',
-                message: '新建检测项目成功！'
-              })
-              this.getProjectFire()
-              this.isNewLoading = false
-              this.isNewDialogShow = false
-            }).catch(() => {
-              this.isNewLoading = false
-            })
+            this.$message({ type: 'warning', message: '请完善项目地址' })
           }
+        } else {
+          this.$message({ type: 'warning', message: '请完善项目信息' })
         }
       })
     },
@@ -1220,7 +1153,7 @@ export default {
         this.isIndeterminate2 = false
         this.checkAll2 = false
       }
-      this.checkedItems = [this.paramsNewProjects.is_testing ? 1 : undefined, this.paramsNewProjects.is_testing2 ? 2 : undefined]
+      this.checkedItems = [1]
     },
     enterProject(pid) {
       this.$store.dispatch('user/SelectProject', pid).then(() => {
@@ -1251,14 +1184,15 @@ export default {
             obj[key] = data[key]
           }
           if (['asbuild_time', 'testing_time', 'testing_completion_time', 'testing2_time', 'testing2_completion_time'].includes(key)) {
-            obj[key] = Formattimestamp2(data[key])
+            obj[key] = data[key] ? Formattimestamp2(data[key]) : null
+            console.log(obj[key])
           }
           if (['leader', 'auditor', 'testing_users'].includes(key)) {
             obj[key] = JSON.parse(data[key])
           }
           if (key === 'testing_id_list' || key === 'testing2_id_list') {
             // 将字符串转化为数组并将将数组项映射成number类型
-            obj[key] = data[key].split(',').map(item => item * 1)
+            obj[key] = data[key] ? data[key].split(',').map(item => item * 1) : []
           }
           if (key === 'testing_scheme') {
             const fileName = data[key] ? data[key].split('/').pop() : ''
@@ -1283,7 +1217,10 @@ export default {
           }
         }
         this.paramsNewProjects = obj
-        this.checkedItems = [this.paramsNewProjects.is_testing ? 1 : undefined, this.paramsNewProjects.is_testing2 ? 2 : undefined]
+        const items = []
+        if (this.paramsNewProjects.is_testing) items.push(1)
+        if (this.paramsNewProjects.is_testing2) items.push(2)
+        this.checkedItems = items
         this.checkAll2 = this.deviceTypeOptions.length === this.paramsNewProjects.testing2_id_list.length
         this.checkAll1 = this.systemTypeOptions.length === this.paramsNewProjects.testing_id_list.length
         this.isIndeterminate1 = this.systemTypeOptions.length > this.paramsNewProjects.testing_id_list.length && this.paramsNewProjects.testing_id_list.length > 0

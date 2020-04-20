@@ -28,7 +28,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .app-main {
     /*50 = navbar  */
     min-height: calc(100vh - 50px);

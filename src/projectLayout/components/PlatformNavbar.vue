@@ -2,7 +2,7 @@
   <div class="navbar">
     <div class="left-menu">
       <template>
-        <span class="left-menu-item"><a @click="$router.push('/project')">利盾消防检查系统</a> / <span style="color:#909399">{{ projectType }}</span></span>
+        <span class="left-menu-item"><a @click="$router.push('/project')">利盾消防检测系统</a> / <span style="color:#909399">{{ projectType }}</span></span>
       </template>
     </div>
     <div class="right-menu">
@@ -15,7 +15,7 @@
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <el-dropdown-item>
-            <span style="display:block;" @click="onProjectTypeSelect">重选项目类型</span>
+            <span style="display:block;" @click="onProjectTypeSelect">选择模块</span>
           </el-dropdown-item>
           <el-dropdown-item divided>
             <span style="display:block;text-align:center" @click="logout">退出登录</span>
@@ -50,7 +50,7 @@ export default {
   },
   computed: {
     projectType() {
-      const typeName = ['消防检测及建筑防火', '维保', '电气检测', '安全评估', '三小场所']
+      const typeName = ['消防设施及建筑防火检测', '维保', '电气检测', '安全评估', '三小场所']
       return typeName[Cookies.get('project_type_id') - 1]
     },
     ...mapGetters({

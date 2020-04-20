@@ -2,8 +2,8 @@
   <section class="app-main">
     <el-scrollbar id="scroller-box" class="sidebar">
       <transition name="fade-transform" mode="out-in">
-        <!-- <router-view :key="key" /> -->
-        <router-view />
+        <router-view :key="key" />
+        <!-- <router-view /> -->
       </transition>
     </el-scrollbar>
   </section>
@@ -14,7 +14,7 @@ export default {
   name: 'AppMain',
   computed: {
     key() {
-      return this.$route.path
+      return this.$route.name !== undefined ? this.$route.name + +new Date() : this.$route + +new Date()
     }
   }
 }

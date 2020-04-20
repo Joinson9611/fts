@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="overflow:hidden">
     <PlatformNavbar />
     <app-main />
   </div>
@@ -14,12 +14,6 @@ export default {
   components: {
     PlatformNavbar,
     AppMain
-  },
-  computed: {
-
-  },
-  methods: {
-
   }
 }
 </script>

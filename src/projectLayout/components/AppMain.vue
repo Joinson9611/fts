@@ -1,7 +1,7 @@
 <template>
   <section class="app-main">
     <!--转场方式-->
-    <div>
+    <div style="overflow:hidden">
       <el-scrollbar id="scroller-box" class="sidebar">
         <transition name="fade-transform" mode="out-in">
           <router-view />
@@ -28,7 +28,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .app-main {
     /*50 = navbar  */
     min-height: calc(100vh - 50px);

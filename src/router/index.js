@@ -8,7 +8,7 @@ import Layout from '@/layout'
 import PlatformLayout from '@/views/platformlayout/PlatformLayout'
 import projectLayout from '@/projectLayout'
 import test from '@/views/login/index'
-import report from '@/views/report/task'
+import report from '@/views/report/project'
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -35,7 +35,7 @@ import report from '@/views/report/task'
  */
 export const constantRoutes = [
   {
-    path: '/report/task',
+    path: '/report/project',
     component: report,
     hidden: true
   },
@@ -140,20 +140,6 @@ export const asyncRouterMap = [
     ]
   },
   {
-    path: '/location4',
-    component: Layout,
-    // redirect: 'noRedirect',
-    // name: 'Location',
-    children: [
-      {
-        path: 'building',
-        name: 'Building',
-        component: () => import('@/views/security/building'),
-        meta: { title: '建筑物', icon: 'building', roles: [4] }
-      }
-    ]
-  },
-  {
     path: '/device1',
     component: Layout,
     hidden: false,
@@ -171,6 +157,50 @@ export const asyncRouterMap = [
       path: 'record',
       component: () => import('@/views/detection/record'),
       meta: { title: '检测记录', icon: 'record', roles: [1] }
+    }]
+  },
+  {
+    path: '/location4',
+    component: Layout,
+    // redirect: 'noRedirect',
+    // name: 'Location',
+    children: [
+      {
+        path: 'building',
+        name: 'Building',
+        component: () => import('@/views/security/building'),
+        meta: { title: '建筑物', icon: 'building', roles: [4] }
+      }
+    ]
+  },
+  {
+    path: '/security',
+    component: Layout,
+    hidden: false,
+    children: [{
+      path: 'record',
+      component: () => import('@/views/security/record'),
+      meta: { title: '评估记录', icon: 'record', roles: [4] }
+    }]
+  },
+  {
+    path: '/problems',
+    component: Layout,
+    hidden: false,
+    children: [{
+      path: 'problem',
+      component: () => import('@/views/security/problem'),
+      meta: { title: '问题', icon: 'problem', roles: [4], is_problem: 1 }
+    }]
+  },
+  {
+    path: '/suggestions',
+    component: Layout,
+    hidden: false,
+    children: [{
+      path: 'suggestion',
+      component: () => import('@/views/security/problem'),
+      meta: { title: '建议', icon: 'suggestion', roles: [4], is_problem: 0 }
     }]
   },
   {

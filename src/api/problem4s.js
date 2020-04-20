@@ -1,10 +1,10 @@
 import request from '@/utils/request'
 import qs from 'qs'
 
-// 用户登录接口
-export function getReportInfo(params) {
+// 获取安全评估子项列表
+export function getProblem(params) {
   return request({
-    url: '/projects/wechatscan',
+    url: '/problem4s/index',
     method: 'post',
     data: qs.stringify(params)
   })

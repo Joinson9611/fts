@@ -7,7 +7,7 @@ import qs from 'qs'
  **/
 export function getFloorInfoList(Params) {
   return request({
-    url: '/floor4s/index',
+    url: '/floor1s/index',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -19,7 +19,7 @@ export function getFloorInfoList(Params) {
  **/
 export function getFloorList(Params) {
   return request({
-    url: '/floor4s/index2',
+    url: '/floor1s/index2',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -31,7 +31,7 @@ export function getFloorList(Params) {
  **/
 export function addFloor(Params) {
   return request({
-    url: '/floor4s/save',
+    url: '/floor1s/save',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -43,7 +43,7 @@ export function addFloor(Params) {
  **/
 export function batchAddFloor(Params) {
   return request({
-    url: '/floor4s/save2',
+    url: '/floor1s/save2',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -55,7 +55,7 @@ export function batchAddFloor(Params) {
  **/
 export function deleteFloor(Params) {
   return request({
-    url: '/floor4s/delete',
+    url: '/floor1s/delete',
     method: 'post',
     data: qs.stringify(Params)
   })
@@ -67,7 +67,7 @@ export function deleteFloor(Params) {
  **/
 export function updateFloor(Params) {
   return request({
-    url: '/floor4s/update',
+    url: '/floor1s/update',
     method: 'post',
     data: qs.stringify(Params)
   })

@@ -10,7 +10,7 @@
       <el-button v-waves type="primary" plain @click="toMangmentPage">公司以及人员管理</el-button>
     </div>
     <div class="app-project_item">
-      <span style="color:#909399">-请在下方选择您需要的进入的项目类型-</span>
+      <span style="color:#909399">-请在下方选择您需要的进入的项目模块-</span>
       <div v-for="item in itemList" :key="item.item_id" @click="onItemSelected(item.item_id)">
         <el-card class="box-card-component" shadow="hover">
           <div slot="header" class="box-card-header">
@@ -33,7 +33,7 @@ export default {
   data() {
     return {
       itemList: [
-        { item_id: 1, item_name: '消防设施检测' },
+        { item_id: 1, item_name: '消防设施及建筑防火检测' },
         // { item_id: 2, item_name: '维保' },
         // { item_id: 3, item_name: '电器检测' },
         { item_id: 4, item_name: '安全评估' }
@@ -76,14 +76,18 @@ export default {
      * @Date: 2019/3/10
      **/
     onItemSelected(id) {
-      this.$store.dispatch('user/selectProjectType', id).then(() => {
-        this.$router.push({
-          path: '/project/project' + id,
-          query: {
-            pid: id
-          }
+      if (this.validatePer([0, 2], this.Account_Type)) {
+        this.$store.dispatch('user/selectProjectType', id).then(() => {
+          this.$router.push({
+            path: '/project/project' + id,
+            query: {
+              pid: id
+            }
+          })
         })
-      })
+      } else {
+        this.$message({ type: 'error', message: '无权限' })
+      }
     }
   }
 }

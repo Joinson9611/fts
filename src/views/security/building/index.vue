@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="tempFilterOptions.building" placeholder="建筑名称" style="width: 300px;" class="filter-item" @keyup.enter.native="onSearch" />
-      <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-search" @click="onSearch">搜索</el-button>
+      <!-- <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-search" @click="onSearch">搜索</el-button> -->
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-plus" @click="openDialogBuildingAdd">新建建筑</el-button>
       <el-button v-waves :disabled="multipleSelection.length===0" class="filter-item" type="danger" icon="el-icon-delete" @click="onBuildingsDelete">删除建筑</el-button>
     </div>
@@ -31,17 +31,17 @@
             <el-form-item label="建筑类型：">
               <span>{{ buildingTypeMap[scope.row.building_type_id*1-1] }}</span>
             </el-form-item>
-            <el-form-item label="占地面积(平方米)：">
-              <span>{{ scope.row.cover_area || '/' }}</span>
-            </el-form-item>
-            <el-form-item label="建筑面积(平方米)：">
-              <span>{{ scope.row.building_area || '/' }}</span>
-            </el-form-item>
-            <el-form-item label="建筑高度(米)：">
-              <span>{{ scope.row.building_height || '/' }}</span>
-            </el-form-item>
             <el-form-item label="自动消防设施：">
               <span :style="{color:scope.row.is_contain_afff? '#67C23A': '#F56C6C'}">{{ isOrNotMap[scope.row.is_contain_afff] }}</span>
+            </el-form-item>
+            <el-form-item label="占地面积(平方米)：">
+              <span>{{ scope.row.cover_area || '0' }}</span>
+            </el-form-item>
+            <el-form-item label="建筑面积(平方米)：">
+              <span>{{ scope.row.building_area || '0' }}</span>
+            </el-form-item>
+            <el-form-item label="建筑高度(米)：">
+              <span>{{ scope.row.building_height || '0' }}</span>
             </el-form-item>
             <el-form-item label="楼层数：">
               <span>{{ scope.row.building_floor || '0' }}</span>
@@ -99,17 +99,17 @@
               <el-option v-for="item in buildingOptions" :key="item.building_type_id" :label="item.building_name" :value="item.building_type_id" />
             </el-select>
           </el-form-item>
-          <el-form-item label="建筑面积：" class="dialog-form-item" :size="size">
-            <el-input v-model="requestParam_addBuilding.building_area" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
-          </el-form-item>
-          <el-form-item label="建筑高度(米)：" class="dialog-form-item" :size="size">
-            <el-input v-model="requestParam_addBuilding.building_height" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
-          </el-form-item>
           <el-form-item label="自动消防设施：" label-position="left" class="dialog-form-item" prop="is_contain_afff" :size="size">
             <el-radio-group v-model="requestParam_addBuilding.is_contain_afff">
               <el-radio :label="1">有</el-radio>
               <el-radio :label="0">无</el-radio>
             </el-radio-group>
+          </el-form-item>
+          <el-form-item label="建筑面积：" class="dialog-form-item" :size="size">
+            <el-input v-model="requestParam_addBuilding.building_area" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
+          </el-form-item>
+          <el-form-item label="建筑高度(米)：" class="dialog-form-item" :size="size">
+            <el-input v-model="requestParam_addBuilding.building_height" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
           </el-form-item>
           <el-form-item label="占地面积：" class="dialog-form-item" :size="size">
             <el-input v-model="requestParam_addBuilding.cover_area" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
@@ -158,17 +158,17 @@
               <el-option v-for="item in buildingOptions" :key="item.building_type_id" :label="item.building_name" :value="item.building_type_id" />
             </el-select>
           </el-form-item>
-          <el-form-item label="建筑面积：" class="dialog-form-item" :size="size">
-            <el-input v-model="requestParam_editBuilding.building_area" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
-          </el-form-item>
-          <el-form-item label="建筑高度(米)：" class="dialog-form-item" :size="size">
-            <el-input v-model="requestParam_editBuilding.building_height" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
-          </el-form-item>
           <el-form-item label="自动消防设施：" label-position="left" class="dialog-form-item" prop="is_contain_afff" :size="size">
             <el-radio-group v-model="requestParam_editBuilding.is_contain_afff">
               <el-radio :label="1">有</el-radio>
               <el-radio :label="0">无</el-radio>
             </el-radio-group>
+          </el-form-item>
+          <el-form-item label="建筑面积：" class="dialog-form-item" :size="size">
+            <el-input v-model="requestParam_editBuilding.building_area" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />
+          </el-form-item>
+          <el-form-item label="建筑高度(米)：" class="dialog-form-item" :size="size">
+            <el-input v-model="requestParam_editBuilding.building_height" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
           </el-form-item>
           <el-form-item label="占地面积：" class="dialog-form-item" :size="size">
             <el-input v-model="requestParam_editBuilding.cover_area" class="dialog-form-item" type="text" oninput="value=value.replace(/[^\d.]/g,'')" />

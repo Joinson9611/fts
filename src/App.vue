@@ -11,3 +11,9 @@ export default {
   name: 'App'
 }
 </script>
+
+<style lang="scss" scoped>
+  #app {
+    overflow: hidden;
+  }
+</style>
