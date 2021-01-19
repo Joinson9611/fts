@@ -1,6 +1,6 @@
 <template>
   <div>
-    项目详情
+    项目详情1
   </div>
 </template>
 

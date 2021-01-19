@@ -50,7 +50,7 @@
         </el-table-column>
         <el-table-column label="完成时间" align="center" width="110">
           <template slot-scope="scope">
-            <span>{{ scope.row.finished_time? getTime(scope.row.finished_time) : '/' }}</span>
+            <span>{{ scope.row.finished_time? getTime(scope.row.finished_time) : '-' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="是否完成" align="center" width="80">
@@ -672,7 +672,6 @@ export default {
       this.$refs.newProjectRuleForm.validate(valid => {
         if (valid) {
           if (this.paramsNewProjects.address && this.paramsNewProjects.longitude) {
-            this.isNewLoading = true
             for (const key in this.paramsNewProjects) {
               if (['testing_users', 'leader', 'auditor'].includes(key)) {
                 this.taskFormData.set(key, JSON.stringify(this.paramsNewProjects[key]))
@@ -680,6 +679,7 @@ export default {
                 this.taskFormData.set(key, this.paramsNewProjects[key])
               }
             }
+            this.isNewLoading = true
             // 是否是编辑
             if (this.isEdit) {
               this.taskFormData.set('project_id', this.project_id)
@@ -690,7 +690,6 @@ export default {
                   message: '编辑项目成功！'
                 })
                 this.getProject()
-                this.isNewLoading = false
                 this.isNewDialogShow = false
               }).catch(() => {
                 this.isNewLoading = false
@@ -704,7 +703,6 @@ export default {
                 })
                 this.init()
                 this.getProject()
-                this.isNewLoading = false
                 this.isNewDialogShow = false
               }).catch(() => {
                 this.isNewLoading = false

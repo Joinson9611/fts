@@ -1,14 +1,5 @@
 <template>
   <div class="app-container">
-    <div class="filter-container">
-      <!--任务筛选-->
-      <div class="taskSelect">
-        <span>当前任务名称：</span>
-        <el-select v-model="paramsGetRecord.task_id" placeholder="任务列表" filterable style="width: 190px" class="filter-item" @change="taskChange" @visible-change="hasTask">
-          <el-option v-for="item in taskOptions" :key="item.task_id" :label="item.name" :value="item.task_id" />
-        </el-select>
-      </div>
-    </div>
     <!--任务列表-->
     <el-table
       v-loading="isRecordListLoadingShow"
@@ -130,7 +121,6 @@
 import waves from '@/directive/waves'
 import { mapGetters } from 'vuex'
 import { getHistory, getDeviceItems } from '@/api/history5'
-import { getTaskList } from '@/api/task5'
 import { Formattimestamp } from '@/utils/time'
 export default {
   directives: {

@@ -155,7 +155,7 @@
                     检测依据: <span>{{ problemDetail.basis || '-' }}</span>
                   </li>
                   <li class="item">
-                    风险可能产生的后果: <span>{{ problemDetail.basis || '-' }}</span>
+                    风险可能产生的后果: <span>{{ problemDetail.aftermath || '-' }}</span>
                   </li>
                   <li class="item">
                     所在位置: <span>{{ problemDetail.address || '-' }}</span>

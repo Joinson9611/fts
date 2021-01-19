@@ -64,6 +64,7 @@ const actions = {
         const { data } = response
         commit('SET_TOKEN', data.token)
         commit('SET_USER_ID', data.user_id)
+        commit('SET_LEVEL', data.level)
         setUserID(data.user_id)
         setToken(data.token)
         resolve()
@@ -114,6 +115,8 @@ const actions = {
           roles = [1]
         } else if (project_type_id === '4') {
           roles = [4]
+        } else if (project_type_id === '3') {
+          roles = [3]
         }
         commit('SET_ROLES', roles)
         resolve(roles)

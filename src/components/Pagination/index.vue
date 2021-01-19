@@ -13,7 +13,6 @@
     />
   </div>
 </template>
-
 <script>
 import { scrollTo } from '@/utils/scrollTo'
 
@@ -77,6 +76,7 @@ export default {
       }
     }
   },
+
   methods: {
     handleSizeChange(val) {
       // 这里利用计时器 使limit的赋值提前，而handleSizeChange内的同步操作延后（插入到异步队列） ,解决pagesize改变时的BUG
@@ -103,3 +103,4 @@ export default {
     display: none;
   }
 </style>
+

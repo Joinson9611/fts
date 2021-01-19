@@ -1,12 +1,5 @@
 <template>
   <div class="main-page">
-    <!-- <div class="block">
-      <el-carousel height="180px">
-        <el-carousel-item v-for="item in 3" :key="item">
-          <img :src="getAdImage(item)" class="ad-image">
-        </el-carousel-item>
-      </el-carousel>
-    </div> -->
     <hr class="divider-big">
     <div>
       <el-row class="info-item">

@@ -81,7 +81,6 @@ export default {
       if (isOpen) {
         getInfo().then(res => {
           console.log(res)
-
           this.UserInfo.u_nickname = res.data.nickname
         })
         if (this.$refs.formEditUserInfo !== undefined) this.$refs.formEditUserInfo.resetFields()

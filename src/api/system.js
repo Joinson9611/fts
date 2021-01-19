@@ -9,3 +9,4 @@ export function getSystemTypes(params) {
     data: qs.stringify(params)
   })
 }
+

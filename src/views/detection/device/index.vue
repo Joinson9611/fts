@@ -72,7 +72,7 @@
         <el-table-column label="出厂日期" align="center" width="120">
           <template slot-scope="scope">
             <i class="el-icon-time" />
-            <span>{{ scope.row.product_time ? getTime(scope.row.product_time) : '/' }}</span>
+            <span>{{ scope.row.product_time ? getTime(scope.row.product_time) : '-' }}</span>
           </template>
         </el-table-column>
         <el-table-column label="描述" align="center">
@@ -93,7 +93,7 @@
         <el-table-column label="创建时间" align="center" width="120">
           <template slot-scope="scope">
             <i v-show="scope.row.create_time" class="el-icon-time" />
-            <span>{{ scope.row.create_time? getTime(scope.row.create_time) : '/' }}</span>
+            <span>{{ scope.row.create_time? getTime(scope.row.create_time) : '-' }}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -103,30 +103,42 @@
     <!--设备窗口-->
     <el-dialog :visible.sync="dialogVisible" :append-to-body="true" :close-on-click-modal="false" :title="isEdit?'编辑':'新建'" @closed="closeDialog">
       <el-form ref="formDevice" :model="paramsDeviceInfo" :rules="deviceInfoRules" label-width="120px">
-        <el-form-item label="系统类型：" class="dialog-form-item" prop="system_type_id">
-          <el-select v-model="paramsDeviceInfo.system_type_id" placeholder="系统类型" :disabled="isEdit" filterable clearable style="width: 190px" class="filter-item" @change="systemDialogChange">
-            <el-option v-for="item in systemListOptions" :key="item.system_type_id" :label="item.system_type" :value="item.system_type_id" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="设备类型：" class="dialog-form-item" prop="device_type_id">
-          <el-select v-model="paramsDeviceInfo.device_type_id" placeholder="设备类型" :disabled="isEdit" filterable clearable style="width: 175px" class="filter-item">
-            <el-option v-for="item in deviceTypeDialogOptions" :key="item.device_type_id" :label="item.device_type" :value="item.device_type_id" />
-          </el-select>
-        </el-form-item>
+        <div style="display: flex; justify-content: space-between">
+          <el-form-item label="系统类型：" class="dialog-form-item" prop="system_type_id">
+            <el-select v-model="paramsDeviceInfo.system_type_id" placeholder="系统类型" :disabled="isEdit" filterable clearable style="width: 230px" class="filter-item" @change="systemDialogChange">
+              <el-option v-for="item in systemListOptions" :key="item.system_type_id" :label="item.system_type" :value="item.system_type_id" />
+            </el-select>
+          </el-form-item>
+          <div>
+            <el-form-item label="设备类型：" class="dialog-form-item" prop="device_type_id">
+              <el-select v-model="paramsDeviceInfo.device_type_id" placeholder="设备类型" :disabled="isEdit" filterable clearable style="width: 215px" class="filter-item">
+                <el-option v-for="item in deviceTypeDialogOptions" :key="item.device_type_id" :label="item.device_type" :value="item.device_type_id" />
+              </el-select>
+            </el-form-item>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: space-between">
+          <el-form-item label="数量：" class="dialog-form-item" prop="quantity">
+            <el-input v-model="paramsDeviceInfo.quantity" style="width: 230px" oninput="value=value.replace(/[^\d.]/g,'')" />
+          </el-form-item>
+          <div>
+            <el-form-item label="出厂日期：" class="dialog-form-item" prop="product_time">
+              <el-date-picker
+                v-model="paramsDeviceInfo.product_time"
+                placeholder="请选择生产日期"
+                style="width: 100%;"
+                value-format="yyyy-MM-dd"
+              />
+            </el-form-item>
+          </div>
+        </div>
         <el-form-item label="备注：" class="dialog-form-item" prop="label">
           <el-input v-model="paramsDeviceInfo.label" class="dialog-form-item" type="text" />
         </el-form-item>
         <el-form-item label="生产厂家：" class="dialog-form-item" prop="producer">
           <el-input v-model="paramsDeviceInfo.producer" class="dialog-form-item" type="text" />
         </el-form-item>
-        <el-form-item label="出厂日期：" class="dialog-form-item" prop="product_time">
-          <el-date-picker
-            v-model="paramsDeviceInfo.product_time"
-            placeholder="请选择生产日期"
-            style="width: 100%;"
-            value-format="yyyy-MM-dd"
-          />
-        </el-form-item>
+
         <el-form-item label="符合法定市场准入规则的证明文件：" label-width="276px" class="dialog-form-item" prop="is_right">
           <el-radio-group v-model="paramsDeviceInfo.is_right">
             <el-radio :label="1">符合</el-radio>
@@ -139,9 +151,7 @@
             <el-radio :label="0">否</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="数量：" class="dialog-form-item" prop="quantity">
-          <el-input-number v-model="paramsDeviceInfo.quantity" :min="0" />
-        </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer" style="margin-right: 20px;margin-top: 0;">
         <el-button v-waves @click.native="dialogVisible = false">取消</el-button>
@@ -583,6 +593,9 @@ export default {
     .button {
       float: right;
     }
+  }
+  /deep/.el-dialog {
+    width: 770px
   }
   .taskSelect{
     vertical-align: top;

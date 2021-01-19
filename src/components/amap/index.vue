@@ -224,7 +224,7 @@ export default {
     // 地理编码
     geocoder(keyword, inputValue) {
       const geocoder = new AMap.Geocoder({
-        // city: "010", //城市，默认：“全国”
+        city: '',
         radius: 1000 // 范围，默认：500
       })
       // 地理编码,返回地理编码结果

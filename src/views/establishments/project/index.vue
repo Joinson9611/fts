@@ -1,145 +1,145 @@
 <template>
   <div class="app-container">
-
-    <div class="filter-container">
-      <!--新建任务-->
-      <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-plus" @click="openNewTaskDialog">新建任务</el-button>
-      <!--删除按钮-->
-      <el-button v-waves :disabled="multipleSelection.length===0" class="filter-item" type="danger" icon="el-icon-delete" @click="deleteTasks">删除任务</el-button>
-    </div>
-
-    <!--任务列表-->
-    <el-table
-      v-loading="isTaskListLoadingShow"
-      :data="TaskList"
-      element-loading-text="Loading"
-      style="width: 100%;"
-      border
-      fit
-      highlight-current-row
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column
-        type="selection"
-        align="center"
-        width="50"
-      />
-      <el-table-column label="序号" align="center" width="60">
-        <template slot-scope="scope"><span>{{ scope.$index+(paramsGetTasks.page - 1) * paramsGetTasks.limit + 1 }} </span></template>
-      </el-table-column>
-      <el-table-column label="任务名称" align="center">
-        <template slot-scope="scope">
-          <a style="color: #409EFF" @click="openEditTask(scope.row.task_id)"><i>{{ scope.row.name }}</i></a>
-        </template>
-      </el-table-column>
-      <el-table-column label="任务描述" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.label }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="负责人" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.leader | leader }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="检测时段" align="center" width="210">
-        <template slot-scope="scope">
-          <span>{{ `${getTime(scope.row.testting_time)}~${ getTime(scope.row.testing_completion_time)}` }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="完成时间" align="center" width="120">
-        <template slot-scope="scope">
-          <span>{{ scope.row.finished_time ? getTime(scope.row.finished_time) : '/' }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="是否完成" align="center" width="80">
-        <template slot-scope="scope">
-          <span :style="{color:scope.row.is_finished? '#67C23A':'#F56C6C'}">{{ isFinished[scope.row.is_finished] }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="检测类型" align="center" width="80">
-        <template slot-scope="scope">
-          <span>{{ reviewMap[scope.row.is_review] }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        align="center"
-        label="操作"
-        width="102"
-        fixed="right"
+    <!--项目列表-->
+    <el-card shadow="never" class="project-list" body-style="padding: 0;">
+      <div slot="header" class="clearfix">
+        <span style="line-height: 29px">项目列表</span>
+        <div class="button" style="float: right">
+          <!--新建-->
+          <el-button v-waves class="filter-item" style="margin-left: 10px" size="small" type="primary" icon="el-icon-plus" @click="openNewProjectDialog">新建项目</el-button>
+          <!--删除-->
+          <el-button v-waves :disabled="multipleSelection.length===0" size="small" class="filter-item" type="danger" icon="el-icon-delete" @click="deleteProjects">删除项目</el-button>
+        </div>
+      </div>
+      <el-table
+        v-loading="isProjectListLoadingShow"
+        :data="ProjectList"
+        element-loading-text="Loading"
+        style="width: 100%;"
+        border
+        fit
+        highlight-current-row
+        @selection-change="handleSelectionChange"
       >
-        <template slot-scope="scope" class="tab-btn">
-          <el-button
-            class="btn"
-            type="primary"
-            size="mini"
-            plain
-            @click="checkReport(scope.row)"
-          >
-            查看报告
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column
+          type="selection"
+          align="center"
+          width="50"
+        />
+        <el-table-column label="序号" align="center" width="60">
+          <template slot-scope="scope"><span>{{ scope.$index+(paramsGetProjects.page - 1) * paramsGetProjects.limit + 1 }} </span></template>
+        </el-table-column>
+        <el-table-column label="项目名称" align="center">
+          <template slot-scope="scope">
+            <a style="color: #409EFF" @click="openEditProject(scope.row.project_id)"><i>{{ scope.row.name }}</i></a>
+          </template>
+        </el-table-column>
+        <el-table-column label="项目描述" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.label }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="负责人" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.leader | leader }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="检测时段" align="center" width="210">
+          <template slot-scope="scope">
+            <span>{{ `${getTime(scope.row.testting_time)}~${ getTime(scope.row.testing_completion_time)}` }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="完成时间" align="center" width="120">
+          <template slot-scope="scope">
+            <span>{{ scope.row.finished_time ? getTime(scope.row.finished_time) : '/' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="是否完成" align="center" width="80">
+          <template slot-scope="scope">
+            <span :style="{color:scope.row.is_finished? '#67C23A':'#F56C6C'}">{{ isFinished[scope.row.is_finished] }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="检测类型" align="center" width="80">
+          <template slot-scope="scope">
+            <span>{{ reviewMap[scope.row.is_review] }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          label="操作"
+          width="102"
+          fixed="right"
+        >
+          <template slot-scope="scope" class="tab-btn">
+            <el-button
+              class="btn"
+              type="primary"
+              size="mini"
+              plain
+              @click="checkReport(scope.row)"
+            >
+              查看报告
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
     <!--页码导航-->
-    <pagination v-show="total>0" :total="total" :page.sync="paramsGetTasks.page" :limit.sync="paramsGetTasks.limit" @pagination="getTask" />
+    <pagination v-show="total>0" :total="total" :page.sync="paramsGetProjects.page" :limit.sync="paramsGetProjects.limit" @pagination="getProject" />
 
-    <!-- 新建检测任务的窗口 -->
+    <!-- 新建检测项目的窗口 -->
     <el-drawer
       ref="drawer"
-      :title="isEdit?'任务编辑': '新建检测任务'"
+      :title="isEdit?'项目编辑': '新建检测项目'"
       :visible.sync="isNewDialogShow"
       direction="ltr"
       size="100%"
       @closed="closeDialog"
     >
-      <div class="task">
-        <el-form ref="newTaskRuleForm" :model="paramsNewTasks" :rules="taskTules">
+      <div class="project">
+        <el-form ref="newProjectRuleForm" :model="paramsNewProjects" :rules="projectTules">
+          <div class="title">项目信息</div>
           <el-row>
-            <el-col :span="11">
-              <el-form-item label="任务名称：" class="dialog-form-item" prop="name" :size="size">
-                <el-input v-model="paramsNewTasks.name" class="dialog-form-item" type="text" />
+            <el-col :span="12">
+              <el-form-item label="项目名称：" class="dialog-form-item" prop="name" :size="size">
+                <el-input v-model="paramsNewProjects.name" class="dialog-form-item" type="text" />
               </el-form-item>
-              <el-form-item label="任务描述：" class="dialog-form-item" prop="label" :size="size">
-                <el-input v-model="paramsNewTasks.label" class="dialog-form-item" type="text" />
+              <el-form-item label="项目描述：" class="dialog-form-item" prop="label" :size="size">
+                <el-input v-model="paramsNewProjects.label" class="dialog-form-item" type="text" />
               </el-form-item>
+              <amap v-if="isNewDialogShow" :position="pos" @getPos="getPos" />
               <el-form-item label="委托单位：" class="dialog-form-item" prop="constructing_unit" :size="size">
-                <el-input v-model="paramsNewTasks.constructing_unit" class="dialog-form-item" type="text" />
+                <el-input v-model="paramsNewProjects.constructing_unit" class="dialog-form-item" type="text" />
               </el-form-item>
-              <el-form-item label="任务开始时间：" class="dialog-form-item" prop="testting_time" :size="size">
+              <el-form-item label="项目开始时间：" class="dialog-form-item" prop="testting_time" :size="size">
                 <el-date-picker
-                  v-model="paramsNewTasks.testting_time"
-                  placeholder="请选择任务开始时间"
+                  v-model="paramsNewProjects.testting_time"
+                  placeholder="请选择项目开始时间"
                   style="width: 100%;"
                   value-format="yyyy-MM-dd"
                 />
               </el-form-item>
-              <el-form-item label="任务结束时间：" class="dialog-form-item" prop="testing_completion_time" :size="size">
+              <el-form-item label="项目结束时间：" class="dialog-form-item" prop="testing_completion_time" :size="size">
                 <el-date-picker
-                  v-model="paramsNewTasks.testing_completion_time"
-                  placeholder="请选择任务结束时间"
+                  v-model="paramsNewProjects.testing_completion_time"
+                  placeholder="请选择项目结束时间"
                   style="width: 100%;"
                   value-format="yyyy-MM-dd"
                 />
               </el-form-item>
             </el-col>
-            <el-col :span="2" style="height:200px">
-              <div class="divider">
-                <el-divider direction="vertical" />
-              </div>
-            </el-col>
-            <el-col :span="11">
+            <el-col :span="12">
               <el-form-item label="统一社会信用代码：" class="dialog-form-item" prop="constructing_unit_code" :size="size">
-                <el-input v-model="paramsNewTasks.constructing_unit_code" class="dialog-form-item" type="text" />
+                <el-input v-model="paramsNewProjects.constructing_unit_code" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="联系人：" class="dialog-form-item" prop="contacts" :size="size">
-                <el-input v-model="paramsNewTasks.contacts" class="dialog-form-item" type="text" />
+                <el-input v-model="paramsNewProjects.contacts" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="联系电话：" class="dialog-form-item" prop="contact_number" :size="size">
-                <el-input v-model="paramsNewTasks.contact_number" oninput="value=value.replace(/[^\d.]/g,'')" class="dialog-form-item" type="text" />
+                <el-input v-model="paramsNewProjects.contact_number" oninput="value=value.replace(/[^\d.]/g,'')" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="合同金额：" class="dialog-form-item" prop="contract_amount" :size="size">
-                <el-input v-model="paramsNewTasks.contract_amount" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
+                <el-input v-model="paramsNewProjects.contract_amount" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
               </el-form-item>
               <el-form-item label="合同扫描件：" class="dialog-form-item" :size="size">
                 <el-input class="dialog-form-item" disabled :placeholder="contractfileList.length===0?'请选择合同扫描件':contractfileList[0].name" type="text" style="width:200px" />
@@ -162,21 +162,21 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label="检测批文：" class="dialog-form-item" prop="testing_appvoval" :size="size">
-                <el-input v-model="paramsNewTasks.testing_appvoval" class="dialog-form-item" type="textarea" />
+                <el-input v-model="paramsNewProjects.testing_appvoval" class="dialog-form-item" type="textarea" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
               <el-form-item label="检测依据：" class="dialog-form-item" prop="testing_basis" :size="size">
-                <el-input v-model="paramsNewTasks.testing_basis" class="dialog-form-item" type="textarea" />
+                <el-input v-model="paramsNewProjects.testing_basis" class="dialog-form-item" type="textarea" />
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
               <el-form-item label="检测内容(场所)：" class="dialog-form-item" prop="system_id_list" :size="size">
-                <el-select v-model="paramsNewTasks.system_id_list" filterable multiple placeholder="请选择需检测的系统" style="width: 100%">
+                <el-select v-model="paramsNewProjects.system_id_list" filterable multiple placeholder="请选择需检测的系统" style="width: 100%">
                   <el-option
                     v-for="item in systemTypeOptions"
                     :key="item.system_type_id"
@@ -187,10 +187,11 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <div class="title">检测人员信息</div>
           <el-row>
             <el-col :span="24">
               <el-form-item label="项目负责人：" class="dialog-form-item" prop="leader" :size="size">
-                <el-select v-model="paramsNewTasks.leader" filterable value-key="user_id" placeholder="请选择项目负责人" style="width: 100%">
+                <el-select v-model="paramsNewProjects.leader" filterable value-key="user_id" placeholder="请选择项目负责人" style="width: 100%">
                   <el-option
                     v-for="item in userOptions"
                     :key="item.user_id"
@@ -204,7 +205,7 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label="审核人：" class="dialog-form-item" prop="auditor" :size="size">
-                <el-select v-model="paramsNewTasks.auditor" filterable value-key="user_id" placeholder="请选择项目负责人" style="width: 100%">
+                <el-select v-model="paramsNewProjects.auditor" filterable value-key="user_id" placeholder="请选择项目负责人" style="width: 100%">
                   <el-option
                     v-for="item in userOptions"
                     :key="item.user_id"
@@ -218,7 +219,7 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label="检测人员：" class="dialog-form-item" prop="testing_users" :size="size">
-                <el-select v-model="paramsNewTasks.testing_users" multiple filterable value-key="user_id" placeholder="请选择检测人员" style="width: 100%">
+                <el-select v-model="paramsNewProjects.testing_users" multiple filterable value-key="user_id" placeholder="请选择检测人员" style="width: 100%">
                   <el-option
                     v-for="item in userOptions"
                     :key="item.user_id"
@@ -232,7 +233,7 @@
           <el-row>
             <el-col :span="24">
               <el-form-item label="检测类型：" class="dialog-form-item" prop="is_review" :size="size">
-                <el-radio-group v-model="paramsNewTasks.is_review" size="small">
+                <el-radio-group v-model="paramsNewProjects.is_review" size="small">
                   <el-radio :label="0">初查</el-radio>
                   <el-radio :label="1">复查</el-radio>
                 </el-radio-group>
@@ -290,12 +291,12 @@
         <el-button v-waves type="primary" :loading="isGenerateReportLoading" plain @click="generateReport"> {{ isGenerateReportLoading? '生成中':'生成报告' }}</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import { getTask, newTask, detailTask, updateTask, deleteTask, generateReport } from '@/api/task5'
+import { getProject, newProject, detailProject, updateProject, deleteProject, generateReport } from '@/api/project5s'
+import amap from '@/components/amap'
 import { getUsersByCompany } from '@/api/user'
 import { getSystemTypes } from '@/api/system'
 import { Formattimestamp2, Formattimestamp } from '@/utils/time'
@@ -304,8 +305,8 @@ import Pagination from '@/components/Pagination'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'Detectiontasks',
-  components: { Pagination },
+  name: 'Securityprojects',
+  components: { Pagination, amap },
   directives: { waves },
   filters: {
     leader(user) {
@@ -334,11 +335,15 @@ export default {
 
       isGenerateReportLoading: false,
       isButtonDownLoading: false,
-      // 新建任务加载显示
+      // 新建项目加载显示
       isNewLoading: false,
-
-      // 当前的任务ID
-      task_id: undefined,
+      pos: {
+        sname: '', // 地点名称
+        slat: 0, // 纬度
+        slon: 0 // 经度
+      },
+      // 当前的项目ID
+      project_id: undefined,
       // 保留检测方案文件信息
       fileTestingScheme: {
         name: '',
@@ -358,20 +363,20 @@ export default {
       // 报告加载显示
       isReportLoading: false,
       isNewDialogShow: false,
-      isTasksDeleteShow: false,
+      isProjectsDeleteShow: false,
       multipleSelection: [],
-      TaskList: [],
+      ProjectList: [],
       total: 0,
-      isTaskListLoadingShow: true,
+      isProjectListLoadingShow: true,
       tempFilterOptions: {
-        task_name: undefined,
-        task_type2_id: undefined,
-        task_state2: undefined
+        project_name: undefined,
+        project_type2_id: undefined,
+        project_state2: undefined
       },
 
-      taskTules: {
-        name: [{ required: true, message: '请填写任务名称', trigger: 'blur' }],
-        label: [{ required: true, message: '请填写任务描述', trigger: 'blur' }],
+      projectTules: {
+        name: [{ required: true, message: '请填写项目名称', trigger: 'blur' }],
+        label: [{ required: true, message: '请填写项目描述', trigger: 'blur' }],
         constructing_unit: [{ required: true, message: '请填写委托单位', trigger: 'blur' }],
         constructing_unit_code: [{ required: true, message: '请填写统一社会信用代码', trigger: 'blur' }],
         designed_unit: [{ required: true, message: '请填写设计单位', trigger: 'blur' }],
@@ -400,8 +405,8 @@ export default {
         testing_users: [{ required: true, message: '请选择检测人员', trigger: 'blur' }],
         is_review: [{ required: true, message: '请选择复查结果', trigger: 'blur' }]
       },
-      paramsGetTasks: {
-        project_id: undefined,
+      paramsGetProjects: {
+        company_id: undefined,
         page: 1,
         limit: 20
       },
@@ -410,12 +415,12 @@ export default {
       // 报告生成时间
       report_time: undefined,
       isEdit: false,
-      // 检测任务的formdata对象
-      taskFormData: new FormData(),
-      paramsNewTasks: {
+      // 检测项目的formdata对象
+      projectFormData: new FormData(),
+      paramsNewProjects: {
         project_id: undefined,		// 项目名称
-        name: undefined,				// 任务名称
-        label: undefined,			// 任务描述
+        name: undefined,				// 项目名称
+        label: undefined,			// 项目描述
         constructing_unit: undefined,		// 委托单位(建设单位)
         constructing_unit_code: undefined,		// 统一信用代码(建设单位)
         testting_time: undefined,		// 检测日期
@@ -440,7 +445,7 @@ export default {
     ])
   },
   created() {
-    this.getTask()
+    this.getProject()
     this.getSystemTypes()
     this.getUserList()
   },
@@ -458,14 +463,14 @@ export default {
         type: 'warning'
       }).then(() => {
         this.isGenerateReportLoading = true
-        generateReport({ task_id: this.task_id }).then(res => {
+        generateReport({ project_id: this.project_id }).then(res => {
           const report_time = res.data.report_time
           this.report_time = res.data.report_time
           this.$message({
             type: 'success',
             message: '新报告生成，需要查看请下载该报告'
           })
-          this.getTask()
+          this.getProject()
           this.is_reported = res.data.is_reported
           const report_info = JSON.parse(res.data.report_info)
           this.reportFile = report_info.map(item => {
@@ -510,7 +515,7 @@ export default {
           report_file_name: item.report_path ? item.report_path.split('/').pop() : '暂无报告'
         }
       })
-      this.task_id = info.task_id
+      this.project_id = info.project_id
     },
     // 导出文件
     exportFile(name) {
@@ -525,7 +530,7 @@ export default {
       if (this.isEdit) {
         this.init()
       } else {
-        this.$refs.newTaskRuleForm.clearValidate()
+        this.$refs.newProjectRuleForm.clearValidate()
       }
       this.isEdit = false
       this.fileTestingScheme.isExport = false
@@ -563,7 +568,7 @@ export default {
     //       this.schemefileList = [fileList[1]]
     //     }
     //     this.fileTestingScheme.isExport = false
-    //     this.taskFormData.set('testing_scheme', this.schemefileList[0].raw, this.schemefileList[0].name)
+    //     this.projectFormData.set('testing_scheme', this.schemefileList[0].raw, this.schemefileList[0].name)
     //   } else {
     //     if (this.fileTestingScheme.isExport) {
     //       this.schemefileList = [{ name: this.fileTestingScheme.name }]
@@ -581,7 +586,7 @@ export default {
           this.contractfileList = [fileList[1]]
         }
         this.fileContractCopy.isExport = false
-        this.taskFormData.set('contract_copy', this.contractfileList[0].raw, this.contractfileList[0].name)
+        this.projectFormData.set('contract_copy', this.contractfileList[0].raw, this.contractfileList[0].name)
       } else {
         if (this.fileContractCopy.isExport) {
           this.contractfileList = [{ name: this.fileContractCopy.name }]
@@ -600,19 +605,23 @@ export default {
     },
     // 获取系统列表
     getSystemTypes() {
-      getSystemTypes({ task_type_id: 5 }).then(res => {
+      getSystemTypes({ project_type_id: 5 }).then(res => {
         this.systemTypeOptions = res.data.items
       }).catch(err => {
         console.error(err)
       })
     },
-    // 打开新建检测任务窗口
-    openNewTaskDialog() {
+    // 打开新建检测项目窗口
+    openNewProjectDialog() {
+      this.project_id = ''
+      this.pos.slon = 0
+      this.pos.slat = 0
+      this.pos.sname = ''
       this.isNewDialogShow = true
     },
-    // 确定新建检测任务
+    // 确定新建检测项目
     onNewSubmit() {
-      this.$refs.newTaskRuleForm.validate(valid => {
+      this.$refs.newProjectRuleForm.validate(valid => {
         if (valid) {
           if (this.contractfileList.length === 0) {
             this.$message({
@@ -621,38 +630,38 @@ export default {
             })
           } else {
             this.isNewLoading = true
-            for (const key in this.paramsNewTasks) {
+            for (const key in this.paramsNewProjects) {
               if (['testing_users', 'leader', 'auditor'].includes(key)) {
-                this.taskFormData.set(key, JSON.stringify(this.paramsNewTasks[key]))
+                this.projectFormData.set(key, JSON.stringify(this.paramsNewProjects[key]))
               } else {
-                this.taskFormData.set(key, this.paramsNewTasks[key])
+                this.projectFormData.set(key, this.paramsNewProjects[key])
               }
             }
             // 是否是编辑
             if (this.isEdit) {
-              this.taskFormData.set('task_id', this.task_id)
-              updateTask(this.taskFormData).then(() => {
+              this.projectFormData.set('project_id', this.project_id)
+              updateProject(this.projectFormData).then(() => {
                 this.isNewLoading = false
                 this.$message({
                   type: 'success',
-                  message: '编辑检测任务成功！'
+                  message: '编辑检测项目成功！'
                 })
-                this.getTask()
+                this.getProject()
                 this.isNewLoading = false
                 this.isNewDialogShow = false
               }).catch(() => {
                 this.isNewLoading = false
               })
             } else {
-              this.taskFormData.set('project_id', this.project_id)
-              newTask(this.taskFormData).then(() => {
+              this.projectFormData.set('project_id', this.project_id)
+              newProject(this.projectFormData).then(() => {
                 this.isNewLoading = false
                 this.init()
                 this.$message({
                   type: 'success',
-                  message: '新建检测任务成功！'
+                  message: '新建检测项目成功！'
                 })
-                this.getTask()
+                this.getProject()
                 this.isNewLoading = false
                 this.isNewDialogShow = false
               }).catch(() => {
@@ -665,12 +674,12 @@ export default {
     },
     // 初始化表单
     init() {
-      if (this.$refs.newTaskRuleForm !== undefined) this.$refs.newTaskRuleForm.resetFields()
+      if (this.$refs.newProjectRuleForm !== undefined) this.$refs.newProjectRuleForm.resetFields()
       // this.schemefileList = []
       this.contractfileList = []
-      this.taskFormData = new FormData()
-      for (const key in this.paramsNewTasks) {
-        this.paramsNewTasks[key] = undefined
+      this.projectFormData = new FormData()
+      for (const key in this.paramsNewProjects) {
+        this.paramsNewProjects[key] = undefined
       }
     },
     getTime(time) {
@@ -680,15 +689,18 @@ export default {
       return Formattimestamp(time)
     },
     // 打开编辑窗口
-    openEditTask(task_id) {
-      this.task_id = task_id
+    openEditProject(project_id) {
+      this.project_id = project_id
       this.isEdit = true
       // this.fileTestingScheme.isExport = true
       this.fileContractCopy.isExport = true
       this.isNewDialogShow = true
-      detailTask({ task_id }).then(res => {
+      detailProject({ project_id }).then(res => {
         const obj = {}
         const data = res.data
+        this.pos.slon = data.longitude
+        this.pos.slat = data.latitude
+        this.pos.sname = data.address
         for (const key in data) {
           if (!['project_id', 'id', 'testing_scheme', 'contract_copy', 'is_finished', 'extension', 'status'].includes(key)) {
             obj[key] = data[key]
@@ -716,32 +728,38 @@ export default {
             this.contractfileList = [{ name: fileName }]
           }
         }
-        this.paramsNewTasks = obj
+        this.paramsNewProjects = obj
       })
     },
     /**
-     * @Description: 获取任务列表
+     * @Description: 获取项目列表
      * @Date: 2019/5/7
      **/
-    getTask() {
-      this.isTaskListLoadingShow = true
-      this.paramsGetTasks.project_id = this.project_id
-      getTask(this.paramsGetTasks).then(response => {
-        this.TaskList = response.data.items
+    getProject() {
+      this.isProjectListLoadingShow = true
+      this.paramsGetProjects.company_id = this.company_id
+      getProject(this.paramsGetProjects).then(response => {
+        this.ProjectList = response.data.items
         this.total = response.data.total
-        this.isTaskListLoadingShow = false
+        this.isProjectListLoadingShow = false
       }).catch(err => {
         console.error(err)
-        this.isTaskListLoadingShow = false
+        this.isProjectListLoadingShow = false
       })
+    },
+    // 获取从amap组件得到的位置信息
+    getPos(pos) {
+      this.paramsNewProjects.longitude = pos.slon
+      this.paramsNewProjects.latitude = pos.slat
+      this.paramsNewProjects.address = pos.sname
     },
     /**
      * @Description: 搜索事件
      * @Date: 2019/5/7
      **/
     onSearch() {
-      this.paramsGetTasks.page = 1
-      this.getTask()
+      this.paramsGetProjects.page = 1
+      this.getProject()
     },
     /**
      * @Description: 列表勾选回调
@@ -751,24 +769,24 @@ export default {
       this.multipleSelection = val
     },
     /**
-     * @Description: 删除任务
+     * @Description: 删除项目
      * @Date: 2019/5/7
      **/
-    deleteTasks() {
-      this.$confirm('确认删除选中的任务吗？', '提示', {
+    deleteProjects() {
+      this.$confirm('确认删除选中的项目吗？', '提示', {
         type: 'warning'
       }).then(() => {
-        this.isTaskListLoadingShow = true
+        this.isProjectListLoadingShow = true
         const deleteParam = {
-          task_id_list: this.multipleSelection.map(item => item.task_id).toString(),
+          project_id_list: this.multipleSelection.map(item => item.project_id).toString(),
           project_id: this.selected_project_id
         }
-        deleteTask(deleteParam).then(() => {
-          this.isTaskListLoadingShow = false
-          this.getTask()
+        deleteProject(deleteParam).then(() => {
+          this.isProjectListLoadingShow = false
+          this.getProject()
         }).catch(err => {
           console.log(err)
-          this.isTaskListLoadingShow = false
+          this.isProjectListLoadingShow = false
         })
       })
     }
@@ -783,15 +801,6 @@ export default {
   /deep/.dialog-form-item {
     margin-right: 0;
   }
-  .divider {
-    height: 100%;
-    width: 100%;
-    text-align: center;
-    /deep/.el-divider--vertical {
-      margin: 0 auto;
-      height: 100%;
-    }
-  }
   /deep/.el-dialog__body{
     padding-top: 0;
   }
@@ -801,14 +810,30 @@ export default {
     padding: 0;
     height: 0
   }
-  .task {
-    padding: 20px 20px;
+  .project-list {
+    .button {
+      float: right;
+    }
+  }
+  .project {
     overflow: auto;
     flex: 1;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
     display: flex;
     flex-direction: column;
     height: 100%;
+    .title {
+      width: 100%;
+      height: 50px;
+      font-size: 17px;
+      line-height: 50px;
+      color: #666c75;
+      padding-left: 25px;
+      font-weight: 500;
+      border-top:1px solid #dcdfe6;
+      border-bottom: 1px solid #dcdfe6;
+      margin-bottom: 15px;
+    }
     /deep/.el-form-item__label {
       width: 152px;
       text-align: right;

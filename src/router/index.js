@@ -76,7 +76,12 @@ export const constantRoutes = [
     }, {
       path: 'project4',
       component: () => import('@/views/security/project')
-    }, {
+    },
+    {
+      path: 'project3',
+      component: () => import('@/views/electricaldetection/project')
+    },
+    {
       path: 'project5',
       component: () => import('@/views/establishments/project')
     }]
@@ -90,15 +95,15 @@ export const constantRoutes = [
   //     component: () => import('@/views/security/project')
   //   }]
   // },
-  // {
-  //   path: '/project5',
-  //   hidden: true,
-  //   component: projectLayout,
-  //   children: [{
-  //     path: 'info',
-  //     component: () => import('@/views/establishments/project')
-  //   }]
-  // },
+  {
+    path: '/project5',
+    hidden: true,
+    component: projectLayout,
+    children: [{
+      path: 'info',
+      component: () => import('@/views/establishments/project')
+    }]
+  },
   {
     path: '/projects',
     component: Layout,
@@ -117,6 +122,7 @@ export const constantRoutes = [
 ]
 
 export const asyncRouterMap = [
+  // 设施检测
   {
     path: '/location1',
     component: Layout,
@@ -152,13 +158,20 @@ export const asyncRouterMap = [
   {
     path: '/fireFighting',
     component: Layout,
+    meta: { title: '检测记录', icon: 'record', roles: [1] },
     hidden: false,
     children: [{
-      path: 'record',
-      component: () => import('@/views/detection/record'),
-      meta: { title: '检测记录', icon: 'record', roles: [1] }
+      path: 'facilities',
+      component: () => import('@/views/detection/record/facilities'),
+      meta: { title: '设施检测', icon: 'facilities', roles: [1] }
+    }, {
+      path: 'fireprevention',
+      component: () => import('@/views/detection/record/fireprevention'),
+      meta: { title: '建筑防火', icon: 'fireprevention', roles: [1] }
     }]
   },
+
+  // 安全评估
   {
     path: '/location4',
     component: Layout,
@@ -203,66 +216,79 @@ export const asyncRouterMap = [
       meta: { title: '建议', icon: 'suggestion', roles: [4], is_problem: 0 }
     }]
   },
+  // 电器检测
   {
-    path: '/fireFighting',
+    path: '/checkItem',
     component: Layout,
-    redirect: 'noredirect',
-    name: 'fireFighting',
-    alwaysShow: true,
-    meta: { title: '消防设施', icon: 'fireFighting', roles: [2] },
-    children: [
-      {
-        path: 'device',
-        name: 'device',
-        component: () => import('@/views/detection/device'),
-        meta: { title: '设备管理', icon: 'devices', roles: [2] }
-      },
-      {
-        path: 'record',
-        name: 'record',
-        meta: { title: '检测记录', icon: 'record', roles: [2] },
-        component: () => import('@/views/detection/record')
-      }
-    ]
+    name: 'checkItem',
+    alwaysShow: false,
+    children: [{
+      path: 'item',
+      component: () => import('@/views/electricaldetection/checkItem'),
+      meta: { title: '检测记录', icon: 'checkItem', roles: [3] }
+    }]
   },
-
-  // {
-  //   path: '/security',
-  //   component: Layout,
-  //   redirect: 'noredirect',
-  //   name: 'security',
-  //   alwaysShow: true,
-  //   meta: { title: '安全评估', icon: 'security', roles: [4] },
-  //   children: [
-  //     {
-  //       path: 'record',
-  //       name: 'record',
-  //       meta: { title: '评估记录', icon: 'record', roles: [4] },
-  //       component: () => import('@/views/security/record')
-  //     }
-  //   ]
-  // },
   {
-    path: '/establishments',
+    path: '/resistanceground',
     component: Layout,
-    redirect: 'noredirect',
-    name: 'establishments',
-    alwaysShow: true,
-    meta: { title: '三小场所', icon: 'establishments', roles: [5] },
-    children: [
-      {
-        path: 'record',
-        name: 'record',
-        meta: { title: '检测记录', icon: 'record', roles: [5] },
-        component: () => import('@/views/establishments/record')
-      }
-    ]
+    name: 'resistanceground',
+    alwaysShow: false,
+    children: [{
+      path: 'resistance',
+      component: () => import('@/views/electricaldetection/resistanceground'),
+      meta: { title: '接地电阻', icon: 'resistance', roles: [3] }
+    }]
+  },
+  {
+    path: '/sceneimage',
+    component: Layout,
+    name: 'sceneimage',
+    alwaysShow: false,
+    children: [{
+      path: 'image',
+      component: () => import('@/views/electricaldetection/sceneimage'),
+      meta: { title: '现场图片', icon: 'image', roles: [3] }
+    }]
+  },
+  {
+    path: '/infrareddetection',
+    component: Layout,
+    name: 'infrareddetection',
+    alwaysShow: false,
+    children: [{
+      path: 'infrared',
+      component: () => import('@/views/electricaldetection/infrareddetection'),
+      meta: { title: '红外检测', icon: 'infrared', roles: [3] }
+    }]
+  },
+  {
+    path: '/instrumentationdetection',
+    component: Layout,
+    name: 'instrumentationdetection',
+    alwaysShow: false,
+    children: [{
+      path: 'instrumentation',
+      component: () => import('@/views/electricaldetection/instrumentation'),
+      meta: { title: '检测仪器', icon: 'instrumentation', roles: [3] }
+    }]
+  },
+  {
+    path: '/aftercurrent',
+    component: Layout,
+    name: 'aftercurrent',
+    alwaysShow: false,
+    children: [{
+      path: 'current',
+      component: () => import('@/views/electricaldetection/aftercurrent'),
+      meta: { title: '剩余电流', icon: 'aftercurrent', roles: [3] }
+    }]
   },
   { path: '*', redirect: '/404', hidden: true }
 ]
 
 export const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  // mode: 'history',
+  // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })

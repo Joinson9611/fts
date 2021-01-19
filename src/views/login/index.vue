@@ -40,16 +40,17 @@
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
-
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
-
     </el-form>
+    <div class="footer">
+      <span>Copyright ©2020 利盾消防 All Rights Reserved</span> <a href="http://www.beian.miit.gov.cn" target="_blank">粤ICP备20071192号-1</a>
+    </div>
   </div>
 </template>
 
 <script>
 import { validUsername } from '@/utils/validate'
-
+import { mapGetters } from 'vuex'
 export default {
   name: 'Login',
   data() {
@@ -81,7 +82,8 @@ export default {
       redirect: undefined
     }
   },
-  watch: {
+  computed: {
+    ...mapGetters(['Account_Type'])
   },
   methods: {
     showPwd() {
@@ -99,7 +101,11 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: '/project' })
+            if (this.Account_Type === 3) {
+              this.$message({ type: 'error', message: '无权限登录' })
+            } else {
+              this.$router.push({ path: '/project' })
+            }
             this.loading = false
           }).catch(() => {
             this.loading = false
@@ -134,7 +140,6 @@ $cursor: #fff;
     display: inline-block;
     height: 47px;
     width: 85%;
-
     input {
       background: transparent;
       border: 0px;
@@ -144,7 +149,6 @@ $cursor: #fff;
       color: $light_gray;
       height: 47px;
       caret-color: $cursor;
-
       &:-webkit-autofill {
         box-shadow: 0 0 0px 1000px $bg inset !important;
         -webkit-text-fill-color: $cursor !important;
@@ -163,7 +167,7 @@ $cursor: #fff;
 
 <style lang="scss" scoped>
 $bg:#2d3a4b;
-$dark_gray:#889aa4;
+$dark_gray:#163a4e;
 $light_gray:#eee;
 
 .login-container {
@@ -221,6 +225,20 @@ $light_gray:#eee;
     color: $dark_gray;
     cursor: pointer;
     user-select: none;
+  }
+  .footer {
+    text-align: center;
+    line-height: 50px;
+    font-size: 12px;
+    height: 50px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: #929293;
+    a:hover {
+      color: #409EFF;
+    }
   }
 }
 </style>

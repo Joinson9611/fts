@@ -11,16 +11,14 @@
     </div>
     <div class="app-project_item">
       <span style="color:#909399">-请在下方选择您需要的进入的项目模块-</span>
-      <div v-for="item in itemList" :key="item.item_id" @click="onItemSelected(item.item_id)">
-        <el-card class="box-card-component" shadow="hover">
-          <div slot="header" class="box-card-header">
-            <img class="project-image" :src="getItemImageUrl(item.item_id)">
+      <ul class="project-list">
+        <li v-for="item in itemList" :key="item.item_id" class="item">
+          <div class="circle" @click="onItemSelected(item.item_id)">
+            <Icon class="icon" :icon-class="item.icon" />
           </div>
-          <div class="box-card-body">
-            <span class="project-name-item">{{ item.item_name }}</span>
-          </div>
-        </el-card>
-      </div>
+          <div class="name">{{ item.item_name }}</div>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -28,16 +26,20 @@
 <script>
 import { mapGetters } from 'vuex'
 import waves from '@/directive/waves'
+import Icon from '@/components/SvgIcon'
 export default {
+  components: {
+    Icon
+  },
   directives: { waves },
   data() {
     return {
       itemList: [
-        { item_id: 1, item_name: '消防设施及建筑防火检测' },
+        { item_id: 1, item_name: '设施检测', icon: 'fire' },
         // { item_id: 2, item_name: '维保' },
-        // { item_id: 3, item_name: '电器检测' },
-        { item_id: 4, item_name: '安全评估' }
-        // { item_id: 5, item_name: '三小场所' }
+        { item_id: 3, item_name: '电器检测', icon: 'electricaldetection' },
+        { item_id: 4, item_name: '安全评估', icon: 'security' }
+        // { item_id: 5, item_name: '三小场所', icon: 'place' }
       ]
     }
   },
@@ -106,6 +108,34 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
   .app-main{
     padding: 12px 24px 32px 24px;
+  }
+  .project-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    .item {
+      margin-right: 30px;
+      .circle {
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #EBEEF5;
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        &:hover {
+          box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+        }
+        .icon {
+          font-size: 50px;
+        }
+      }
+      .name {
+        margin-top: 20px;
+        text-align: center;
+      }
+    }
   }
   .app-title-item {
     margin-left: 10px;

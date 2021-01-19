@@ -163,7 +163,7 @@
               </el-col>
             </el-row>
           </div>
-          <transition name="fade-transform" mode="out-in">
+          <transition name="fade" mode="out-in">
             <div v-if="paramsNewProjects.is_testing" class="fire">
               <div class="title">消防设施检测信息</div>
               <el-row>
@@ -288,7 +288,7 @@
               </el-row>
             </div>
           </transition>
-          <transition name="fade-transform" mode="out-in">
+          <transition name="fade" mode="out-in">
             <div v-if="paramsNewProjects.is_testing2" class="building">
               <div class="title">建筑防火检测信息	</div>
               <el-row>
@@ -433,7 +433,7 @@
         </el-table-column>
         <el-table-column label="报告文件名称" align="center" width="160">
           <template slot-scope="scope">
-            <a style="color: #409EFF" @click="downloadReport">{{ scope.row.is_reported ? scope.row.filename : '-' }}</a>
+            <a style="color: #409EFF" @click="downloadReport(scope.row)">{{ scope.row.is_reported ? scope.row.filename : '-' }}</a>
           </template>
         </el-table-column>
         <el-table-column label="报告生成日期" align="center" width="110">
@@ -513,10 +513,6 @@ export default {
   filters: {
     leader(leader) {
       return leader ? JSON.parse(leader).user_name : ''
-    },
-    page(page) {
-      // 向上取整
-      return Math.ceil(page / 2)
     }
   },
   data() {
@@ -807,7 +803,7 @@ export default {
         const data = res.data
         for (const key in data) {
           if (['asbuild_time', 'testing_time', 'testing_completion_time', 'testing2_time', 'testing2_completion_time'].includes(key)) {
-            this.paramsNewProjects[key] = Formattimestamp2(data[key])
+            this.paramsNewProjects[key] = data[key] ? Formattimestamp2(data[key]) : null
           } else if (key === 'testing_id_list' || key === 'testing2_id_list') {
             this.paramsNewProjects[key] = data[key] ? data[key].split(',').map(item => item * 1) : []
           } else {
@@ -1066,7 +1062,6 @@ export default {
       this.$refs.newProjectRuleForm.validate(valid => {
         if (valid) {
           if (this.paramsNewProjects.address && this.paramsNewProjects.longitude) {
-            this.isNewLoading = true
             for (const key in this.paramsNewProjects) {
               if (this.paramsNewProjects.is_testing && !this.paramsNewProjects.is_testing2) {
                 if (!this.building_str_list.includes(key)) {
@@ -1093,6 +1088,7 @@ export default {
                 this.projectFormData.set(key, JSON.stringify(this.paramsNewProjects[key]))
               }
             }
+            this.isNewLoading = true
             // 是否是编辑
             if (this.isEdit) {
               this.projectFormData.set('project_id', this.project_id)
@@ -1100,10 +1096,9 @@ export default {
                 this.isNewLoading = false
                 this.$message({
                   type: 'success',
-                  message: '编辑检测项目成功！'
+                  message: '编辑项目成功！'
                 })
                 this.getProjectFire()
-                this.isNewLoading = false
                 this.isNewDialogShow = false
               }).catch(() => {
                 this.isNewLoading = false
@@ -1114,17 +1109,16 @@ export default {
                 this.init()
                 this.$message({
                   type: 'success',
-                  message: '新建检测项目成功！'
+                  message: '新建项目成功！'
                 })
                 this.getProjectFire()
-                this.isNewLoading = false
                 this.isNewDialogShow = false
               }).catch(() => {
                 this.isNewLoading = false
               })
             }
           } else {
-            this.$message({ type: 'warning', message: '请完善项目地址' })
+            this.$message({ type: 'warning', message: '请确保项目地址的正确完善' })
           }
         } else {
           this.$message({ type: 'warning', message: '请完善项目信息' })
@@ -1183,9 +1177,16 @@ export default {
           if (!['project_id', 'id', 'testing_scheme', 'testing_contract_copy', 'testing2_contract_copy', 'is_finished', 'extension', 'status'].includes(key)) {
             obj[key] = data[key]
           }
+          if (data['is_testing'] === 0 && this.fire_str_list.includes(key)) {
+            data[key] = undefined
+            obj[key] = undefined
+          }
+          if (data['is_testing2'] === 0 && this.building_str_list.includes(key)) {
+            data[key] = undefined
+            obj[key] = undefined
+          }
           if (['asbuild_time', 'testing_time', 'testing_completion_time', 'testing2_time', 'testing2_completion_time'].includes(key)) {
             obj[key] = data[key] ? Formattimestamp2(data[key]) : null
-            console.log(obj[key])
           }
           if (['leader', 'auditor', 'testing_users'].includes(key)) {
             obj[key] = JSON.parse(data[key])
@@ -1236,7 +1237,6 @@ export default {
       this.paramsGetProjects.company_id = this.company_id
       getProjectFire(this.paramsGetProjects).then(response => {
         this.ProjectList = response.data.items
-        // this.initChartData()
         this.total = response.data.total
         this.isProjectListLoadingShow = false
       }).catch(err => {
@@ -1285,27 +1285,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .app-title-item {
-    margin-left: 10px;
-    margin-bottom: 10px;
-    margin-top: 12px;
-    .company-text{
-      line-height: 48px;
-      display: block;
-      font-size: 26px;
-      font-weight: 600;
-    }
-    .title {
-      color: #409EFF;
-      font-size: 30px;
-      font-weight: 2000;
-    }
-    .tip-text{
-      text-align: center;
-      display: block;
-      line-height: 36px;
-    }
-  }
   .project-list {
     .button {
       float: right;
@@ -1316,15 +1295,6 @@ export default {
   }
   /deep/.dialog-form-item {
     margin-right: 0;
-  }
-  .divider {
-    height: 100%;
-    width: 100%;
-    text-align: center;
-    /deep/.el-divider--vertical {
-      margin: 0 auto;
-      height: 100%;
-    }
   }
   /deep/.el-drawer__body{
     padding: 0;
@@ -1381,4 +1351,5 @@ export default {
     justify-content: center;
     align-items: center;
   }
+
 </style>

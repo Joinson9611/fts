@@ -2,7 +2,6 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="tempFilterOptions.building" placeholder="建筑名称" style="width: 300px;" class="filter-item" @keyup.enter.native="onSearch" />
-      <!-- <el-button v-waves class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-search" @click="onSearch">搜索</el-button> -->
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-plus" @click="openDialogBuildingAdd">新建建筑</el-button>
       <el-button v-waves :disabled="multipleSelection.length===0" class="filter-item" type="danger" icon="el-icon-delete" @click="onBuildingsDelete">删除建筑</el-button>
     </div>
@@ -62,13 +61,13 @@
               <span>{{ scope.row.fire_lift_count || '0' }}</span>
             </el-form-item>
             <el-form-item label="避难层位置：">
-              <span>{{ scope.row.refuge_layer || '/' }}</span>
+              <span>{{ scope.row.refuge_layer || '-' }}</span>
             </el-form-item>
             <el-form-item label="耐火等级：">
-              <span>{{ scope.row.fire_rating || '/' }}</span>
+              <span>{{ scope.row.fire_rating || '-' }}</span>
             </el-form-item>
             <el-form-item label="使用功能：">
-              <span>{{ scope.row.use_function || '/' }}</span>
+              <span>{{ scope.row.use_function || '-' }}</span>
             </el-form-item>
           </el-form>
         </template>
@@ -85,8 +84,9 @@
       </el-table-column>
     </el-table>
     <pagination v-show="total>0" :total="total" :page.sync="requestParam_getBuildingInfoList.page" :limit.sync="requestParam_getBuildingInfoList.limit" @pagination="getBuildingInfoList" />
-    <div class="building">
-      <el-dialog :visible.sync="isDialogAddBuildingShow" :append-to-body="true" :close-on-click-modal="false" title="新建建筑">
+
+    <el-dialog :visible.sync="isDialogAddBuildingShow" :append-to-body="true" :close-on-click-modal="false" title="新建建筑">
+      <div class="building">
         <el-form ref="formAddBuilding" :model="requestParam_addBuilding" :rules="BuidlingInfoRules" label-width="100px">
           <el-form-item label="建筑名称：" class="dialog-form-item" prop="building" :size="size">
             <el-input v-model="requestParam_addBuilding.building" type="text" />
@@ -132,6 +132,9 @@
           <el-form-item label="消防电梯个数：" class="dialog-form-item">
             <el-input-number v-model="requestParam_addBuilding.fire_lift_count" :min="0" :size="size" />
           </el-form-item>
+          <el-form-item label="避难层位置：" class="dialog-form-item">
+            <el-input-number v-model="requestParam_addBuilding.refuge_layer" :min="0" :size="size" />
+          </el-form-item>
           <el-form-item label="耐火等级：" class="dialog-form-item" :size="size">
             <el-input v-model="requestParam_addBuilding.fire_rating" class="dialog-form-item" type="text" />
           </el-form-item>
@@ -139,13 +142,16 @@
             <el-input v-model="requestParam_addBuilding.use_function" class="dialog-form-item" type="text" />
           </el-form-item>
         </el-form>
-        <div slot="footer" class="dialog-footer" style="margin-right: 20px;margin-top: 0;">
-          <el-button v-waves @click.native="closeDialogBuildingAdd">取消</el-button>
-          <el-button v-waves :loading="isDialogAddBuildingLoadingShow" type="primary" @click.native="onBuildingAdd">确定</el-button>
-        </div>
-      </el-dialog>
+      </div>
 
-      <el-dialog :visible.sync="isDialogEditBuildingShow" :append-to-body="true" :close-on-click-modal="false" title="编辑建筑">
+      <div slot="footer" class="dialog-footer" style="margin-right: 20px;margin-top: 0;">
+        <el-button v-waves @click.native="closeDialogBuildingAdd">取消</el-button>
+        <el-button v-waves :loading="isDialogAddBuildingLoadingShow" type="primary" @click.native="onBuildingAdd">确定</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog :visible.sync="isDialogEditBuildingShow" :append-to-body="true" :close-on-click-modal="false" title="编辑建筑">
+      <div class="building">
         <el-form ref="formEditBuilding" :model="requestParam_editBuilding" :rules="BuidlingInfoRules" label-width="100px">
           <el-form-item label="建筑名称：" class="dialog-form-item" prop="building" :size="size">
             <el-input v-model="requestParam_editBuilding.building" type="text" />
@@ -191,19 +197,23 @@
           <el-form-item label="消防电梯个数：" class="dialog-form-item">
             <el-input-number v-model="requestParam_editBuilding.fire_lift_count" :min="0" :size="size" />
           </el-form-item>
+          <el-form-item label="避难层位置：" class="dialog-form-item">
+            <el-input-number v-model="requestParam_addBuilding.refuge_layer" :min="0" :size="size" />
+          </el-form-item>
           <el-form-item label="耐火等级：" class="dialog-form-item" :size="size">
-            <el-input v-model="requestParam_editBuilding.fire_rating" class="dialog-form-item" type="text" />
+            <el-input v-model="requestParam_editBuilding.fire_rating" type="text" />
           </el-form-item>
           <el-form-item label="使用功能 ：" class="dialog-form-item" :size="size">
             <el-input v-model="requestParam_editBuilding.use_function" class="dialog-form-item" type="text" />
           </el-form-item>
         </el-form>
-        <div slot="footer" class="dialog-footer" style="margin-right: 20px;margin-top: 0;">
-          <el-button v-waves @click.native="closeDialogBuildingEdit">取消</el-button>
-          <el-button v-waves :loading="isDialogEditBuildingLoadingShow" type="primary" @click.native="onBuildingEdit">确定</el-button>
-        </div>
-      </el-dialog>
-    </div>
+      </div>
+      <div slot="footer" class="dialog-footer" style="margin-right: 20px;margin-top: 0;">
+        <el-button v-waves @click.native="closeDialogBuildingEdit">取消</el-button>
+        <el-button v-waves :loading="isDialogEditBuildingLoadingShow" type="primary" @click.native="onBuildingEdit">确定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -225,7 +235,7 @@ const initParams = {
   safety_exit_count: 0,
   evacuation_staircase_count:	0,
   fire_lift_count:	0,
-  refuge_layer:	'',
+  refuge_layer:	0,
   fire_rating:	'',
   use_function:	'',
   is_contain_afff:	1
@@ -424,6 +434,7 @@ export default {
           addBuilding(Params).then(() => {
             this.isDialogAddBuildingLoadingShow = false
             this.getBuildingInfoList()
+            this.init()
             this.$message({
               message: '新建成功',
               type: 'success'
@@ -441,9 +452,8 @@ export default {
      * @Date: 2019/6/28
      **/
     openDialogBuildingEdit(info) {
-      // const buildLabel = JSON.parse(info.label)
       this.requestParam_editBuilding = info
-      // this.requestParam_editBuilding = Object.assign(this.requestParam_editBuilding, buildLabel)
+
       this.isDialogEditBuildingShow = true
     },
     /**
@@ -512,17 +522,19 @@ export default {
         margin-bottom: 0;
         width: 100%;
       }
-      /deep/.el-form-item__label {
-        width: 148px;
-        text-align: right;
-        padding: 0;
-      }
-      /deep/.el-form-item__content{
-        margin-left: 3px;
-      }
       /deep/.demo-table-expand {
         width: 200px;
       }
     }
   }
+    .building {
+      /deep/.el-form-item__label {
+        width: 128px !important;
+        text-align: right;
+        padding: 0;
+      }
+      /deep/.el-form-item__content{
+        margin-left: 128px !important;
+      }
+    }
 </style>
