@@ -37,7 +37,7 @@ export default {
       itemList: [
         { item_id: 1, item_name: '设施检测', icon: 'fire' },
         // { item_id: 2, item_name: '维保' },
-        { item_id: 3, item_name: '电器检测', icon: 'electricaldetection' },
+        { item_id: 3, item_name: '电气检测', icon: 'electricaldetection' },
         { item_id: 4, item_name: '安全评估', icon: 'security' }
         // { item_id: 5, item_name: '三小场所', icon: 'place' }
       ]
@@ -190,7 +190,7 @@ export default {
       // }
     }
     .box-card-body {
-      text-align:center;
+      text-align: center;
       line-height: 60px;
       .project-name-item {
         font-size: 18px;

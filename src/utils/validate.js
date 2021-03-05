@@ -25,7 +25,6 @@ export function validUsername(str) {
 }
 
 // 验证用户名是否含有特殊字符
-
 export function check_other_char(str) {
   const UserName = '^(?=[0-9a-zA-Z_]+$)'
   const REG = new RegExp(UserName)

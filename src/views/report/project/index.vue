@@ -18,9 +18,6 @@
             <el-form-item class="reportInfo-item" label="检测单位 ：">
               <span>{{ reportInfo.testing_unit|| '-' }}</span>
             </el-form-item>
-            <!-- <el-form-item class="reportInfo-item" label="是否完成 ：">
-              <span>{{ reportInfo.is_finished }}</span>
-            </el-form-item> -->
             <el-form-item class="reportInfo-item" label="完成日期 ：">
               <span>{{ reportInfo.finished_time ? getTime(reportInfo.finished_time) : '-' }}</span>
             </el-form-item>

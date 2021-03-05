@@ -115,11 +115,9 @@ export default {
         height: 100%;
         font-size: 16px;
         vertical-align: text-bottom;
-
         &.hover-effect {
           cursor: pointer;
           transition: background .3s;
-
           &:hover {
             background: rgba(0, 0, 0, .1)
           }
@@ -145,7 +143,6 @@ export default {
         &.hover-effect {
           cursor: pointer;
           transition: background .3s;
-
           &:hover {
             background: rgba(0, 0, 0, .1)
           }

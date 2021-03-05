@@ -34,7 +34,7 @@ export default {
   directives: { waves },
   props: {
     visible: {
-      type: Boolean,
+      type: Boolean, // 布尔值
       required: true
     }
   },
@@ -80,7 +80,6 @@ export default {
     visible(isOpen) {
       if (isOpen) {
         getInfo().then(res => {
-          console.log(res)
           this.UserInfo.u_nickname = res.data.nickname
         })
         if (this.$refs.formEditUserInfo !== undefined) this.$refs.formEditUserInfo.resetFields()
@@ -110,6 +109,7 @@ export default {
     onCancel() {
       this.$router.go(-1)
     },
+
     /**
      * @Description: 提交修改
      * @Date: 2019/5/7

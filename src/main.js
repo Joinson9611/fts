@@ -39,9 +39,9 @@ var aMapUILoader = new AMapJS.AMapUILoader({
   v: '1.0' // UI组件库版本号
 })
 
-aMapJSAPILoader.load().then(function(AMap) {
+aMapJSAPILoader.load().then(function() {
   aMapUILoader.load().then(function(initAMapUI) {
-    var AMapUI = initAMapUI() // 这里调用initAMapUI初始化并返回AMapUI
+    initAMapUI() // 这里调用initAMapUI初始化并返回AMapUI
     // 其他逻辑
   })
 })

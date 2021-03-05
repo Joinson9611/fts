@@ -133,7 +133,7 @@
                 <el-input v-model="paramsNewProjects.constructing_unit" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="委托单位联系电话：" class="dialog-form-item" prop="constructing_contact_number" :size="size">
-                <el-input v-model="paramsNewProjects.constructing_contact_number" oninput="value=value.replace(/[^\d.]/g,'')" class="dialog-form-item" type="text" />
+                <el-input v-model="paramsNewProjects.constructing_contact_number" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="委托单位联系人：" class="dialog-form-item" prop="constructing_contacts" :size="size">
                 <el-input v-model="paramsNewProjects.constructing_contacts" class="dialog-form-item" type="text" />
@@ -153,13 +153,13 @@
                 <el-input v-model="paramsNewProjects.building_height" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="检测部位：" class="dialog-form-item" prop="testing_part" :size="size">
-                <el-input v-model="paramsNewProjects.testing_part" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
+                <el-input v-model="paramsNewProjects.testing_part" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="检测面积(平方米)：" class="dialog-form-item" prop="testing_area" :size="size">
-                <el-input v-model="paramsNewProjects.testing_area" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
+                <el-input v-model="paramsNewProjects.testing_area" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="测试部位使用功能：" class="dialog-form-item" prop="testing_part_function" :size="size">
-                <el-input v-model="paramsNewProjects.testing_part_function" class="dialog-form-item" oninput="value=value.replace(/[^\d.]/g,'')" type="text" />
+                <el-input v-model="paramsNewProjects.testing_part_function" class="dialog-form-item" type="text" />
               </el-form-item>
               <el-form-item label="检测类型：" class="dialog-form-item" prop="testing_type_id" :size="size">
                 <el-select v-model="paramsNewProjects.testing_type_id" filterable placeholder="请选择检测类型" style="width: 100%">

@@ -283,7 +283,7 @@
               @click="downloadReport(scope.row.report_path)"
             >
               下载报告
-            </el-button>
+            </el-button>f ftn
           </template>
         </el-table-column>
       </el-table>
@@ -733,7 +733,7 @@ export default {
     },
     /**
      * @Description: 获取项目列表
-     * @Date: 2019/5/7
+     * @Date: 2020/5/7
      **/
     getProject() {
       this.isProjectListLoadingShow = true
@@ -755,7 +755,7 @@ export default {
     },
     /**
      * @Description: 搜索事件
-     * @Date: 2019/5/7
+     * @Date: 2020/5/7
      **/
     onSearch() {
       this.paramsGetProjects.page = 1
@@ -763,14 +763,14 @@ export default {
     },
     /**
      * @Description: 列表勾选回调
-     * @Date: 2019/5/7
+     * @Date: 2020/5/7
      **/
     handleSelectionChange(val) {
       this.multipleSelection = val
     },
     /**
      * @Description: 删除项目
-     * @Date: 2019/5/7
+     * @Date: 2020/5/7
      **/
     deleteProjects() {
       this.$confirm('确认删除选中的项目吗？', '提示', {

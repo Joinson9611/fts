@@ -123,7 +123,6 @@ export default {
         type: 'info'
       })
     },
-
     onSearch() {
       this.paramsGetResistance.note = this.tempFilterOptions.note || undefined
       this.paramsGetResistance.address = this.tempFilterOptions.address || undefined

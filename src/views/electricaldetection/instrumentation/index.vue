@@ -219,7 +219,7 @@ export default {
         this.total = res.data.total
         this.instrumenlist = res.data.items
       }).catch(err => {
-        console.error(err)
+        console.log(err)
         this.isListLoadingShow = false
       })
     },

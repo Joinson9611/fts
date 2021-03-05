@@ -105,11 +105,11 @@ export default {
         &.hover-effect {
           cursor: pointer;
           transition: background .3s;
-
           &:hover {
             background: rgba(0, 0, 0, .1)
           }
         }
+
       }
     }
     .right-menu {
@@ -127,21 +127,18 @@ export default {
         font-size: 18px;
         color: #5a5e66;
         vertical-align: text-bottom;
-
         &.hover-effect {
           cursor: pointer;
           transition: background .3s;
-
           &:hover {
             background: rgba(0, 0, 0, .1)
-          }
+           }
         }
       }
 
       .avatar-container {
         margin-right: 0px;
         padding: 0 8px 0 8px;
-
         .username-item {
           display: inline-block;
           margin-left: 8px;

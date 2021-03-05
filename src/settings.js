@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: '消防检查系统',
+  title: '利盾消防检查系统',
 
   /**
    * @type {boolean} true | false
